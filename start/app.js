@@ -19,7 +19,8 @@ const providers = [
   '@adonisjs/shield/providers/ShieldProvider',
   '@adonisjs/session/providers/SessionProvider',
   '@adonisjs/auth/providers/AuthProvider',
-  'adonis-nextjs/providers/NextProvider'
+  'adonis-nextjs/providers/NextProvider',
+  '@radmen/adonis-lucid-soft-deletes/providers/SoftDeletesProvider'
 ]
 
 /*
