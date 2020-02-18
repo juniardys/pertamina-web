@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
-import Link from 'next/link'
 
 class Index extends Component {
     render() {
         return (
             <Layout>
-                ini content 
-                <Link href="/test">
-                    <a>Ke page test</a>
-                </Link>
+                ini test
+                
                 <div className="panel panel-flat">
 					<div className="panel-heading">
 						<h5 className="panel-title">Simple panel<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>

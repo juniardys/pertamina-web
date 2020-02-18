@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import Login from '~/components/login';
 import {connect} from 'react-redux'
-import {Router} from '../routes'
-import {login} from "~/state/actions/AuthActionCreators";
+// import {Router} from '../routes'
+// import {login} from "~/state/actions/AuthActionCreators";
 
 
 class LoginPage extends Component {
@@ -20,7 +20,7 @@ class LoginPage extends Component {
 
    handleLoginSubmit = (value) => {
        const {dispatch} = this.props;
-       dispatch(login(value));
+    //    dispatch(login(value));
    };
 
 
