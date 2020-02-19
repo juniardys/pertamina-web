@@ -23,7 +23,7 @@ class Auth extends Component {
 						</div>
 
 						<div className="navbar-collapse collapse" id="navbar-mobile">
-							<ul className="nav navbar-nav navbar-right">
+							{/* <ul className="nav navbar-nav navbar-right">
 								<li>
 									<a href="#">
 										<i className="icon-display4"></i> <span className="visible-xs-inline-block position-right"> Go to website</span>
@@ -42,7 +42,7 @@ class Auth extends Component {
 										<span className="visible-xs-inline-block position-right"> Options</span>
 									</a>
 								</li>
-							</ul>
+							</ul> */}
 						</div>
 					</div>
 

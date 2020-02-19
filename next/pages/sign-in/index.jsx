@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import Layout from "~/components/layouts/Base";
+import Layout from "~/components/layouts/Auth";
 
-class Base extends Component {
+class Index extends Component {
     render() {
         return (
             <Layout>
@@ -40,4 +40,4 @@ class Base extends Component {
     }
 }
 
-export default Base;
+export default Index;

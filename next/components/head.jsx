@@ -29,7 +29,7 @@ const Head = (props) => (
     <link rel="icon" href="pyramid.png" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{process.env.APP_NAME} {(props.title) ? '-' + props.title : ''}</title>
+    <title>{process.env.APP_NAME} {(props.title) ? ' - ' + props.title : ''}</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css" />
     <link href="global_assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />

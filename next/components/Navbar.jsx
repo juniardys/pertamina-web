@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Link from 'next/link'
 
 class Navbar extends Component {
 	render() {
@@ -10,25 +11,15 @@ class Navbar extends Component {
 					<ul className="nav navbar-nav pull-right visible-xs-block">
 						<li><a data-toggle="collapse" data-target="#navbar-mobile"><i className="icon-tree5"></i></a></li>
 						<li><a className="sidebar-mobile-main-toggle"><i className="icon-paragraph-justify3"></i></a></li>
-						<li><a className="sidebar-mobile-secondary-toggle"><i className="icon-more"></i></a></li>
 					</ul>
 				</div>
 
 				<div className="navbar-collapse collapse" id="navbar-mobile">
 					<ul className="nav navbar-nav">
 						<li><a className="sidebar-control sidebar-main-toggle hidden-xs"><i className="icon-paragraph-justify3"></i></a></li>
-						<li><a className="sidebar-control sidebar-secondary-hide hidden-xs"><i className="icon-transmission"></i></a></li>
 					</ul>
 
 					<ul className="nav navbar-nav navbar-right">
-						<li><a href="#">Text link</a></li>
-
-						<li>
-							<a href="#">
-								<i className="icon-cog3"></i>
-								<span className="visible-xs-inline-block position-right">Icon link</span>
-							</a>
-						</li>
 
 						<li className="dropdown dropdown-user">
 							<a className="dropdown-toggle" data-toggle="dropdown">
@@ -38,11 +29,13 @@ class Navbar extends Component {
 							</a>
 
 							<ul className="dropdown-menu dropdown-menu-right">
-								<li><a href="#"><i className="icon-user-plus"></i> My profile</a></li>
-								<li><a href="#"><i className="icon-coins"></i> My balance</a></li>
-								<li><a href="#"><span className="badge badge-warning pull-right">58</span> <i className="icon-comment-discussion"></i> Messages</a></li>
-								<li className="divider"></li>
-								<li><a href="#"><i className="icon-cog5"></i> Account settings</a></li>
+								{/* <li><a href="#"><i className="icon-user-plus"></i> My profile</a></li> */}
+								{/* <li><a href="#"><i className="icon-coins"></i> My balance</a></li> */}
+								{/* <li><a href="#"><span className="badge badge-warning pull-right">58</span> <i className="icon-comment-discussion"></i> Messages</a></li> */}
+								{/* <li className="divider"></li> */}
+								<Link href="/profile">
+									<li><a href="#"><i className="icon-cog5"></i> Account settings</a></li>
+								</Link>
 								<li><a href="#"><i className="icon-switch2"></i> Logout</a></li>
 							</ul>
 						</li>

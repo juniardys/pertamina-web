@@ -12,9 +12,10 @@ class Base extends Component {
 	}
 
 	render() {
+		const breadcrumb = this.props.breadcrumb || []
 		return (
 			<div className="BaseLayout">
-				<Head />
+				<Head title={this.props.title} />
 				<Navbar />
 				<div className="page-container">
 					<div className="page-content">
@@ -24,7 +25,7 @@ class Base extends Component {
 							<div className="page-header page-header-default">
 								<div className="page-header-content">
 									<div className="page-title">
-										<h4><i className="icon-arrow-left52 position-left"></i> <span className="text-semibold">Home</span> - Dashboard</h4>
+										<h4><span className="text-semibold">{ this.props.title }</span></h4>
 									</div>
 
 									<div className="heading-elements">
@@ -36,14 +37,14 @@ class Base extends Component {
 									</div>
 								</div>
 
-								<Breadcrumb />
+								<Breadcrumb data={this.props.breadcrumb} />
 							</div>
 							<div className="content">
 								<div className="row">
 								{this.props.children}
 								</div>
 								<div className="footer text-muted">
-									&copy; 2015. <a href="#">Limitless Web App Kit</a> by <a href="http://themeforest.net/user/Kopyov" target="_blank">Eugene Kopyov</a>
+									&copy; 2020. <a href="#">Pertamina</a> by <a href="https://nalarnaluri.com" target="_blank">Nalar Naluri</a>
 								</div>
 
 							</div>
@@ -51,7 +52,6 @@ class Base extends Component {
 						</div>
 					</div>
 				</div>
-
 			</div>
 		)
 	}
