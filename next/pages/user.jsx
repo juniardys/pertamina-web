@@ -3,7 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 
-class Index extends Component {
+class User extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -25,18 +25,19 @@ class Index extends Component {
     }
 
     _setUserState = async (title, modalType, user) => {
+        console.log(user.name);
         await this.setState({
             title: title,
             modalType: modalType,
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            address: user.address,
-            role: user.role,
-            spbu: user.spbu,
-            ktp: user.ktp,
-            image: user.image
+            uuid: user.uuid || '',
+            name: user.name || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            address: user.address || '',
+            role: user.role || '',
+            spbu: user.spbu || '',
+            ktp: user.ktp || '',
+            image: user.image || ''
         })
     }
 
@@ -54,10 +55,11 @@ class Index extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, hapus!'
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.value) {
-                Swal.fire('Berhasil!','User berhasil dihapus.','success')
+                Swal.fire('Berhasil!', 'User berhasil dihapus.', 'success')
             }
         })
     }
@@ -205,7 +207,7 @@ class Index extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar User <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Buat User', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
                         </div>
                     </div>
 
@@ -253,4 +255,4 @@ class Index extends Component {
 
 
 
-export default Index;
+export default User;

@@ -3,7 +3,7 @@ import Layout from "~/components/layouts/Base";
 import { useRouter } from 'next/router'
 
 
-const Index = () => {
+const Report = () => {
     const router = useRouter()
     const { uuid } = router.query
 
@@ -13,17 +13,17 @@ const Index = () => {
             url: '/spbu'
         },
         {
-            title: 'Detail',
-            url: '/spbu/' + uuid
+            title: 'Laporan',
+            url: `/spbu/${uuid}/report`
         }
     ]
     
 
     return (
-        <Layout title={'Dashboard SPBU ' + uuid} breadcrumb={breadcrumb}>
-            ini spbu {uuid}
+        <Layout title={'Laporan SPBU ' + uuid} breadcrumb={breadcrumb}>
+            ini laporan spbu {uuid}
         </Layout>
     )
 }
 
-export default Index;
+export default Report;

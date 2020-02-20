@@ -11,9 +11,9 @@ const SubSidebar = () => {
 		const datas = [
 			{
 				type: 'menu',
-				title: 'Dashboard',
-				icon: 'icon-home2',
-				url: '/spbu/' + spbu
+				title: 'Laporan',
+				icon: 'icon-file-text2',
+				url: `/spbu/${spbu}/report/`
 			},
 			{
 				type: 'menu',
@@ -25,7 +25,7 @@ const SubSidebar = () => {
 				type: 'menu',
 				title: 'Shift',
 				icon: 'icon-alarm-check',
-				url: '/shift'
+				url: `/spbu/${spbu}/shift/`
 			},
 			{
 				type: 'menu',
@@ -35,7 +35,7 @@ const SubSidebar = () => {
 			},
 			{
 				type: 'menu',
-				title: 'Payment Method',
+				title: 'Metode Pembayaran',
 				icon: ' icon-coin-dollar',
 				url: `/spbu/${spbu}/payment/`
 			},
@@ -76,7 +76,8 @@ const SubSidebar = () => {
 								<li className="navigation-header"><span>SPBU Menu</span> <i className="icon-menu" title="Main pages"></i></li>
 								{datas.map((menu, i) => (
 									<Link href={menu.url} key={i}>
-										<li>
+										
+										<li className={(router.pathname == menu.url) ? 'active' : null }>
 											<a>
 												{menu.icon != null ? (<i className={menu.icon}></i>) : (<i className="icon-circle2"></i>)}
 												<span>{menu.title}</span>
@@ -85,7 +86,7 @@ const SubSidebar = () => {
 												<ul>
 													{menu.sub.map((sub, subi) => (
 														<Link href={sub.url} key={subi}>
-															<li><a>{sub.title}</a></li>
+															<li className={(router.pathname == sub.url) ? 'active' : null }><a>{sub.title}</a></li>
 														</Link>
 													))}
 												</ul>

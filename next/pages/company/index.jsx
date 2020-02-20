@@ -25,6 +25,17 @@ class Index extends Component {
         })
     }
 
+    _setModalState = async (title, modalType, item) => {
+        await this.setState({
+            title: title,
+            modalType: modalType,
+            uuid: item.uuid || '',
+            name: item.name || '',
+            address: item.address || '',
+            phone: item.phone || ''
+        })
+    }
+
     _deleteSPBU = async (uuid) => {
         Swal.fire({
             title: 'Apakah anda yakin?',
@@ -33,7 +44,8 @@ class Index extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, hapus!'
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.value) {
                 Swal.fire('Berhasil!','Perusahaan berhasil dihapus.','success')
@@ -95,7 +107,7 @@ class Index extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Perusahaan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal"  onClick={() => this._setModalState('Buat Perusahaan', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                         </div>
                     </div>
 
@@ -122,7 +134,7 @@ class Index extends Component {
                                                 <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
                                             </Link>
 
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this.setState({ title: 'Edit ' + item.name, modalType: 'edit', uuid: item.uuid, name: item.name, address: item.address, phone: item.phone, code: item.code })}><i className="icon-pencil7"></i></button>
+                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', [])}><i className="icon-pencil7"></i></button>
 
                                             <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteSPBU(item.uuid)}><i className="icon-trash"></i></button>
                                         </td>
