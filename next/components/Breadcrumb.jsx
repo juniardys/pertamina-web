@@ -13,11 +13,11 @@ const Breadcrumb = (props) => {
                 {data.map((menu, i) => {
                     if (data.length == i + 1) {
                         return (
-                            <li className="active">{menu.title}</li>
+                            <li className="active" key={i}>{menu.title}</li>
                         )
                     } else {
                         return (
-                            <Link href={menu.url}>
+                            <Link href={menu.url} key={i}>
                                 <li><a>{menu.title}</a></li>
                             </Link>
                         )

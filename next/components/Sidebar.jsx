@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const Sidebar = () => {
+	const router = useRouter()
+
 	const datas = [
 		{
 			type: 'menu',
@@ -10,22 +13,20 @@ const Sidebar = () => {
 			url: '/'
 		},
 		{
-			type: 'menu',
-			title: 'User Management',
+			type: 'dropdown',
+			title: 'Manajemen User',
 			icon: 'icon-users',
-			url: '/user'
-		},
-		{
-			type: 'menu',
-			title: 'Role Management',
-			icon: 'icon-tree5',
-			url: '/role'
-		},
-		{
-			type: 'menu',
-			title: 'Company',
-			icon: 'icon-office',
-			url: '/company'
+			url: '#',
+			sub: [
+				{
+					title: 'Pengaturan User',
+					url: '/user'
+				},
+				{
+					title: 'Pengaturan Jabatan',
+					url: '/role'
+				}
+			]
 		},
 		{
 			type: 'menu',
@@ -33,44 +34,46 @@ const Sidebar = () => {
 			icon: 'icon-library2',
 			url: '/spbu'
 		},
-		// {
-		// 	type: 'dropdown',
-		// 	title: 'Sub Manu',
-		// 	icon: null,
-		// 	url: '#',
-		// 	sub: [
-		// 		{
-		// 			title: 'ini Sub Menu 1',
-		// 			url: '#'
-		// 		},
-		// 		{
-		// 			title: 'ini Sub Menu 2',
-		// 			url: '#'
-		// 		}
-		// 	]
-		// }
+		{
+			type: 'menu',
+			title: 'Produk',
+			icon: 'icon-box',
+			url: '/product'
+		},
+		{
+			type: 'menu',
+			title: 'Metode Pembayaran',
+			icon: ' icon-coin-dollar',
+			url: '/payment'
+		},
+		{
+			type: 'menu',
+			title: 'Perusahaan',
+			icon: 'icon-office',
+			url: '/company'
+		},
 	]
 
 	return (
 		<div className="sidebar sidebar-main">
 			<div className="sidebar-content">
+
 				<div className="sidebar-category sidebar-category-visible">
 					<div className="category-content no-padding">
 						<ul className="navigation navigation-main navigation-accordion">
-
-							<li className="navigation-header"><span>Main</span> <i className="icon-menu" title="Main pages"></i></li>
-							{datas.map(menu => (
-								<Link href={menu.url}>
-									<li>
+							<li className="navigation-header"><span>Main Menu</span> <i className="icon-menu" title="Main pages"></i></li>
+							{datas.map((menu, i) => (
+								<Link href={menu.url} key={i}>
+									<li className={(router.pathname == menu.url) ? 'active' : null }>
 										<a>
 											{menu.icon != null ? (<i className={menu.icon}></i>) : (<i className="icon-circle2"></i>)}
 											<span>{menu.title}</span>
 										</a>
 										{menu.type == 'dropdown' ? (
 											<ul>
-												{menu.sub.map(sub => (
-													<Link href={sub.url}>
-														<li><a>{sub.title}</a></li>
+												{menu.sub.map((sub, subi) => (
+													<Link href={sub.url} key={subi}>
+														<li className={(router.pathname == sub.url) ? 'active' : null }><a>{sub.title}</a></li>
 													</Link>
 												))}
 											</ul>
@@ -78,9 +81,11 @@ const Sidebar = () => {
 									</li>
 								</Link>
 							))}
+
 						</ul>
 					</div>
 				</div>
+
 			</div>
 		</div>
 	)

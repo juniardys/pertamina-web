@@ -1,19 +1,17 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
-import Link from "next/link"
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 
-class Index extends Component {
+class Product extends Component {
     constructor(props) {
         super(props)
         this.state = {
             uuid: '',
             name: '',
-            address: '',
-            phone: '',
-            balance: '',
-            title: 'Buat Perusahaan',
+            code: '',
+            price: '',
+            title: 'Buat Produk',
             modalType: "create",
             isLoading: true,
         }
@@ -36,7 +34,7 @@ class Index extends Component {
             confirmButtonText: 'Yes, hapus!'
         }).then((result) => {
             if (result.value) {
-                Swal.fire('Berhasil!','Perusahaan berhasil dihapus.','success')
+                Swal.fire('Berhasil!','Produk berhasil dihapus.','success')
             }
         })
     }
@@ -56,15 +54,20 @@ class Index extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Alamat</label>
+                    <label className="control-label col-lg-2">Kode</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
                     </div>
                 </div>
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Nomor Handphone</label>
+                <div className="form-group">
+                    <label className="control-label col-lg-2">Harga / Liter</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="phone" value={this.state.phone} onChange={this.handleInputChange} />
+                        <div className="form-group has-feedback has-feedback-left">
+                            <input type="number" className="form-control" placeholder="Ketik harga produk disini" name="price" value={this.state.price} onChange={this.handleInputChange} />
+                            <div className="form-control-feedback">
+                                Rp.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -72,28 +75,27 @@ class Index extends Component {
     }
 
     render() {
-		const breadcrumb = [
-			{
-				title: 'Perusahaan',
-				url: '/company'
-			}
-		]
+        const breadcrumb = [
+            {
+                title: 'Produk',
+                url: '/product'
+            }
+        ]
 
-        const spbu = [
+        const products = [
             {
                 uuid: 'qwer1234',
-                name: 'PT Kayu Mati',
-                phone: '085102725497',
-                address: 'Malang, Jawa Timur, Indonesia',
-                balance: 1000000
+                name: 'Pertamina',
+                code: 'PRTMN',
+                price: '13000'
             }
         ]
 
         return (
-            <Layout title="Perusahaan" breadcrumb={breadcrumb}>
+            <Layout title="Produk" breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar Perusahaan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Produk<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
 
                         </div>
@@ -105,26 +107,22 @@ class Index extends Component {
                                 <tr>
                                     <th>#</th>
                                     <th>Nama</th>
-                                    <th>Alamat</th>
-                                    <th>Saldo</th>
-                                    <th>Action</th>
+                                    <th>Kode</th>
+                                    <th>Harga</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {spbu.map((item, i) => (
+                                {products.map((product, i) => (
                                     <tr key={i}>
-                                        <td>1</td>
-                                        <td>{item.name}</td>
-                                        <td>{item.address}</td>
-                                        <td>Rp. {item.balance}</td>
+                                        <td>{i + 1}</td>
+                                        <td>{product.name}</td>
+                                        <td>{product.code}</td>
+                                        <td>Rp. {product.price}</td>
                                         <td>
-                                            <Link href={'/company/' + item.uuid}>
-                                                <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                            </Link>
+                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this.setState({ title: 'Edit ' + product.name, modalType: 'edit', uuid: product.uuid, name: product.name, address: product.address, phone: product.phone, code: product.code, price: product.price })}><i className="icon-pencil7"></i></button>
 
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this.setState({ title: 'Edit ' + item.name, modalType: 'edit', uuid: item.uuid, name: item.name, address: item.address, phone: item.phone, code: item.code })}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteSPBU(item.uuid)}><i className="icon-trash"></i></button>
+                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(product.uuid)}><i className="icon-trash"></i></button>
                                         </td>
                                     </tr>
                                 ))}
@@ -141,4 +139,4 @@ class Index extends Component {
     }
 }
 
-export default Index;
+export default Product;

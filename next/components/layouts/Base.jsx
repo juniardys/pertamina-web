@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import Head from "~/components/head";
+import Head from "~/components/Head";
 import Navbar from "~/components/Navbar";
 import Sidebar from "~/components/Sidebar";
+import SubSidebar from "~/components/SubSidebar";
 import Breadcrumb from "~/components/Breadcrumb";
 
 class Base extends Component {
@@ -20,6 +21,7 @@ class Base extends Component {
 				<div className="page-container">
 					<div className="page-content">
 						<Sidebar />
+						<SubSidebar />
 						<div className="content-wrapper">
 
 							<div className="page-header page-header-default">

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Head from "~/components/head";
+import Head from "~/components/Head";
 
 class Auth extends Component {
 
