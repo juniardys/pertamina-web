@@ -120,22 +120,22 @@ class Setting extends Component {
 
                         <div className="panel-body">
                             <div className="form-group row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="text-semibold">Pilih Metode Pembayaran yang ditetapkan pada SPBU ini</label>
-                                        <div class="checkbox">
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <label className="text-semibold">Pilih Metode Pembayaran yang ditetapkan pada SPBU ini</label>
+                                        <div className="checkbox">
                                             <label>
                                                 <input type="checkbox" value="tunai" defaultChecked="checked" />
                                                 Tunai
 											</label>
                                         </div>
-                                        <div class="checkbox">
+                                        <div className="checkbox">
                                             <label>
                                                 <input type="checkbox" value="cc" />
                                                 CC
 											</label>
                                         </div>
-                                        <div class="checkbox">
+                                        <div className="checkbox">
                                             <label>
                                                 <input type="checkbox" value="voucher" />
                                                 Voucher
