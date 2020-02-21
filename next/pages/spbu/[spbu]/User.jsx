@@ -4,6 +4,11 @@ import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 
 class User extends Component {
+
+    static getInitialProps({ query }) {
+        return { query }
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -13,7 +18,6 @@ class User extends Component {
             phone: '',
             address: '',
             role: '',
-            spbu: '',
             ktp: '',
             image: '',
             filterRole: 'all',
@@ -25,7 +29,6 @@ class User extends Component {
     }
 
     _setUserState = async (title, modalType, user) => {
-        console.log(user.name);
         await this.setState({
             title: title,
             modalType: modalType,
@@ -35,7 +38,6 @@ class User extends Component {
             phone: user.phone || '',
             address: user.address || '',
             role: user.role || '',
-            spbu: user.spbu || '',
             ktp: user.ktp || '',
             image: user.image || ''
         })
@@ -47,7 +49,7 @@ class User extends Component {
         })
     }
 
-    _deleteSPBU = async (uuid) => {
+    _deleteUser = async (uuid) => {
         Swal.fire({
             title: 'Apakah anda yakin?',
             text: "Anda tidak akan dapat mengembalikan ini!",
@@ -122,19 +124,8 @@ class User extends Component {
                         <label className="control-label col-lg-2">Jabatan</label>
                         <div className="col-lg-10">
                             <select className="form-control col-lg-10" name="role" onChange={this.handleInputChange}>
-                                <option value="1">Superadmin</option>
                                 <option value="2">Admin</option>
                                 <option value="3">Operator</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="form-group row">
-                        <label className="control-label col-lg-2">SPBU</label>
-                        <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="role" onChange={this.handleInputChange}>
-                                <option value="1762v36x">G-Walk</option>
-                                <option value="1273uasb">Lidah Wetan</option>
-                                <option value="ashjdk16">Lakarsantri</option>
                             </select>
                         </div>
                     </div>
@@ -146,49 +137,43 @@ class User extends Component {
     render() {
         const breadcrumb = [
             {
+                title: 'SPBU',
+                url: '/spbu'
+            },
+            {
                 title: 'User',
-                url: '/user'
+                url: `/spbu/${this.props.query.spbu}/user`
             }
         ]
 
         const users = [
             {
                 uuid: 'qwer1234',
-                name: 'Nizar Alfarizi',
-                email: 'fariz@nalarnaluri.com',
-                phone: '085102725497',
-                address: 'Pesona Permata Gading 1 Blok B4',
-                role: 'Superadmin',
-                spbu: 'pusat',
+                name: 'Jhon Doe',
+                email: 'jhon@mail.test',
+                phone: '1234567890',
+                address: 'Pluto',
+                role: 'Admin',
                 ktp: '12345678910',
                 image: '/global_assets/images/placeholders/placeholder.jpg'
             }
         ]
 
         return (
-            <Layout title="Manajemen User" breadcrumb={breadcrumb}>
+            <Layout title={'User ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Jabatan</label>
                             <select className="form-control" name="filterRole" onChange={this.handleInputChange}>
                                 <option value="all">Semua</option>
-                                <option value="superadmin">Superadmin</option>
                                 <option value="admin">Admin</option>
                                 <option value="operator">Operator</option>
                             </select>
                         </div>
                     </div>
                     <div className="col-md-3">
-                        <div className="form-group">
-                            <label>SPBU</label>
-                            <select className="form-control" name="filterSPBU" onChange={this.handleInputChange}>
-                                <option value="all">Semua</option>
-                                <option value="1762v36x">G-Walk</option>
-                                <option value="1273uasb">Lidah Wetan</option>
-                                <option value="ashjdk16">Lakarsantri</option>
-                            </select>
-                        </div>
+
                     </div>
                     <div className="col-md-3">
                     </div>
@@ -218,7 +203,6 @@ class User extends Component {
                                     <th>#</th>
                                     <th>Nama</th>
                                     <th>Email</th>
-                                    <th>SPBU</th>
                                     <th>Jabatan</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -229,7 +213,6 @@ class User extends Component {
                                         <td>1</td>
                                         <td>{user.name}</td>
                                         <td>{user.email}</td>
-                                        <td>{user.spbu}</td>
                                         <td>{user.role}</td>
                                         <td>
                                             <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profile ' + user.name, 'preview', user)}><i className="icon-profile"></i></button>
@@ -252,7 +235,5 @@ class User extends Component {
         )
     }
 }
-
-
 
 export default User;

@@ -39,6 +39,12 @@ const SubSidebar = () => {
 				icon: ' icon-coin-dollar',
 				url: `/spbu/${spbu}/payment/`
 			},
+			{
+				type: 'menu',
+				title: 'Pengaturan',
+				icon: ' icon-gear',
+				url: `/spbu/${spbu}/setting/`
+			},
 			// {
 			// 	type: 'menu',
 			// 	title: 'Transaction',
