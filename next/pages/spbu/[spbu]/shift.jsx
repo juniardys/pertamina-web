@@ -2,10 +2,9 @@ import React, { Component, useEffect } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
-import Link from "next/link"
 
-class Index extends Component {
-
+class Report extends Component {
+    
     static getInitialProps({ query }) {
         return { query }
     }
@@ -15,8 +14,9 @@ class Index extends Component {
         this.state = {
             uuid: '',
             name: '',
-            code: '',
-            title: 'Buat Island',
+            start: '',
+            end: '',
+            title: 'Buat Shift',
             modalType: "create",
             isLoading: true,
         }
@@ -34,11 +34,12 @@ class Index extends Component {
             modalType: modalType,
             uuid: item.uuid || '',
             name: item.name || '',
-            code: item.code || ''
+            start: item.start || '',
+            end: item.end || '',
         })
     }
 
-    _deleteIsland = async (uuid) => {
+    _deleteRole = async (uuid) => {
         Swal.fire({
             title: 'Apakah anda yakin?',
             text: "Anda tidak akan dapat mengembalikan ini!",
@@ -50,7 +51,7 @@ class Index extends Component {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.value) {
-                Swal.fire('Berhasil!', 'Island berhasil dihapus.', 'success')
+                Swal.fire('Berhasil!', 'Shift berhasil dihapus.', 'success')
             }
         })
     }
@@ -70,9 +71,15 @@ class Index extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Kode</label>
+                    <label className="control-label col-lg-2">Waktu Mulai</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
+                        <input type="time" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Waktu Berakhir</label>
+                    <div className="col-lg-10">
+                        <input type="time" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
                     </div>
                 </div>
             </form>
@@ -80,33 +87,34 @@ class Index extends Component {
     }
 
     render() {
-
         const breadcrumb = [
             {
                 title: 'SPBU',
                 url: '/spbu'
             },
             {
-                title: 'Island',
-                url: `/spbu/${this.props.query.spbu}/island`
+                title: 'Shift',
+                url: `/spbu/${this.props.query.spbu}/shift`
             }
         ]
 
-        const islands = [
+        const shifts = [
             {
                 uuid: 'qwer1234',
-                name: 'Island 1',
-                code: 'I1',
+                name: 'Shift 1',
+                start: '07:00',
+                end: '01:00',
             }
         ]
 
+
         return (
-            <Layout title={'Island ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Shift ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar Island<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Shift<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Island', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Shift', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                         </div>
                     </div>
                     <div className="table-responsive">
@@ -114,25 +122,23 @@ class Index extends Component {
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Kode</th>
+                                    <th>Nama</th>
+                                    <th>Waktu Mulai</th>
+                                    <th>Waktu Berakhir</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {islands.map((island, i) => (
+                                {shifts.map((shift, i) => (
                                     <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{island.name}</td>
-                                        <td>{island.code}</td>
+                                        <td>{i+1}</td>
+                                        <td>{shift.name}</td>
+                                        <td>{shift.start}</td>
+                                        <td>{shift.end}</td>
                                         <td>
-                                            <Link href={'/spbu/' + this.props.query.spbu + '/island/' + island.uuid}>
-                                                <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Pompa"><i className="icon-newspaper2"></i></button>
-                                            </Link>
+                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
 
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + island.name, 'edit', island)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger zbtn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteIsland(island.uuid)}><i className="icon-trash"></i></button>
+                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
                                         </td>
                                     </tr>
                                 ))}
@@ -149,4 +155,4 @@ class Index extends Component {
     }
 }
 
-export default Index;
+export default Report;

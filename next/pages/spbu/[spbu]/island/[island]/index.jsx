@@ -3,8 +3,8 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 
-class Report extends Component {
-    
+class Index extends Component {
+
     static getInitialProps({ query }) {
         return { query }
     }
@@ -14,9 +14,9 @@ class Report extends Component {
         this.state = {
             uuid: '',
             name: '',
-            start: '',
-            end: '',
-            title: 'Buat Shift',
+            code: '',
+            product: '',
+            title: 'Buat Pompa',
             modalType: "create",
             isLoading: true,
         }
@@ -34,12 +34,12 @@ class Report extends Component {
             modalType: modalType,
             uuid: item.uuid || '',
             name: item.name || '',
-            start: item.start || '',
-            end: item.end || '',
+            code: item.code || '',
+            product: item.product || ''
         })
     }
 
-    _deleteRole = async (uuid) => {
+    _deleteIsland = async (uuid) => {
         Swal.fire({
             title: 'Apakah anda yakin?',
             text: "Anda tidak akan dapat mengembalikan ini!",
@@ -51,7 +51,7 @@ class Report extends Component {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.value) {
-                Swal.fire('Berhasil!', 'Shift berhasil dihapus.', 'success')
+                Swal.fire('Berhasil!', 'Pompa berhasil dihapus.', 'success')
             }
         })
     }
@@ -71,15 +71,19 @@ class Report extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Waktu Mulai</label>
+                    <label className="control-label col-lg-2">Kode</label>
                     <div className="col-lg-10">
-                        <input type="time" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
                     </div>
                 </div>
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Waktu Berakhir</label>
-                    <div className="col-lg-10">
-                        <input type="time" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
+                <div class="form-group row">
+                    <label class="control-label col-lg-2">Produk</label>
+                    <div class="col-lg-10">
+                        <select class="form-control col-lg-10" name="role">
+                            <option value="1">Premium</option>
+                            <option value="2">Pertalite</option>
+                            <option value="3">Pertamax</option>
+                        </select>
                     </div>
                 </div>
             </form>
@@ -87,34 +91,39 @@ class Report extends Component {
     }
 
     render() {
+
         const breadcrumb = [
             {
                 title: 'SPBU',
                 url: '/spbu'
             },
             {
-                title: 'Shift',
-                url: `/spbu/${this.props.query.spbu}/shift`
+                title: 'Island',
+                url: `/spbu/${this.props.query.spbu}/island`
+            },
+            {
+                title: 'Pompa',
+                url: `/spbu/${this.props.query.spbu}/island/${this.props.query.island}`
             }
         ]
 
-        const shifts = [
+        const nozzles = [
             {
                 uuid: 'qwer1234',
-                name: 'Shift 1',
-                start: '07:00',
-                end: '01:00',
+                name: 'Pompa 1',
+                code: 'A1',
+                product: 'Premium'
             }
         ]
 
 
         return (
-            <Layout title={'Shift ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Pompa ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar Shift<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Pompa<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Shift', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Pompa', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                         </div>
                     </div>
                     <div className="table-responsive">
@@ -123,22 +132,22 @@ class Report extends Component {
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>
-                                    <th>Waktu Mulai</th>
-                                    <th>Waktu Berakhir</th>
+                                    <th>Kode</th>
+                                    <th>Produk</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {shifts.map((shift, i) => (
+                                {nozzles.map((nozzle, i) => (
                                     <tr key={i}>
-                                        <td>{i+1}</td>
-                                        <td>{shift.name}</td>
-                                        <td>{shift.start}</td>
-                                        <td>{shift.end}</td>
+                                        <td>{i + 1}</td>
+                                        <td>{nozzle.name}</td>
+                                        <td>{nozzle.code}</td>
+                                        <td>{nozzle.product}</td>
                                         <td>
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
+                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + nozzle.name, 'edit', nozzle)}><i className="icon-pencil7"></i></button>
 
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
+                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteIsland(nozzle.uuid)}><i className="icon-trash"></i></button>
                                         </td>
                                     </tr>
                                 ))}
@@ -155,4 +164,4 @@ class Report extends Component {
     }
 }
 
-export default Report;
+export default Index;
