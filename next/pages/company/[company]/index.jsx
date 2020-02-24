@@ -10,19 +10,19 @@ class Payment extends Component {
     render() {
         const breadcrumb = [
             {
-                title: 'SPBU',
-                url: '/spbu'
+                title: 'Perusahaan',
+                url: '/company'
             },
             {
-                title: 'Metode Pembayaran',
-                url: `/spbu/${this.props.query.spbu}/payment`
+                title: 'Dashboard',
+                url: `/company/${this.props.query.company}`
             }
         ]
 
 
         return (
-            <Layout title={'Metode Pembayaran ' + this.props.query.spbu} breadcrumb={breadcrumb}>
-                ini payment {this.props.query.spbu}
+            <Layout title={'Dashboard ' + this.props.query.company} breadcrumb={breadcrumb}>
+                Dashboard
             </Layout>
         )
     }

@@ -12,7 +12,7 @@ class Index extends Component {
 
         return (
             <Layout title="Account Settings" breadcrumb={breadcrumb}>
-                Ini page Akun Setting
+                
             </Layout>
         )
     }

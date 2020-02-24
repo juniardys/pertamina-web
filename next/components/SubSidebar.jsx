@@ -5,10 +5,11 @@ import { useRouter } from 'next/router'
 const SubSidebar = () => {
 	const router = useRouter()
 
-	if (router.pathname.includes('/spbu/[spbu]')) {
-		const { spbu } = router.query
+	const { spbu, company } = router.query
+	let datas = []
 
-		const datas = [
+	if (router.pathname.includes('/spbu/[spbu]')) {
+		datas = [
 			{
 				type: 'menu',
 				title: 'Laporan',
@@ -40,12 +41,6 @@ const SubSidebar = () => {
 				url: `/spbu/${spbu}/setting/`
 			},
 			// {
-			// 	type: 'menu',
-			// 	title: 'Transaction',
-			// 	icon: ' icon-transmission',
-			// 	url: `/spbu/${spbu}/transaction/`
-			// },
-			// {
 			// 	type: 'dropdown',
 			// 	title: 'Island',
 			// 	icon: 'icon-grid-alt',
@@ -66,18 +61,29 @@ const SubSidebar = () => {
 			// 	]
 			// },
 		]
+	} else if (router.pathname.includes('/company/[company]')) {
+		datas = [
+			{
+				type: 'menu',
+				title: 'Dashboard',
+				icon: 'icon-home',
+				url: `/company/${company}`
+			}
+		]
+	}
 
+	if (datas.length > 0) {
 		return (
 			<div className="sidebar sidebar-secondary sidebar-default">
 				<div className="sidebar-content">
 					<div className="sidebar-category">
 						<div className="category-content no-padding">
 							<ul className="navigation navigation-alt navigation-accordion">
-								<li className="navigation-header"><span>SPBU Menu</span> <i className="icon-menu" title="Main pages"></i></li>
+								<li className="navigation-header"><span>Secondary Menu</span> <i className="icon-menu" title="Main pages"></i></li>
 								{datas.map((menu, i) => (
 									<Link href={menu.url} key={i}>
-										
-										<li className={(router.pathname == menu.url) ? 'active' : null }>
+
+										<li className={(router.pathname == menu.url) ? 'active' : null}>
 											<a>
 												{menu.icon != null ? (<i className={menu.icon}></i>) : (<i className="icon-circle2"></i>)}
 												<span>{menu.title}</span>
@@ -86,7 +92,7 @@ const SubSidebar = () => {
 												<ul>
 													{menu.sub.map((sub, subi) => (
 														<Link href={sub.url} key={subi}>
-															<li className={(router.pathname == sub.url) ? 'active' : null }><a>{sub.title}</a></li>
+															<li className={(router.pathname == sub.url) ? 'active' : null}><a>{sub.title}</a></li>
 														</Link>
 													))}
 												</ul>

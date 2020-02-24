@@ -5,7 +5,7 @@ class Index extends Component {
     render() {
         return (
             <Layout title="Dashboard">
-                Ini page Dashboard
+                
             </Layout>
         )
     }
