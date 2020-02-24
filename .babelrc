@@ -9,15 +9,5 @@
                 "rootPathSuffix": "next"
             }
         ]
-    ],
-    "env": { // For React Native
-        "production": {
-            "plugins": [
-                "babel-plugin-root-import",
-                {
-                    "rootPathSuffix": "next"
-                }
-            ]
-        }
-    }
+    ]
 }

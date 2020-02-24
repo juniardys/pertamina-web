@@ -14,10 +14,6 @@
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
-// const Route = use('Route')
-
-// Route.on('/').render('welcome')
-
 const Route = use('Route');
 const Next = use('Adonis/Addons/Next');
 const handler = Next.getRequestHandler();
@@ -26,6 +22,16 @@ const handler = Next.getRequestHandler();
 Route.get('/api', ({ request }) => {
 	return { greeting: "I'm Api Endpoint" };
 });
+
+Route.post('api/v1/sign-in', 'AuthenticationController.signIn').middleware(['secureApi'])
+
+Route.group(() => {
+	Route.get('role', 'RoleController.get')
+	Route.post('role/store', 'RoleController.store')
+	Route.post('role/update', 'RoleController.update')
+	Route.post('role/delete', 'RoleController.delete')
+	Route.get('users', 'UserController.get')
+}).prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes
 Route.get('/b', ({ request, response }) => {
