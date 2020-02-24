@@ -1,3 +1,14 @@
 .swal2-popup {
-    font-size: 1.1em !important;
+  font-size: 1.1em !important;
+}
+
+@media (min-width: 769px) {
+  .sidebar-xs .header-highlight .navbar-header .navbar-brand {
+    padding-left: 0;
+    padding-right: 0;
+    background: url('/favicon.png') no-repeat center center;
+    background-size: auto 16px;
+    float: none;
+    display: block;
+  }
 }

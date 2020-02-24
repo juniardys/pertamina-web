@@ -26,7 +26,7 @@ const Head = (props) => (
     <meta property="og:image:height" content="630" /> */}
 
     <meta charSet="utf-8" />
-    <link rel="icon" href="/pyramid.png" />
+    <link rel="icon" href="/favicon.png" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{process.env.APP_NAME} {(props.title) ? ' - ' + props.title : ''}</title>
