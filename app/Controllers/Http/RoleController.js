@@ -28,7 +28,7 @@ class RoleController {
             }
         }
 
-        if (await query.getCount() == 1) {
+        if (await query.getCount() <= 1) {
             roles = await query.fetch()
         } else {
             roles = await query.paginate(request.get().page || 1, request.get().paginate || 20)
