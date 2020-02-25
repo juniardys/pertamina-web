@@ -30,6 +30,7 @@
     "@adonisjs/shield": "^1.0.8",
     "@adonisjs/validator": "^5.0.6",
     "@radmen/adonis-lucid-soft-deletes": "^0.2.0",
+    "adonis-bumblebee": "^2.1.0",
     "adonis-nextjs": "^3.1.1",
     "axios": "^0.19.2",
     "babel-plugin-root-import": "^6.4.1",

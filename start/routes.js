@@ -19,19 +19,20 @@ const Next = use('Adonis/Addons/Next');
 const handler = Next.getRequestHandler();
 
 // API Endpoint for your database
-Route.get('/api', ({ request }) => {
-	return { greeting: "I'm Api Endpoint" };
-});
-
-Route.post('api/v1/sign-in', 'AuthenticationController.signIn').middleware(['secureApi'])
-
+Route.post('api/v1/sign-in', 'V1/AuthenticationController.signIn').middleware(['secureApi'])
+Route.post('api/v1/sign-in/client', 'V1/AuthenticationController.signInClient').middleware(['secureApi'])
 Route.group(() => {
+	// Role
 	Route.get('role', 'RoleController.get')
 	Route.post('role/store', 'RoleController.store')
 	Route.post('role/update', 'RoleController.update')
 	Route.post('role/delete', 'RoleController.delete')
-	Route.get('users', 'UserController.get')
-}).prefix('api/v1').middleware(['secureApi', 'auth'])
+	// User
+	Route.get('user', 'UserController.get')
+	Route.post('user/store', 'UserController.store')
+	Route.post('user/update', 'UserController.update')
+	Route.post('user/delete', 'UserController.delete')
+}).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes
 Route.get('/b', ({ request, response }) => {

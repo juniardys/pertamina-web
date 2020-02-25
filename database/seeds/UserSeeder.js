@@ -15,8 +15,6 @@ const Factory = use('Factory')
 const User = use('App/Models/User')
 const Role = use('App/Models/Role')
 const uuid = use('uuid-random')
-const moment = use('moment')
-const Hash = use('Hash')
 
 class UserSeeder {
   async run () {

@@ -4,6 +4,17 @@
 const Model = use('Model')
 
 class Role extends Model {
+    static get hidden() {
+        return ['id']
+    }
+
+    // Setters
+    setCreatedAt(created_at) {
+        return new Date(created_at).toISOString()
+    }
+    setUpdatedAt(updated_at) {
+        return new Date(updated_at).toISOString()
+    }
 }
 
 module.exports = Role

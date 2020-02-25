@@ -1292,6 +1292,11 @@ adjust-sourcemap-loader@2.0.0:
     object-path "0.11.4"
     regex-parser "2.2.10"
 
+adonis-bumblebee@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/adonis-bumblebee/-/adonis-bumblebee-2.1.0.tgz#6d451132772619ef26dee4174a5c5d478e0952d6"
+  integrity sha512-/Ya5bPBWpX8+wjJi+yh2MRvNmCsSlLKHn8keqPLt7CvzswGkAGHyyBzQlsIo+Imo6LFWWuneEItTNcYH0Gyjmg==
+
 adonis-nextjs@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/adonis-nextjs/-/adonis-nextjs-3.1.1.tgz#3c343ab52dee5a37e53fea2032ee20d617c5b5b5"

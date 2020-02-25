@@ -2,7 +2,7 @@
 
 const User = use('App/Models/User')
 const { validate } = use('Validator')
-const { makeResp } = use('App/Helpers/ApiHelper')
+const { queryBuilder, baseResp } = use('App/Helpers')
 
 class UserController {
     getRules() {
@@ -16,33 +16,15 @@ class UserController {
     }
 
     async get({ request, response }) {
-        let data = []
-        let query = User.query()
-        if (request.get().order && request.get().order_val) query = query.orderBy(request.get().order, request.get().order_val);
-        if (request.get().filter && request.get().filter_val) query = query.where(request.get().filter, request.get().filter_val);
-        if (request.get().search) {
-            if (request.get().search.split('-').length == 5) {
-                query = query.where('uuid', request.get().search)
-            } else {
-                query = query.orWhere('email', 'LIKE', `%${request.get().search}%`)
-                    .orWhere('name', 'LIKE', `%${request.get().search}%`)
-                    .orWhere('phone', 'LIKE', `%${request.get().search}%`)
-                    .orWhere('address', 'LIKE', `%${request.get().search}%`)
-            }
-        }
-        if (await query.getCount() <= 1) {
-            data = await query.fetch()
-        } else {
-            data = await query.paginate(request.get().page || 1, request.get().paginate || 20)
-        }
+        const data = await queryBuilder(Role.query(), request.all(), ['name', 'phone', 'address']) 
 
-        return response.status(400).json(makeResp(false, data, 'Data User sukses diterima'))
+        return response.status(200).json(baseResp(false, data, 'Data Pengguna sukses diterima'))
     }
 
     async store({ request, response }) {
         const req = request.all()
         const validation = await validate(req, this.getRules())
-        if (validation.fails()) return response.status(400).json(makeResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
         const user = new User()
         user.uuid = uuid()
@@ -55,7 +37,7 @@ class UserController {
         user.address = req.address
         await user.save()
 
-        return response.status(200).json(makeResp(true, user, 'Membuat User Baru'))
+        return response.status(200).json(baseResp(true, user, 'Membuat Pengguna Baru'))
     }
 
     async update({ request, response }) {
@@ -66,7 +48,7 @@ class UserController {
         if (req.email) rules['email'] = 'required|email|max:254'
         if (req.password) rules['password'] = 'required|min:8|max254'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(makeResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
         const user = await User.query()
             .where('uuid', req.uuid)
@@ -81,7 +63,7 @@ class UserController {
         user.address = req.address
         await user.save()
 
-        return response.status(200).json(makeResp(true, user, 'Mengedit User ' + user.name))
+        return response.status(200).json(baseResp(true, user, 'Mengedit Pengguna ' + user.name))
     }
 
     async delete({ request, response }) {
@@ -89,17 +71,17 @@ class UserController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(makeResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
         const user = await User.query()
             .where('uuid', req.uuid)
             .first()
 
-        if (!user) return response.status(400).json(makeResp(false, [], 'User tidak ditemukan'))
+        if (!user) return response.status(400).json(baseResp(false, [], 'Pengguna tidak ditemukan'))
 
         await user.delete()
 
-        return response.status(200).json(makeResp(true, user, 'Menghapus User ' + user.name))
+        return response.status(200).json(baseResp(true, user, 'Menghapus Pengguna ' + user.name))
     }
 }
 

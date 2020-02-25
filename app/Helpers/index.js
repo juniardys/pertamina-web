@@ -1,38 +1,53 @@
 'use strict'
 
-const { validate } = use('Validator')
 const Database = use('Database')
 const Helpers = use('Helpers')
 const uuid = use('uuid-random')
 
-const sweet_validate = async (request, rules, session) => {
-    const validation = await validate(request, rules)
-        
-    if (validation.fails()) {
-        // session.withErrors(validation.messages())
-        const error = validation.messages()[0]
-        session.flash({
-            sweetalert: {
-                type: 'error',
-                title: splitString("_", error.field.charAt(0).toUpperCase() + error.field.slice(1)) + " " + splitString("_", error.validation.charAt(0).toUpperCase() + error.validation.slice(1)),
-                message: splitString("_", error.message.charAt(0).toUpperCase() + error.message.slice(1)),
-                name: error.field
-            }
-        })
-        session.flashAll()
+const baseResp = (success, data, message = null, errors = null) => {
+    return {
+        success: success,
+        data: data,
+        message: message,
+        errors: errors,
+    }
+}
 
-        return true
+const queryBuilder = async (model, request, search = []) => {
+    let data = []
+    let paginate = false
+    let query = model
+    if (request.order && request.order_val) query = query.orderBy(request.order, request.order_val);
+    if (request.filter && request.filter_val) query = query.where(request.filter, request.filter_val);
+    if (request.search) {
+        if (request.search.split('-').length == 5) {
+            query = query.where('uuid', request.search)
+        } else {
+            for (let i = 0; i < search.length; i++) {
+                query = query.orWhere(search[i], 'LIKE', `%${request.search}%`)
+            }
+        }
     }
 
-    return false
+    if (await query.getCount() <= 1) {
+        data = await query.fetch()
+    } else {
+        data = await query.paginate(request.page || 1, request.paginate || 20)
+        paginate = true
+    }
+
+    return {
+        data: data,
+        paginate: paginate
+    }
 }
 
 const splitString = (charToSplit, string) => {
     const splited = string.split(charToSplit);
     let result = ""
-    
+
     // Display array values on page
-    for(var i = 0; i < splited.length; i++){
+    for (var i = 0; i < splited.length; i++) {
         result = result + " " + splited[i]
     }
 
@@ -57,7 +72,7 @@ const slugify = async (text, table = null, column = null) => {
                 .replace(/\-\-+/g, '-')         // Replace multiple - with single -
                 .replace(/^-+/, '')             // Trim - from start of text
                 .replace(/-+$/, '')             // Trim - from end of text
-            + '-' + Math.floor(1000 + Math.random() * 9000)
+                + '-' + Math.floor(1000 + Math.random() * 9000)
             let existSlug = await Database.table(table).where(column, slug).count()
             checkSlug = existSlug[0].count
         }
@@ -122,9 +137,10 @@ const rndmChr = async (length, table = null, column = null) => {
 }
 
 module.exports = {
-  sweet_validate,
-  splitString,
-  slugify,
-  uploadImage,
-  rndmChr
+    baseResp,
+    queryBuilder,
+    splitString,
+    slugify,
+    uploadImage,
+    rndmChr
 }
