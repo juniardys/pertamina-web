@@ -17,6 +17,15 @@ class Script extends Component {
                 <script src="/global_assets/js/plugins/forms/selects/select2.min.js"></script>
 
                 <script src="/global_assets/js/demo_pages/components_modals.js"></script>
+
+                <script src="/global_assets/js/plugins/ui/moment/moment.min.js"></script>
+                <script src="/global_assets/js/plugins/pickers/daterangepicker.js"></script>
+                <script src="/global_assets/js/plugins/pickers/anytime.min.js"></script>
+                <script src="/global_assets/js/plugins/pickers/pickadate/picker.js"></script>
+                <script src="/global_assets/js/plugins/pickers/pickadate/picker.date.js"></script>
+                <script src="/global_assets/js/plugins/pickers/pickadate/picker.time.js"></script>
+                <script src="/global_assets/js/plugins/pickers/pickadate/legacy.js"></script>
+                <script src="/js/script.js"></script>
             </div>
         )
     }

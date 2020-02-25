@@ -51,7 +51,6 @@ class Report extends Component {
                     <div className="col-md-3">
                     </div>
                     <div className="col-md-3">
-
                     </div>
                 </div>
 
@@ -124,7 +123,18 @@ class Report extends Component {
                                                 <td>1</td>
                                                 <td>Tunai</td>
                                                 <td>600000</td>
-                                                <td>1000</td>
+                                                <td> - </td>
+                                                <td>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>CC</td>
+                                                <td>600000</td>
+                                                <td> - </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
@@ -132,6 +142,14 @@ class Report extends Component {
                                                 </td>
                                             </tr>
                                         </tbody>
+
+                                        <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td>1200000</td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -197,7 +215,18 @@ class Report extends Component {
                                                 <td>1</td>
                                                 <td>Tunai</td>
                                                 <td>600000</td>
-                                                <td>1000</td>
+                                                <td> - </td>
+                                                <td>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>CC</td>
+                                                <td>600000</td>
+                                                <td> - </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
@@ -205,47 +234,97 @@ class Report extends Component {
                                                 </td>
                                             </tr>
                                         </tbody>
+
+                                        <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td>1200000</td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
-                    {/* Feeder Content */}
-                    <h5 style={{ marginLeft: '20px' }}>
-                        Feeder Tank
-                    </h5>
-                    <table className="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Pompa</th>
-                                <th>Produk</th>
-                                <th>Meteran Awal</th>
-                                <th>Meteran Akhir</th>
-                                <th>Volume</th>
-                                <th>Profit</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>A1</td>
-                                <td>Premium</td>
-                                <td>1000</td>
-                                <td>400</td>
-                                <td>600</td>
-                                <td>600000</td>
-                                <td>
-                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                    {/* Feeder Tank */}
+                    <div className="panel panel-flat" style={{ margin: '4px' }}>
+                        <div className="panel-heading">
+                            <h5 className="panel-title">Feeder Tank <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <div className="heading-elements">
 
-                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </div>
+                        </div>
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Pompa</th>
+                                    <th>Produk</th>
+                                    <th>Meteran Awal</th>
+                                    <th>Meteran Akhir</th>
+                                    <th>Volume</th>
+                                    <th>Profit</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>A1</td>
+                                    <td>Premium</td>
+                                    <td>1000</td>
+                                    <td>400</td>
+                                    <td>600</td>
+                                    <td>600000</td>
+                                    <td>
+                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+
+                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Feeder Tank */}
+                    <div className="panel panel-flat" style={{ margin: '4px' }}>
+                        <div className="panel-heading">
+                            <h5 className="panel-title">Total Keuangan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <div className="heading-elements">
+
+                            </div>
+                        </div>
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Island</th>
+                                    <th>Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Island 1</td>
+                                    <td>1200000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Island 2</td>
+                                    <td>1200000</td>
+                                </tr>
+                            </tbody>
+                            <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2400000</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </Layout>
         )

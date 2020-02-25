@@ -146,7 +146,7 @@ class User extends Component {
     render() {
         const breadcrumb = [
             {
-                title: 'User',
+                title: 'Pengguna',
                 url: '/user'
             }
         ]
@@ -166,7 +166,7 @@ class User extends Component {
         ]
 
         return (
-            <Layout title="Manajemen User" breadcrumb={breadcrumb}>
+            <Layout title="Manajemen Pengguna" breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
@@ -195,7 +195,7 @@ class User extends Component {
                     <div className="col-md-3">
                         <label>Cari</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" placeholder="Cari User" />
+                            <input type="text" className="form-control" placeholder="Cari Pengguna" />
                             <span className="input-group-btn">
                                 <button className="btn bg-slate" type="button"><i className="icon-search4"></i></button>
                             </span>
@@ -205,9 +205,9 @@ class User extends Component {
 
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar User <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Pengguna <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Buat User', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Buat Pengguna', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
                         </div>
                     </div>
 
@@ -232,7 +232,7 @@ class User extends Component {
                                         <td>{user.spbu}</td>
                                         <td>{user.role}</td>
                                         <td>
-                                            <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profile ' + user.name, 'preview', user)}><i className="icon-profile"></i></button>
+                                            <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profil ' + user.name, 'preview', user)}><i className="icon-profile"></i></button>
 
                                             <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit ' + user.name, 'edit', user)}><i className="icon-pencil7"></i></button>
 

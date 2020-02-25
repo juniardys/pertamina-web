@@ -18,7 +18,7 @@ const SubSidebar = () => {
 			},
 			{
 				type: 'menu',
-				title: 'User',
+				title: 'Pengguna',
 				icon: 'icon-users',
 				url: `/spbu/${spbu}/user/`
 			},

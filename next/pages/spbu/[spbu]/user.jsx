@@ -22,7 +22,7 @@ class User extends Component {
             image: '',
             filterRole: 'all',
             filterSPBU: 'all',
-            title: 'Buat User',
+            title: 'Buat Pengguna',
             modalType: "create",
             isLoading: true,
         }
@@ -61,7 +61,7 @@ class User extends Component {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.value) {
-                Swal.fire('Berhasil!', 'User berhasil dihapus.', 'success')
+                Swal.fire('Berhasil!', 'Pengguna berhasil dihapus.', 'success')
             }
         })
     }
@@ -141,7 +141,7 @@ class User extends Component {
                 url: '/spbu'
             },
             {
-                title: 'User',
+                title: 'Pengguna',
                 url: `/spbu/${this.props.query.spbu}/user`
             }
         ]
@@ -160,7 +160,7 @@ class User extends Component {
         ]
 
         return (
-            <Layout title={'User ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Pengguna ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
@@ -180,7 +180,7 @@ class User extends Component {
                     <div className="col-md-3">
                         <label>Cari</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" placeholder="Cari User" />
+                            <input type="text" className="form-control" placeholder="Cari Pengguna" />
                             <span className="input-group-btn">
                                 <button className="btn bg-slate" type="button"><i className="icon-search4"></i></button>
                             </span>
@@ -190,9 +190,9 @@ class User extends Component {
 
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar User <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Pengguna <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Buat User', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Buat Pengguna', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
                         </div>
                     </div>
 

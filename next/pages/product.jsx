@@ -120,7 +120,7 @@ class Product extends Component {
                                     <th>#</th>
                                     <th>Nama</th>
                                     <th>Kode</th>
-                                    <th>Harga</th>
+                                    <th>Harga / Liter</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>

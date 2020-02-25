@@ -14,12 +14,12 @@ const Sidebar = () => {
 		},
 		{
 			type: 'dropdown',
-			title: 'Manajemen User',
+			title: 'Manajemen Pengguna',
 			icon: 'icon-users',
 			url: '#',
 			sub: [
 				{
-					title: 'Pengaturan User',
+					title: 'Pengaturan Pengguna',
 					url: '/user'
 				},
 				{

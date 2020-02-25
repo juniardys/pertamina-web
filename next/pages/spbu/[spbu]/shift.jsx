@@ -4,9 +4,15 @@ import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 
 class Report extends Component {
-    
+
     static getInitialProps({ query }) {
         return { query }
+    }
+
+    componentDidMount() {
+        $("#time-start, #time-end").AnyTime_picker({
+            format: "%H:%i"
+        });
     }
 
     constructor(props) {
@@ -73,13 +79,13 @@ class Report extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Waktu Mulai</label>
                     <div className="col-lg-10">
-                        <input type="time" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" id="time-start" name="start" value={this.state.start} onChange={this.handleInputChange} readOnly />
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Waktu Berakhir</label>
                     <div className="col-lg-10">
-                        <input type="time" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" id="time-end" name="end" value={this.state.end} onChange={this.handleInputChange} readOnly />
                     </div>
                 </div>
             </form>
@@ -103,7 +109,7 @@ class Report extends Component {
                 uuid: 'qwer1234',
                 name: 'Shift 1',
                 start: '07:00',
-                end: '01:00',
+                end: '13:00',
             }
         ]
 
@@ -112,7 +118,7 @@ class Report extends Component {
             <Layout title={'Shift ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar Shift<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Shift <i className="icon-info22" data-popup="tooltip" data-original-title="Satuan waktu 24 jam"></i> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
                             <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Shift', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                         </div>
@@ -131,7 +137,7 @@ class Report extends Component {
                             <tbody>
                                 {shifts.map((shift, i) => (
                                     <tr key={i}>
-                                        <td>{i+1}</td>
+                                        <td>{i + 1}</td>
                                         <td>{shift.name}</td>
                                         <td>{shift.start}</td>
                                         <td>{shift.end}</td>

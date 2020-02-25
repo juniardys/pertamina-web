@@ -2,6 +2,7 @@ import React, { Component, useEffect } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
+import Link from 'next/link'
 
 class Index extends Component {
 
@@ -121,8 +122,14 @@ class Index extends Component {
             <Layout title={'Pompa ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar Pompa<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">
+                            Daftar Pompa
+                            <div style={{ fontSize: '12px', color: '#9d9d9d' }}>Island 1 - IS1</div>
+                        <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
+                            <Link href={`/spbu/${this.props.query.spbu}/island`}>
+                                <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
+                            </Link>
                             <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Pompa', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                         </div>
                     </div>
