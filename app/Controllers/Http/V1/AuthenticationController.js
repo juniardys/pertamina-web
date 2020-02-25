@@ -38,7 +38,6 @@ class AuthenticationController {
             const authenticated = await auth.authenticator('client').attempt(req.email, req.password)
             return response.status(400).json(baseResp(true, authenticated, `Data Bearer ${req.email} diterima`))
         } catch (error) {
-            console.log(error);
             return response.status(400).json(baseResp(false, null, 'username / password salah'))
         }
     }

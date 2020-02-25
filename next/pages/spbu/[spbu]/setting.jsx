@@ -67,8 +67,6 @@ class Setting extends Component {
                             <h5 className="panel-title">Detail SPBU <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                             <div className="heading-elements">
                                 <ul className="icons-list">
-                                    <li><a data-action="collapse"></a></li>
-                                    <li><a data-action="reload"></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -112,8 +110,6 @@ class Setting extends Component {
                             <h5 className="panel-title">Metode Pembayaran <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                             <div className="heading-elements">
                                 <ul className="icons-list">
-                                    <li><a data-action="collapse"></a></li>
-                                    <li><a data-action="reload"></a></li>
                                 </ul>
                             </div>
                         </div>
