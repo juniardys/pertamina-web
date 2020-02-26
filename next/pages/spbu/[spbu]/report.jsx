@@ -300,19 +300,19 @@ class Report extends Component {
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Island</th>
+                                    <th>Metode Pembayaran</th>
                                     <th>Nominal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>1</td>
-                                    <td>Island 1</td>
+                                    <td>Tunai</td>
                                     <td>1200000</td>
                                 </tr>
                                 <tr>
                                     <td>2</td>
-                                    <td>Island 2</td>
+                                    <td>CC</td>
                                     <td>1200000</td>
                                 </tr>
                             </tbody>

@@ -12,14 +12,14 @@ class RoleController {
             name: 'required|max:254'
         }
 
-        return rules 
+        return rules
     }
 
     async get({ request, response, transform }) {
         const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'])
         let data
-        (builder.paginate) ? data = await transform.paginate(builder.data, RoleTransformer) : data = await transform.item(builder.data, RoleTransformer)
-        
+        (builder.paginate) ? data = await transform.paginate(builder.data, RoleTransformer) : data = await transform.collection(builder.data, RoleTransformer)
+
         return response.status(200).json(baseResp(false, data, 'Data Jabatan sukses diterima'))
     }
 
@@ -29,11 +29,15 @@ class RoleController {
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
         const role = new Role()
-        role.uuid = uuid()
-        role.name = req.name
-        role.description = req.description
-        role.slug = await slugify(req.name, 'roles', 'slug')
-        await role.save()
+        try {
+            role.uuid = uuid()
+            role.name = req.name
+            role.description = req.description
+            role.slug = await slugify(req.name, 'roles', 'slug')
+            await role.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
+        }
 
         return response.status(200).json(baseResp(true, role, 'Membuat Jabatan Baru'))
     }
