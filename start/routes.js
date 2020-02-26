@@ -32,6 +32,16 @@ Route.group(() => {
 	Route.post('user/store', 'UserController.store')
 	Route.post('user/update', 'UserController.update')
 	Route.post('user/delete', 'UserController.delete')
+	// SPBU
+	Route.get('spbu', 'SpbuController.get')
+	Route.post('spbu/store', 'SpbuController.store')
+	Route.post('spbu/update', 'SpbuController.update')
+	Route.post('spbu/delete', 'SpbuController.delete')
+	// Product
+	Route.get('product', 'ProductController.get')
+	Route.post('product/store', 'ProductController.store')
+	Route.post('product/update', 'ProductController.update')
+	Route.post('product/delete', 'ProductController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

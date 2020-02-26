@@ -68,7 +68,7 @@ class UserController {
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
-            return response.status(400).json(baseResp(false, [], 'Kesalahan pada mencari data'))
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
         try {
@@ -102,7 +102,7 @@ class UserController {
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
-            return response.status(400).json(baseResp(false, [], 'Kesalahan pada hapus data'))
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
         if (!user) return response.status(400).json(baseResp(false, [], 'Pengguna tidak ditemukan'))

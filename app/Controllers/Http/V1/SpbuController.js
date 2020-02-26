@@ -1,26 +1,29 @@
 'use strict'
 
-const Role = use('App/Models/Role')
+const Spbu = use('App/Models/Spbu')
 const { validate } = use('Validator')
 const { queryBuilder, slugify, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
-const RoleTransformer = use('App/Transformers/V1/RoleTransformer')
+const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 
-class RoleController {
+class SpbuController {
     getRules() {
         let rules = {
-            name: 'required|max:254'
+            name: 'required|max:254',
+            address: 'required',
+            phone: 'required|number',
+            code: 'required'
         }
 
         return rules
     }
 
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'])
+        const builder = await queryBuilder(Spbu.query(), request.all(), ['name', 'address', 'phone', 'code'])
         let data
-        (builder.paginate) ? data = await transform.paginate(builder.data, RoleTransformer) : data = await transform.collection(builder.data, RoleTransformer)
+        (builder.paginate) ? data = await transform.paginate(builder.data, SpbuTransformer) : data = await transform.collection(builder.data, SpbuTransformer)
 
-        return response.status(200).json(baseResp(false, data, 'Data Jabatan sukses diterima'))
+        return response.status(200).json(baseResp(false, data, 'Data SPBU sukses diterima'))
     }
 
     async store({ request, response, transform }) {
@@ -28,20 +31,21 @@ class RoleController {
         const validation = await validate(req, this.getRules())
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        let role = new Role()
+        let spbu = new Spbu()
         try {
-            role.uuid = uuid()
-            role.name = req.name
-            role.description = req.description
-            role.slug = await slugify(req.name, 'roles', 'slug')
-            await role.save()
+            spbu.uuid = uuid()
+            spbu.name = req.name
+            spbu.address = req.address
+            spbu.phone = req.phone
+            spbu.code = req.code
+            await spbu.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
-        role = await transform.item(role, RoleTransformer)
+        spbu = await transform.item(spbu, SpbuTransformer)
 
-        return response.status(200).json(baseResp(true, role, 'Membuat Jabatan Baru'))
+        return response.status(200).json(baseResp(true, spbu, 'Membuat SPBU Baru'))
     }
 
     async update({ request, response, transform }) {
@@ -51,9 +55,9 @@ class RoleController {
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        let role
+        let spbu
         try {
-            role = await Role.query()
+            spbu = await Spbu.query()
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
@@ -61,19 +65,18 @@ class RoleController {
         }
 
         try {
-            if (role.name != req.name) {
-                role.name = req.name
-                role.slug = await slugify(req.name, 'roles', 'slug')
-            }
-            role.description = req.description
-            await role.save()
+            spbu.name = req.name
+            spbu.address = req.address
+            spbu.phone = req.phone
+            spbu.code = req.code
+            await spbu.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        role = await transform.item(role, RoleTransformer)
+        spbu = await transform.item(spbu, SpbuTransformer)
 
-        return response.status(200).json(baseResp(true, role, 'Mengedit Jabatan ' + role.name))
+        return response.status(200).json(baseResp(true, spbu, 'Mengedit SPBU ' + spbu.name))
     }
 
     async delete({ request, response, transform }) {
@@ -83,23 +86,23 @@ class RoleController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        let role
+        let spbu
         try {
-            role = await Role.query()
+            spbu = await Spbu.query()
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
-        if (!role) return response.status(400).json(baseResp(false, [], 'Jabatan tidak ditemukan'))
+        if (!spbu) return response.status(400).json(baseResp(false, [], 'SPBU tidak ditemukan'))
 
-        await role.delete()
+        await spbu.delete()
 
-        role = await transform.item(role, RoleTransformer)
+        spbu = await transform.item(spbu, SpbuTransformer)
 
-        return response.status(200).json(baseResp(true, role, 'Menghapus Jabatan ' + role.name))
+        return response.status(200).json(baseResp(true, spbu, 'Menghapus SPBU ' + spbu.name))
     }
 }
 
-module.exports = RoleController
+module.exports = SpbuController

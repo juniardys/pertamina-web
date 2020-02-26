@@ -1,0 +1,109 @@
+'use strict'
+
+const Product = use('App/Models/Product')
+const { validate } = use('Validator')
+const { queryBuilder, slugify, baseResp } = use('App/Helpers')
+const uuid = use('uuid-random')
+const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
+
+class ProductController {
+    getRules() {
+        let rules = {
+            name: 'required|max:254',
+            code: 'required',
+            price: 'required|number'
+        }
+
+        return rules
+    }
+
+    async get({ request, response, transform }) {
+        const builder = await queryBuilder(Product.query(), request.all(), ['name', 'code', 'price'])
+        let data
+        (builder.paginate) ? data = await transform.paginate(builder.data, ProductTransformer) : data = await transform.collection(builder.data, ProductTransformer)
+
+        return response.status(200).json(baseResp(false, data, 'Data Produk sukses diterima'))
+    }
+
+    async store({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, this.getRules())
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+
+        let product = new Product()
+        try {
+            product.uuid = uuid()
+            product.name = req.name
+            product.slug = await slugify(req.name, 'products', 'slug')
+            product.code = req.code
+            product.price = req.price
+            await product.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
+        }
+
+        product = await transform.item(product, ProductTransformer)
+
+        return response.status(200).json(baseResp(true, product, 'Membuat Produk Baru'))
+    }
+
+    async update({ request, response, transform }) {
+        const req = request.all()
+        let rules = this.getRules()
+        rules['uuid'] = 'required'
+        const validation = await validate(req, rules)
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+
+        let product
+        try {
+            product = await Product.query()
+                .where('uuid', req.uuid)
+                .first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
+        }
+
+        try {
+            if (product.name != req.name) {
+                product.name = req.name
+                product.slug = await slugify(req.name, 'products', 'slug')
+            }
+            product.code = req.code
+            product.price = req.price
+            await product.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+        }
+
+        product = await transform.item(product, ProductTransformer)
+
+        return response.status(200).json(baseResp(true, product, 'Mengedit Produk ' + product.name))
+    }
+
+    async delete({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            uuid: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+
+        let product
+        try {
+            product = await Product.query()
+                .where('uuid', req.uuid)
+                .first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
+        }
+
+        if (!product) return response.status(400).json(baseResp(false, [], 'Produk tidak ditemukan'))
+
+        await product.delete()
+
+        product = await transform.item(product, ProductTransformer)
+
+        return response.status(200).json(baseResp(true, product, 'Menghapus Produk ' + product.name))
+    }
+}
+
+module.exports = ProductController

@@ -9,6 +9,21 @@ class Spbu extends Model {
 
         this.addTrait('@provider:Lucid/SoftDeletes')
     }
+
+    static get table() {
+        return 'spbu'
+    }
+
+    // Setters
+    setDeletedAt(deleted_at) {
+        return new Date(deleted_at).toISOString()
+    }
+    setCreatedAt(created_at) {
+        return new Date(created_at).toISOString()
+    }
+    setUpdatedAt(updated_at) {
+        return new Date(updated_at).toISOString()
+    }
 }
 
 module.exports = Spbu

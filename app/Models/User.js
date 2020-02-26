@@ -40,6 +40,17 @@ class User extends Model {
   static get hidden() {
     return ['password']
   }
+
+  // Setters
+  setDeletedAt(deleted_at) {
+    return new Date(deleted_at).toISOString()
+  }
+  setCreatedAt(created_at) {
+    return new Date(created_at).toISOString()
+  }
+  setUpdatedAt(updated_at) {
+    return new Date(updated_at).toISOString()
+  }
 }
 
 module.exports = User

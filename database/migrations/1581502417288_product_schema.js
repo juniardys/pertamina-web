@@ -8,7 +8,6 @@ class ProductSchema extends Schema {
     this.create('products', (table) => {
       table.increments()
       table.uuid('uuid').unique()
-      table.uuid('spbu_uuid')
       table.string('name')
       table.text('slug').unique()
       table.string('code')
