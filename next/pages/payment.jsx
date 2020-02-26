@@ -129,7 +129,7 @@ class Payment extends Component {
                             <tbody>
                                 {payments.map((payment, i) => (
                                     <tr key={i}>
-                                        <td>{i}</td>
+                                        <td>{i + 1}</td>
                                         <td>{payment.name}</td>
                                         <td>{payment.code}</td>
                                         <td>{(payment.image_required) ? "Ya" : "Tidak"}</td>

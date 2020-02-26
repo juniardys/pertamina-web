@@ -16,6 +16,8 @@ class UserTransformer extends BumblebeeTransformer {
   transform(model) {
     moment.locale('id')
 
+    const deleted_at = (model.deleted_at) ? moment(model.deleted_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY') : null
+
     return {
       uuid: model.uuid,
       spbu_uuid: model.spbu_uuid,
@@ -24,6 +26,7 @@ class UserTransformer extends BumblebeeTransformer {
       name: model.name,
       phone: model.phone,
       address: model.address,
+      deleted_at: deleted_at,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
     }

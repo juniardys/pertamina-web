@@ -23,12 +23,12 @@ class RoleController {
         return response.status(200).json(baseResp(false, data, 'Data Jabatan sukses diterima'))
     }
 
-    async store({ request, response }) {
+    async store({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, this.getRules())
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        const role = new Role()
+        let role = new Role()
         try {
             role.uuid = uuid()
             role.name = req.name
@@ -39,44 +39,64 @@ class RoleController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
+        role = await transform.item(role, RoleTransformer)
+
         return response.status(200).json(baseResp(true, role, 'Membuat Jabatan Baru'))
     }
 
-    async update({ request, response }) {
+    async update({ request, response, transform }) {
         const req = request.all()
         let rules = this.getRules()
         rules['uuid'] = 'required'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        const role = await Role.query()
-            .where('uuid', req.uuid)
-            .first()
-
-        if (role.name != req.name) {
-            role.name = req.name
-            role.slug = await slugify(req.name, 'roles', 'slug')
+        let role
+        try {
+            role = await Role.query()
+                .where('uuid', req.uuid)
+                .first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada mencari data'))
         }
-        role.description = req.description
-        await role.save()
+
+        try {
+            if (role.name != req.name) {
+                role.name = req.name
+                role.slug = await slugify(req.name, 'roles', 'slug')
+            }
+            role.description = req.description
+            await role.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+        }
+
+        role = await transform.item(role, RoleTransformer)
 
         return response.status(200).json(baseResp(true, role, 'Mengedit Jabatan ' + role.name))
     }
 
-    async delete({ request, response }) {
+    async delete({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, {
             uuid: 'required'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        const role = await Role.query()
-            .where('uuid', req.uuid)
-            .first()
+        let role
+        try {
+            role = await Role.query()
+                .where('uuid', req.uuid)
+                .first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada hapus data'))
+        }
 
         if (!role) return response.status(400).json(baseResp(false, [], 'Jabatan tidak ditemukan'))
 
         await role.delete()
+
+        role = await transform.item(role, RoleTransformer)
 
         return response.status(200).json(baseResp(true, role, 'Menghapus Jabatan ' + role.name))
     }

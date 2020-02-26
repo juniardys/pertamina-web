@@ -89,7 +89,7 @@ class UserController {
         return response.status(200).json(baseResp(true, user, 'Mengedit Pengguna ' + user.name))
     }
 
-    async delete({ request, response }) {
+    async delete({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, {
             uuid: 'required'
@@ -108,6 +108,8 @@ class UserController {
         if (!user) return response.status(400).json(baseResp(false, [], 'Pengguna tidak ditemukan'))
 
         await user.delete()
+
+        user = await transform.item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Menghapus Pengguna ' + user.name))
     }
