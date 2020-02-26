@@ -12,3 +12,7 @@
     display: block;
   }
 }
+
+.card-panel-dashboard:hover {
+  cursor: pointer;
+}
