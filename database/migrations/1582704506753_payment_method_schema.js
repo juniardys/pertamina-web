@@ -3,23 +3,23 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class ProductSchema extends Schema {
+class PaymentMethodSchema extends Schema {
   up () {
-    this.create('products', (table) => {
+    this.create('payment_methods', (table) => {
       table.increments()
       table.uuid('uuid').unique()
-      table.string('name')
-      table.text('slug').unique()
       table.string('code').unique()
-      table.integer('price').unsigned()
+      table.string('name')
+      table.boolean('image_required').defaultTo(0)
+      table.text('slug').unique()
       table.timestamp('deleted_at').nullable()
       table.timestamps()
     })
   }
 
   down () {
-    this.drop('products')
+    this.drop('payment_methods')
   }
 }
 
-module.exports = ProductSchema
+module.exports = PaymentMethodSchema

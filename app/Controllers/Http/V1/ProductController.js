@@ -7,17 +7,7 @@ const uuid = use('uuid-random')
 const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
 
 class ProductController {
-    getRules() {
-        let rules = {
-            name: 'required|max:254',
-            code: 'required',
-            price: 'required|number'
-        }
-
-        return rules
-    }
-
-    async get({ request, response, transform }) {
+   async get({ request, response, transform }) {
         const builder = await queryBuilder(Product.query(), request.all(), ['name', 'code', 'price'])
         let data
         (builder.paginate) ? data = await transform.paginate(builder.data, ProductTransformer) : data = await transform.collection(builder.data, ProductTransformer)
@@ -27,7 +17,11 @@ class ProductController {
 
     async store({ request, response, transform }) {
         const req = request.all()
-        const validation = await validate(req, this.getRules())
+        const validation = await validate(req, {
+            name: 'required|max:254',
+            code: 'required|unique:products',
+            price: 'required|number'
+        })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
         let product = new Product()
@@ -49,8 +43,11 @@ class ProductController {
 
     async update({ request, response, transform }) {
         const req = request.all()
-        let rules = this.getRules()
+        let rules = []
         rules['uuid'] = 'required'
+        if (req.name) rules['name'] = 'required|max:254'
+        if (req.code) rules['code'] = `required|unique:spbu,code,uuid,${req.uuid}|max:254`
+        if (req.price) rules['price'] = 'required|max:254'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
@@ -64,12 +61,12 @@ class ProductController {
         }
 
         try {
-            if (product.name != req.name) {
+            if (req.name && product.name != req.name) {
                 product.name = req.name
                 product.slug = await slugify(req.name, 'products', 'slug')
             }
-            product.code = req.code
-            product.price = req.price
+            if (req.code) product.code = req.code
+            if (req.price) product.price = req.price
             await product.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))

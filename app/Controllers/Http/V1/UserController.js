@@ -56,7 +56,7 @@ class UserController {
         let rules = []
         rules['uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
-        if (req.email) rules['email'] = 'required|email|unique:users|max:254'
+        if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid}|max:254`
         if (req.password) rules['password'] = 'required|min:8|max:254'
         if (req.phone) rules['phone'] = 'number'
         const validation = await validate(req, rules)
@@ -75,12 +75,13 @@ class UserController {
             if (req.roles_uuid) user.roles_uuid = req.roles_uuid
             if (req.spbu_uuid) user.spbu_uuid = req.spbu_uuid
             if (req.name) user.name = req.name
-            if (req.email) user.email = req.email
+            if (req.email && user.email != req.email) user.email = req.email
             if (req.password) user.password = req.password
             if (req.phone) user.phone = req.phone
             if (req.address) user.address = req.address
             await user.save()
         } catch (error) {
+            console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 

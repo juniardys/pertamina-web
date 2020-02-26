@@ -7,17 +7,6 @@ const uuid = use('uuid-random')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 
 class SpbuController {
-    getRules() {
-        let rules = {
-            name: 'required|max:254',
-            address: 'required',
-            phone: 'required|number',
-            code: 'required'
-        }
-
-        return rules
-    }
-
     async get({ request, response, transform }) {
         const builder = await queryBuilder(Spbu.query(), request.all(), ['name', 'address', 'phone', 'code'])
         let data
@@ -28,7 +17,12 @@ class SpbuController {
 
     async store({ request, response, transform }) {
         const req = request.all()
-        const validation = await validate(req, this.getRules())
+        const validation = await validate(req, {
+            name: 'required|max:254',
+            address: 'required',
+            phone: 'required|number',
+            code: 'required|unique:spbu'
+        })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
         let spbu = new Spbu()
@@ -50,8 +44,12 @@ class SpbuController {
 
     async update({ request, response, transform }) {
         const req = request.all()
-        let rules = this.getRules()
+        let rules = []
         rules['uuid'] = 'required'
+        if (req.name) rules['name'] = 'required|max:254'
+        if (req.address) rules['address'] = 'required'
+        if (req.phone) rules['phone'] = 'required|number'
+        if (req.code) rules['code'] = `required|unique:spbu,code,uuid,${req.uuid}|max:254`
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
@@ -65,10 +63,12 @@ class SpbuController {
         }
 
         try {
-            spbu.name = req.name
-            spbu.address = req.address
-            spbu.phone = req.phone
-            spbu.code = req.code
+            if (req.name && spbu.name != req.name) {
+                spbu.name = req.name
+                spbu.slug = await slugify(req.name, 'spbu', 'slug')
+            }
+            if (req.address) spbu.address = req.address
+            if (req.phone) spbu.phone = req.phone
             await spbu.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))

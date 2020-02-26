@@ -42,6 +42,11 @@ Route.group(() => {
 	Route.post('product/store', 'ProductController.store')
 	Route.post('product/update', 'ProductController.update')
 	Route.post('product/delete', 'ProductController.delete')
+	// Payment Method
+	Route.get('payment-method', 'PaymentMethodController.get')
+	Route.post('payment-method/store', 'PaymentMethodController.store')
+	Route.post('payment-method/update', 'PaymentMethodController.update')
+	Route.post('payment-method/delete', 'PaymentMethodController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes
