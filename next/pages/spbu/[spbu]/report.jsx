@@ -83,7 +83,7 @@ class Report extends Component {
                                                 <th>Meteran Awal</th>
                                                 <th>Meteran Akhir</th>
                                                 <th>Volume</th>
-                                                <th>Profit</th>
+                                                <th>Omset</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -95,11 +95,13 @@ class Report extends Component {
                                                 <td>1000</td>
                                                 <td>400</td>
                                                 <td>600</td>
-                                                <td>600000</td>
+                                                <td>Rp. 600.000</td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -122,7 +124,7 @@ class Report extends Component {
                                             <tr>
                                                 <td>1</td>
                                                 <td>Tunai</td>
-                                                <td>600000</td>
+                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
@@ -133,12 +135,14 @@ class Report extends Component {
                                             <tr>
                                                 <td>2</td>
                                                 <td>CC</td>
-                                                <td>600000</td>
+                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -147,7 +151,7 @@ class Report extends Component {
                                             <tr>
                                                 <td></td>
                                                 <td></td>
-                                                <td>1200000</td>
+                                                <td>Rp. 1.200.000</td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -175,7 +179,7 @@ class Report extends Component {
                                                 <th>Meteran Awal</th>
                                                 <th>Meteran Akhir</th>
                                                 <th>Volume</th>
-                                                <th>Profit</th>
+                                                <th>Omset</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -187,11 +191,13 @@ class Report extends Component {
                                                 <td>1000</td>
                                                 <td>400</td>
                                                 <td>600</td>
-                                                <td>600000</td>
+                                                <td>Rp. 600.000</td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -214,7 +220,7 @@ class Report extends Component {
                                             <tr>
                                                 <td>1</td>
                                                 <td>Tunai</td>
-                                                <td>600000</td>
+                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
@@ -225,12 +231,14 @@ class Report extends Component {
                                             <tr>
                                                 <td>2</td>
                                                 <td>CC</td>
-                                                <td>600000</td>
+                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -239,7 +247,7 @@ class Report extends Component {
                                             <tr>
                                                 <td></td>
                                                 <td></td>
-                                                <td>1200000</td>
+                                                <td>Rp. 1.200.000</td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -265,7 +273,7 @@ class Report extends Component {
                                     <th>Meteran Awal</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
-                                    <th>Profit</th>
+                                    <th>Omset</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -277,7 +285,7 @@ class Report extends Component {
                                     <td>1000</td>
                                     <td>400</td>
                                     <td>600</td>
-                                    <td>600000</td>
+                                    <td>Rp. 600.000</td>
                                     <td>
                                         <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
@@ -308,19 +316,19 @@ class Report extends Component {
                                 <tr>
                                     <td>1</td>
                                     <td>Tunai</td>
-                                    <td>1200000</td>
+                                    <td>Rp. 1.200.000</td>
                                 </tr>
                                 <tr>
                                     <td>2</td>
                                     <td>CC</td>
-                                    <td>1200000</td>
+                                    <td>Rp. 1.200.000</td>
                                 </tr>
                             </tbody>
                             <tfoot style={{ borderTop: '2px solid #bbb' }}>
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td>2400000</td>
+                                    <td>Rp. 2.400.000</td>
                                 </tr>
                             </tfoot>
                         </table>
