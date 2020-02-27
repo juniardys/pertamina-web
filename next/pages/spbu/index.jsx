@@ -3,7 +3,8 @@ import Layout from "~/components/layouts/Base";
 import Link from "next/link"
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
-import { checkAuth } from '~/helpers'
+import { checkAuth, toast } from '~/helpers'
+import axios from 'axios'
 
 class Index extends Component {
     constructor(props) {
@@ -15,14 +16,29 @@ class Index extends Component {
             phone: '',
             code: '',
             user: '',
+            dataItems: [],
+            page: 1,
             title: 'Buat SPBU',
-            modalType: "create",
-            isLoading: true,
+            modalType: "create"
         }
     }
 
-    componentDidMount() {
-        checkAuth()
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        this.token = await checkAuth()
+        await axios.get(`${process.env.APP_API_URL}/api/v1/spbu?api_key=${process.env.APP_API_KEY}&page=${this.state.page}&paginate=20&order=created_at&order_val=asc`, {
+            headers: { Authorization: `Bearer ${this.token}` }
+        })
+            .then(response => {
+                this.setState({
+                    dataItems: response.data.data.data
+                })
+                helperUnblock('.container-data')
+            })
+            .catch(error => {
+                console.log(error.response);
+            });
     }
 
     handleInputChange = async (e) => {
@@ -52,16 +68,79 @@ class Index extends Component {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
+            cancelButtonText: 'Batal',
+            preConfirm: async (login) => {
+                await axios.post(`${process.env.APP_API_URL}/api/v1/spbu/delete`, {
+                    api_key: process.env.APP_API_KEY,
+                    uuid: uuid
+                }, {
+                    headers: { Authorization: `Bearer ${this.token}` }
+                })
+                    .then(response => {
+                        const dataItems = this.state.dataItems.filter(item => item.uuid !== response.data.data.uuid)
+                        this.setState({ dataItems: dataItems })
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Request failed: ${error}`)
+                        console.log(error.response);
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.value) {
-                Swal.fire('Berhasil!','SPBU berhasil dihapus.','success')
+                Swal.fire('Berhasil!', 'SPBU berhasil dihapus.', 'success')
             }
         })
     }
 
-    _submit = async (uuid) => {
-        console.log(uuid);
+    _submit = async () => {
+        // helperBlock('.container-data')
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            await axios.post(`${process.env.APP_API_URL}/api/v1/spbu/store`, {
+                api_key: process.env.APP_API_KEY,
+                name: this.state.name,
+                address: this.state.address,
+                phone: this.state.phone,
+                code: this.state.code
+            }, {
+                headers: { Authorization: `Bearer ${this.token}` }
+            })
+                .then(response => {
+                    this.setState({
+                        dataItems: [...this.state.dataItems, response.data.data]
+                    })
+                    this.btnModal.stop()
+                    helperModalHide()
+                })
+                .catch(error => {
+                    if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message.message })
+                    this.btnModal.stop()
+                    console.log(error.response)
+                });
+        } else {
+            await axios.post(`${process.env.APP_API_URL}/api/v1/spbu/update`, {
+                api_key: process.env.APP_API_KEY,
+                uuid: this.state.uuid,
+                name: this.state.name,
+                address: this.state.address,
+                phone: this.state.phone,
+                code: this.state.code
+            }, {
+                headers: { Authorization: `Bearer ${this.token}` }
+            })
+                .then(response => {
+                    const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.data.data : item))
+                    this.setState({dataItems: dataItems})
+                    this.btnModal.stop()
+                    helperModalHide()
+                })
+                .catch(error => {
+                    if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message.message })
+                    this.btnModal.stop()
+                    console.log(error.response)
+                });
+        }
     }
 
     renderModal = () => {
@@ -117,7 +196,7 @@ class Index extends Component {
 
         return (
             <Layout title="SPBU" breadcrumb={breadcrumb}>
-                <div className="panel panel-flat">
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar SPBU<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
@@ -138,9 +217,9 @@ class Index extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {spbu.map((item, i) => (
+                                {this.state.dataItems.map((item, i) => (
                                     <tr key={i}>
-                                        <td>1</td>
+                                        <td>{i + 1}</td>
                                         <td>{item.name}</td>
                                         <td>{item.code}</td>
                                         <td>{item.address}</td>

@@ -63,14 +63,13 @@ class SpbuController {
         }
 
         try {
-            if (req.name && spbu.name != req.name) {
-                spbu.name = req.name
-                spbu.slug = await slugify(req.name, 'spbu', 'slug')
-            }
+            if (req.name) spbu.name = req.name
             if (req.address) spbu.address = req.address
             if (req.phone) spbu.phone = req.phone
             await spbu.save()
         } catch (error) {
+            console.log(error);
+            
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 

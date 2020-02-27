@@ -4,8 +4,8 @@ import Link from "next/link"
 import { checkAuth } from '~/helpers'
 
 class Index extends Component {
-    componentDidMount() {
-        checkAuth()
+    async componentDidMount() {
+        await checkAuth()
     }
 
     render() {

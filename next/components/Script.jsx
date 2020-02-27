@@ -28,6 +28,8 @@ class Script extends Component {
                 <script src="/global_assets/js/plugins/pickers/pickadate/legacy.js"></script>
                 <script src="/global_assets/js/plugins/buttons/spin.min.js"></script>
                 <script src="/global_assets/js/plugins/buttons/ladda.min.js"></script>
+
+                <script src="/js/script.js"></script>
             </div>
         )
     }

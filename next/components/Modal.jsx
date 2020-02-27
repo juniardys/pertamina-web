@@ -18,7 +18,10 @@ const Modal = (props) => {
                     {props.onClick !== undefined && props.onClick !== null && props.onClick !== '' ? (
                         <div className="modal-footer">
                             <button type="button" className="btn btn-link" data-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary" onClick={props.onClick}>{props.buttonYes}</button>
+                            <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-modal-spinner" data-spinner-color="#333" data-style="slide-down" onClick={props.onClick}>
+                                <span className="ladda-label">{props.buttonYes}</span>
+                                <span className="ladda-spinner"></span>
+                            </button>
                         </div>
                     ) : null}
                 </div>

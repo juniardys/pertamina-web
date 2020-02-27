@@ -15,7 +15,6 @@ class Index extends Component {
     componentDidMount() {
         checkAuth()
         this.btnLogin = Ladda.create(document.querySelector('.btn-spinner'))
-
     }
 
     handleInputChange = async (e) => {
@@ -24,13 +23,13 @@ class Index extends Component {
         })
     }
 
-    _tryLogin() {
+    async _tryLogin() {
         this.btnLogin.start()
         if (this.state.email == '' || this.state.password == '') {
             toast.fire({ icon: 'warning', title: 'Email dan password tidak boleh kosong' })
             this.btnLogin.stop()
         } else {
-            axios.post(`${process.env.APP_API_URL}/api/v1/sign-in`, {
+            await axios.post(`${process.env.APP_API_URL}/api/v1/sign-in`, {
                 api_key: process.env.APP_API_KEY,
                 email: this.state.email,
                 password: this.state.password
@@ -72,7 +71,7 @@ class Index extends Component {
 
                         <div className="form-group">
 
-                            <button type="submit" className="btn btn-primary btn-block btn-ladda btn-ladda-spinner ladda-button btn-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._tryLogin()}>
+                            <button className="btn btn-primary btn-block btn-ladda btn-ladda-spinner ladda-button btn-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._tryLogin()}>
                                 <span className="ladda-label">Masuk <i className="icon-circle-right2 position-right"></i></span>
                                 <span className="ladda-spinner"></span>
                             </button>
