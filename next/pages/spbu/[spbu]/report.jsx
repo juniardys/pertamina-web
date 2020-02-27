@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
+import { checkAuth } from '~/helpers'
 
 class Report extends Component {
 
@@ -13,6 +14,10 @@ class Report extends Component {
             filterDate: '2020-02-21',
             isLoading: true,
         }
+    }
+
+    componentDidMount() {
+        checkAuth()
     }
 
     render() {

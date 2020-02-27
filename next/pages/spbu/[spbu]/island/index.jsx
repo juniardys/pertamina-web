@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 import Link from "next/link"
+import { checkAuth } from '~/helpers'
 
 class Index extends Component {
 
@@ -20,6 +21,10 @@ class Index extends Component {
             modalType: "create",
             isLoading: true,
         }
+    }
+
+    componentDidMount() {
+        checkAuth()
     }
 
     handleInputChange = async (e) => {

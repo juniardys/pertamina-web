@@ -1,8 +1,13 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Link from "next/link"
+import { checkAuth } from '~/helpers'
 
 class Index extends Component {
+    componentDidMount() {
+        checkAuth()
+    }
+
     render() {
         return (
             <Layout title="Dashboard">

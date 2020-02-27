@@ -2,6 +2,7 @@ import React, { Component, useEffect } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
+import { checkAuth } from '~/helpers'
 
 class Report extends Component {
 
@@ -10,6 +11,7 @@ class Report extends Component {
     }
 
     componentDidMount() {
+        checkAuth()
         $("#time-start, #time-end").AnyTime_picker({
             format: "%H:%i"
         });

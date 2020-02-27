@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
+import { checkAuth } from '~/helpers'
 
 class Payment extends Component {
+    componentDidMount() {
+        checkAuth()
+    }
 
     static getInitialProps({ query }) {
         return { query }

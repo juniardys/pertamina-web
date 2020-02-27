@@ -21,7 +21,7 @@ class UserSeeder {
     const data = [
       {
         email: "admin@nalarnaluri.com",
-        password: "farizink",
+        password: "12345678",
         name: "Admin",
         role: "superadmin"
       }

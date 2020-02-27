@@ -1,7 +1,13 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
+import { logout } from '~/helpers'
 
 class Navbar extends Component {
+
+	_tryLogout() {
+		logout()
+	}
+
 	render() {
 		return (
 			<div className="navbar navbar-default header-highlight">
@@ -125,9 +131,9 @@ class Navbar extends Component {
 								<li><a href="#"><span className="badge badge-warning pull-right">58</span> <i className="icon-comment-discussion"></i> Messages</a></li>
 								<li className="divider"></li> */}
 								<Link href="/profile">
-									<li><a href="#"><i className="icon-cog5"></i> Account settings</a></li>
+									<li><a href="#"><i className="icon-cog5"></i> Setting Akun</a></li>
 								</Link>
-								<li><a href="#"><i className="icon-switch2"></i> Logout</a></li>
+								<li onClick={() => this._tryLogout()}><a href="#"><i className="icon-switch2"></i> Keluar</a></li>
 							</ul>
 						</li>
 					</ul>

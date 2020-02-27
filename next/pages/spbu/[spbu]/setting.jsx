@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
+import { checkAuth } from '~/helpers'
 
 class Setting extends Component {
 
@@ -18,6 +19,10 @@ class Setting extends Component {
             user: 0,
             isLoading: true,
         }
+    }
+
+    componentDidMount() {
+        checkAuth()
     }
 
     handleInputChange = async (e) => {

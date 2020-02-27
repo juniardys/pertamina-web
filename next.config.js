@@ -1,17 +1,10 @@
-const host = process.env.HOST;
-const port = process.env.PORT;
-const appUrl = process.env.APP_URL;
-const appName = process.env.APP_NAME;
-console.log(`Your host is ${host}`);
-console.log(`Your port is ${port}`);
-console.log(`Your app url is ${appUrl}`);
-console.log(`Your app name is ${appName}`);
-
 module.exports = {
     env: {
-        HOST: host || '0.0.0.0',
-        PORT: port || '3333',
-        APP_URL: appUrl || 'http://0.0.0.0:3333',
-        APP_NAME: appName || 'Pertamina',
+        HOST: process.env.HOST || '0.0.0.0',
+        PORT: process.env.PORT || '3333',
+        APP_URL: process.env.APP_URL || 'http://0.0.0.0:3333',
+        APP_NAME: process.env.APP_NAME || 'Pertamina',
+        APP_API_KEY: process.env.APP_API_KEY,
+        APP_API_URL: process.env.APP_API_URL
     },
 }

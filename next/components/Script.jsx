@@ -18,6 +18,7 @@ class Script extends Component {
 
                 <script src="/global_assets/js/demo_pages/components_modals.js"></script>
 
+                {/* Custom but defined in here */}
                 <script src="/global_assets/js/plugins/ui/moment/moment.min.js"></script>
                 <script src="/global_assets/js/plugins/pickers/daterangepicker.js"></script>
                 <script src="/global_assets/js/plugins/pickers/anytime.min.js"></script>
@@ -25,7 +26,8 @@ class Script extends Component {
                 <script src="/global_assets/js/plugins/pickers/pickadate/picker.date.js"></script>
                 <script src="/global_assets/js/plugins/pickers/pickadate/picker.time.js"></script>
                 <script src="/global_assets/js/plugins/pickers/pickadate/legacy.js"></script>
-                <script src="/js/script.js"></script>
+                <script src="/global_assets/js/plugins/buttons/spin.min.js"></script>
+                <script src="/global_assets/js/plugins/buttons/ladda.min.js"></script>
             </div>
         )
     }

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
+import { checkAuth } from '~/helpers'
 
 class Payment extends Component {
     constructor(props) {
@@ -15,6 +16,10 @@ class Payment extends Component {
             modalType: "create",
             isLoading: true,
         }
+    }
+
+    componentDidMount() {
+        checkAuth()
     }
 
     handleInputChange = async (e) => {
