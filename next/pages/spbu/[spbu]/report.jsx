@@ -30,6 +30,7 @@ class Report extends Component {
 
         return (
             <Layout title={'Laporan  ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+                <h1>Pertamina G-Walk</h1>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
