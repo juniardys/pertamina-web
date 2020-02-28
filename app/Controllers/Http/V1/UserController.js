@@ -20,7 +20,7 @@ class UserController {
 
     async get({ request, response, transform }) {
         const builder = await queryBuilder(User.query(), request.all(), ['email', 'name', 'phone', 'address'])
-        const data = await transform.paginate(builder.data, UserTransformer)
+        const data = await transform.paginate(builder, UserTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Pengguna sukses diterima'))
     }

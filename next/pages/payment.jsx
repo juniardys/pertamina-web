@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 import { checkAuth } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Payment extends Component {
     constructor(props) {
@@ -11,21 +12,31 @@ class Payment extends Component {
             uuid: '',
             name: '',
             code: '',
-            image_required: '',
+            image_required: "0",
+            dataItems: [],
             title: 'Buat Metode Pembayaran',
-            modalType: "create",
-            isLoading: true,
+            modalType: "create"
         }
     }
 
-    componentDidMount() {
-        checkAuth()
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        this.token = await checkAuth()
+        const data = await get(this.token, '/payment-method')
+        if (data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
     }
 
     handleInputChange = async (e) => {
         await this.setState({
             [e.target.name]: e.target.value
         })
+        
     }
 
     _setModalState = async (title, modalType, item) => {
@@ -35,29 +46,51 @@ class Payment extends Component {
             uuid: item.uuid || '',
             name: item.name || '',
             code: item.code || '',
-            image_required: item.image_required || '',
+            image_required: item.image_required || "0",
         })
     }
 
     _deletePayment = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!', 'Metode Pembayaran berhasil dihapus.', 'success')
-            }
-        })
+        const response = await removeWithSwal(this.token, '/payment-method/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
-    _submit = async (uuid) => {
-        console.log(uuid);
+    _submit = async () => {
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            const response = await store(this.token, '/payment-method/store', {
+                name: this.state.name,
+                code: this.state.code,
+                image_required: this.state.image_required
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update(this.token, '/payment-method/update', this.state.uuid, {
+                name: this.state.name,
+                code: this.state.code,
+                image_required: this.state.image_required
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -80,11 +113,11 @@ class Payment extends Component {
                     <label className="control-label col-lg-2">Harus Upload Gambar</label>
                     <div className="col-lg-10">
                         <label className="radio-inline">
-                            <input type="radio" name="radio-unstyled-inline-left" defaultChecked={(this.state.image_required) ? "checked" : null} name="image_required" value="1" onChange={this.handleInputChange} />
+                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="1" defaultChecked={this.state.image_required == "1"} onChange={this.handleInputChange} />
                             Ya
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" name="radio-unstyled-inline-left" defaultChecked={(this.state.image_required) ? null : "checked"} name="image_required" value="0" onChange={this.handleInputChange} />
+                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="0" defaultChecked={this.state.image_required == "0"} onChange={this.handleInputChange} />
                             Tidak
                         </label>
                     </div>
@@ -98,15 +131,6 @@ class Payment extends Component {
             {
                 title: 'Metode Pembayaran',
                 url: '/payment'
-            }
-        ]
-
-        const payments = [
-            {
-                uuid: 'qwer1234',
-                name: 'Tunai',
-                code: 'TN',
-                image_required: 0
             }
         ]
 
@@ -132,19 +156,25 @@ class Payment extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {payments.map((payment, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{payment.name}</td>
-                                        <td>{payment.code}</td>
-                                        <td>{(payment.image_required) ? "Ya" : "Tidak"}</td>
-                                        <td>
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + payment.name, 'edit', payment)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deletePayment(payment.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                        this.state.dataItems.map((item, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{item.name}</td>
+                                                <td>{item.code}</td>
+                                                <td>{(item.image_required == "1") ? "Ya" : "Tidak"}</td>
+                                                <td>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deletePayment(item.uuid)}><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                             </tbody>
                         </table>
                     </div>

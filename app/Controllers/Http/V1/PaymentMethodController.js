@@ -9,7 +9,7 @@ const PaymentMethodTransformer = use('App/Transformers/V1/PaymentMethodTransform
 class PaymentMethodController {
     async get({ request, response, transform }) {
         const builder = await queryBuilder(PaymentMethod.query(), request.all(), ['name', 'code'])
-        const data = await transform.paginate(builder.data, PaymentMethodTransformer)
+        const data = await transform.paginate(builder, PaymentMethodTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Metode Pembayaran sukses diterima'))
     }

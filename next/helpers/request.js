@@ -2,18 +2,18 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import { toast } from '~/helpers'
 
-export const get = async (token, url, builder = [], ver = null) => {
+export const get = async (token, url, queryBuilder = [], ver = null) => {
     let query = process.env.APP_API_URL
     query = `${query}/api/${(ver != null) ? ver : 'v1'}`
     query = query + url
     query = query + `?api_key=${process.env.APP_API_KEY}`
-    if (builder.search) query = query + `&search=${builder.search}`
-    if (builder.page) query = query + `&page=${builder.page}`
-    if (builder.paginate) query = query + `&paginate=${builder.paginate}`
-    if (builder.order) query = query + `&order=${builder.order}`
-    if (builder.order_val) query = query + `&order_val=${builder.order_val}`
-    if (builder.filter) query = query + `&filter=${builder.filter}`
-    if (builder.filter_val) query = query + `&order_val=${builder.order_val}`
+    if (queryBuilder['search']) query = query + '&search=' + queryBuilder.search
+    if (queryBuilder['page']) query = query + '&page=' + queryBuilder.page
+    if (queryBuilder['paginate']) query = query + '&paginate=' + queryBuilder.paginate
+    if (queryBuilder['order_col']) query = query + '&order_col=' + queryBuilder.order_col
+    if (queryBuilder['order_val']) query = query + '&order_val=' + queryBuilder.order_val
+    if (queryBuilder['filter_col']) query = query + '&filter_col=' + queryBuilder.filter_col
+    if (queryBuilder['filter_val']) query = query + '&filter_val=' + queryBuilder.filter_val
 
     const response = await axios.get(query, {
         headers: { Authorization: `Bearer ${token}` }
@@ -52,6 +52,7 @@ export const store = async (token, url, data, ver = null) => {
 export const update = async (token, url, uuid, data, ver = null) => {
     let success, res
     data['api_key'] = process.env.APP_API_KEY
+    data['uuid'] = uuid
     await axios.post(`${process.env.APP_API_URL}/api/${(ver != null) ? ver : 'v1'}${url}`, data, {
         headers: { Authorization: `Bearer ${token}` }
     })

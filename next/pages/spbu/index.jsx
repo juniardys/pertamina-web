@@ -2,9 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Link from "next/link"
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
-import { checkAuth, toast } from '~/helpers'
-import axios from 'axios'
+import { checkAuth } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Index extends Component {
@@ -164,24 +162,30 @@ class Index extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.state.dataItems.map((item, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{item.name}</td>
-                                        <td>{item.code}</td>
-                                        <td>{item.address}</td>
-                                        <td>{item.user}</td>
-                                        <td>
-                                            <Link href={'/spbu/' + item.uuid + '/report'}>
-                                                <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                            </Link>
-
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteSPBU(item.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    this.state.dataItems.map((item, i) => (
+                                        <tr key={i}>
+                                            <td>{i + 1}</td>
+                                            <td>{item.name}</td>
+                                            <td>{item.code}</td>
+                                            <td>{item.address}</td>
+                                            <td>{item.user}</td>
+                                            <td>
+                                                <Link href={'/spbu/' + item.uuid + '/report'}>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
+                                                </Link>
+    
+                                                <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
+    
+                                                <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteSPBU(item.uuid)}><i className="icon-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>

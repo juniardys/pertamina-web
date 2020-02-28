@@ -16,8 +16,8 @@ const baseResp = (success, data, message = null, errors = null) => {
 const queryBuilder = async (model, request, search = []) => {
     let data = []
     let query = model
-    if (request.order && request.order_val) query = query.orderBy(request.order, request.order_val);
-    if (request.filter && request.filter_val) query = query.where(request.filter, request.filter_val);
+    if (request.order_col && request.order_val) query = query.orderBy(request.order_col, request.order_val);
+    if (request.filter_col && request.filter_val) query = query.where(request.filter_col, request.filter_val);
     if (request.search) {
         if (request.search.split('-').length == 5) {
             query = query.where('uuid', request.search)

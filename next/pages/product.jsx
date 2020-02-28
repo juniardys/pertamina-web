@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 import { checkAuth } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Product extends Component {
     constructor(props) {
@@ -12,14 +13,24 @@ class Product extends Component {
             name: '',
             code: '',
             price: '',
+            dataItems: [],
             title: 'Buat Produk',
             modalType: "create",
-            isLoading: true,
         }
     }
 
-    componentDidMount() {
-        checkAuth()
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        this.token = await checkAuth()
+        const data = await get(this.token, '/product')
+        console.log(data);
+        if (data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
     }
 
     handleInputChange = async (e) => {
@@ -40,24 +51,46 @@ class Product extends Component {
     }
 
     _deleteProduct = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!','Produk berhasil dihapus.','success')
-            }
-        })
+        const response = await removeWithSwal(this.token, '/product/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
-    _submit = async (uuid) => {
-        console.log(uuid);
+    _submit = async () => {
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            const response = await store(this.token, '/product/store', {
+                name: this.state.name,
+                code: this.state.code,
+                price: this.state.price
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update(this.token, '/product/update', this.state.uuid, {
+                name: this.state.name,
+                code: this.state.code,
+                price: this.state.price
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -99,18 +132,9 @@ class Product extends Component {
             }
         ]
 
-        const products = [
-            {
-                uuid: 'qwer1234',
-                name: 'Pertamina',
-                code: 'PRTMN',
-                price: '13000'
-            }
-        ]
-
         return (
             <Layout title="Produk" breadcrumb={breadcrumb}>
-                <div className="panel panel-flat">
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Produk<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
@@ -130,19 +154,25 @@ class Product extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.map((product, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{product.name}</td>
-                                        <td>{product.code}</td>
-                                        <td>Rp. {product.price}</td>
-                                        <td>
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + product.name, 'edit', product)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(product.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                        this.state.dataItems.map((item, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{item.name}</td>
+                                                <td>{item.code}</td>
+                                                <td>Rp. {item.price}</td>
+                                                <td>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                             </tbody>
                         </table>
                     </div>
