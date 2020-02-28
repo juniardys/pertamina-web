@@ -15,7 +15,6 @@ const baseResp = (success, data, message = null, errors = null) => {
 
 const queryBuilder = async (model, request, search = []) => {
     let data = []
-    let paginate = true
     let query = model
     if (request.order && request.order_val) query = query.orderBy(request.order, request.order_val);
     if (request.filter && request.filter_val) query = query.where(request.filter, request.filter_val);
@@ -31,10 +30,7 @@ const queryBuilder = async (model, request, search = []) => {
 
     data = await query.paginate(request.page || 1, request.paginate || 20)
 
-    return {
-        data: data,
-        paginate: true
-    }
+    return data
 }
 
 const splitString = (charToSplit, string) => {

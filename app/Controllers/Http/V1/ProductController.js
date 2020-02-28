@@ -9,10 +9,9 @@ const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
 class ProductController {
    async get({ request, response, transform }) {
         const builder = await queryBuilder(Product.query(), request.all(), ['name', 'code', 'price'])
-        let data
-        (builder.paginate) ? data = await transform.paginate(builder.data, ProductTransformer) : data = await transform.collection(builder.data, ProductTransformer)
+        const data = await transform.paginate(builder.data, ProductTransformer)
 
-        return response.status(200).json(baseResp(false, data, 'Data Produk sukses diterima'))
+        return response.status(200).json(baseResp(true, data, 'Data Produk sukses diterima'))
     }
 
     async store({ request, response, transform }) {

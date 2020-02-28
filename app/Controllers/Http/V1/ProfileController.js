@@ -9,7 +9,7 @@ class ProfileController {
     async get({ transform, response, auth }) {
         const data = await transform.item(auth.user, UserTransformer)
 
-        return response.status(200).json(baseResp(false, data, 'Data Profil sukses diterima'))
+        return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima'))
     }
 }
 

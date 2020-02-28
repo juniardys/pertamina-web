@@ -5,6 +5,7 @@ import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 import { checkAuth, toast } from '~/helpers'
 import axios from 'axios'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Index extends Component {
     constructor(props) {
@@ -27,18 +28,13 @@ class Index extends Component {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         this.token = await checkAuth()
-        await axios.get(`${process.env.APP_API_URL}/api/v1/spbu?api_key=${process.env.APP_API_KEY}&page=${this.state.page}&paginate=20&order=created_at&order_val=asc`, {
-            headers: { Authorization: `Bearer ${this.token}` }
-        })
-            .then(response => {
-                this.setState({
-                    dataItems: response.data.data.data
-                })
-                helperUnblock('.container-data')
+        const data = await get(this.token, '/spbu')
+        if (data.success) {
+            this.setState({
+                dataItems: data.data.data
             })
-            .catch(error => {
-                console.log(error.response);
-            });
+            helperUnblock('.container-data')
+        }
     }
 
     handleInputChange = async (e) => {
@@ -60,86 +56,48 @@ class Index extends Component {
     }
 
     _deleteSPBU = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal',
-            preConfirm: async (login) => {
-                await axios.post(`${process.env.APP_API_URL}/api/v1/spbu/delete`, {
-                    api_key: process.env.APP_API_KEY,
-                    uuid: uuid
-                }, {
-                    headers: { Authorization: `Bearer ${this.token}` }
-                })
-                    .then(response => {
-                        const dataItems = this.state.dataItems.filter(item => item.uuid !== response.data.data.uuid)
-                        this.setState({ dataItems: dataItems })
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(`Request failed: ${error}`)
-                        console.log(error.response);
-                    });
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!', 'SPBU berhasil dihapus.', 'success')
-            }
-        })
+        const response = await removeWithSwal(this.token, '/spbu/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
     _submit = async () => {
-        // helperBlock('.container-data')
         this.btnModal.start()
         if (this.state.uuid === '') {
-            await axios.post(`${process.env.APP_API_URL}/api/v1/spbu/store`, {
-                api_key: process.env.APP_API_KEY,
+            const response = await store(this.token, '/spbu/store', {
                 name: this.state.name,
                 address: this.state.address,
                 phone: this.state.phone,
                 code: this.state.code
-            }, {
-                headers: { Authorization: `Bearer ${this.token}` }
             })
-                .then(response => {
-                    this.setState({
-                        dataItems: [...this.state.dataItems, response.data.data]
-                    })
-                    this.btnModal.stop()
-                    helperModalHide()
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
                 })
-                .catch(error => {
-                    if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message.message })
-                    this.btnModal.stop()
-                    console.log(error.response)
-                });
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
         } else {
-            await axios.post(`${process.env.APP_API_URL}/api/v1/spbu/update`, {
-                api_key: process.env.APP_API_KEY,
+            const response = await update(this.token, '/spbu/update', this.state.uuid, {
                 uuid: this.state.uuid,
                 name: this.state.name,
                 address: this.state.address,
                 phone: this.state.phone,
                 code: this.state.code
-            }, {
-                headers: { Authorization: `Bearer ${this.token}` }
             })
-                .then(response => {
-                    const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.data.data : item))
-                    this.setState({dataItems: dataItems})
-                    this.btnModal.stop()
-                    helperModalHide()
-                })
-                .catch(error => {
-                    if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message.message })
-                    this.btnModal.stop()
-                    console.log(error.response)
-                });
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
         }
     }
 
@@ -180,17 +138,6 @@ class Index extends Component {
             {
                 title: 'SPBU',
                 url: '/spbu'
-            }
-        ]
-
-        const spbu = [
-            {
-                uuid: 'qwer1234',
-                name: 'Pertamina G-WALK',
-                code: 'PRTMNGWLK',
-                phone: '085102725497',
-                address: 'G-Walk',
-                user: 0
             }
         ]
 
