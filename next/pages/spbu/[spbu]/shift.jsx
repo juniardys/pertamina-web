@@ -12,9 +12,6 @@ class Report extends Component {
 
     componentDidMount() {
         checkAuth()
-        $("#time-start, #time-end").AnyTime_picker({
-            format: "%H:%i"
-        });
     }
 
     constructor(props) {
@@ -37,6 +34,7 @@ class Report extends Component {
     }
 
     _setModalState = async (title, modalType, item) => {
+        anyTimePicker("#time-start, #time-end")
         await this.setState({
             title: title,
             modalType: modalType,

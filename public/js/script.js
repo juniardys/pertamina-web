@@ -26,3 +26,9 @@ function helperModalHide() {
 function helperModalShow() {
     $('#modal').modal('show');
 }
+
+function anyTimePicker(elemName) {
+    $(elemName).AnyTime_picker({
+        format: "%H:%i"
+    });
+}

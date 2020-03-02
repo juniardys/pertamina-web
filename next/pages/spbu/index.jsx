@@ -175,7 +175,7 @@ class Index extends Component {
                                             <td>{item.address}</td>
                                             <td>{item.user}</td>
                                             <td>
-                                                <Link href={'/spbu/' + item.uuid + '/report'}>
+                                                <Link href={'/spbu/[spbu]/report'} as={'/spbu/' + item.uuid + '/report'}>
                                                     <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
                                                 </Link>
     
