@@ -12,9 +12,6 @@ class Index extends Component {
         return (
             <Layout title="Dashboard">
                 <div className="row">
-                    <Link href="/test/[test]" as="/test/asd">
-                        <a>asd</a>
-                    </Link>
                     <div className="col-lg-4">
                         <Link href="/user">
                             <div className="panel bg-teal-400 card-panel-dashboard">
