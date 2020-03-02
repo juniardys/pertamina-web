@@ -31,7 +31,7 @@ export const get = async (token, url, queryBuilder = [], ver = null) => {
 export const store = async (token, url, data, ver = null) => {
     let success, res
     data['api_key'] = process.env.APP_API_KEY
-    await axios.post(`${process.env.APP_API_URL}/api/${(ver != null) ? ver : 'v1'}${url}`, data, {
+    await axios.post(`/api/${(ver != null) ? ver : 'v1'}${url}`, data, {
         headers: { Authorization: `Bearer ${token}` }
     })
         .then(response => {
@@ -53,7 +53,7 @@ export const update = async (token, url, uuid, data, ver = null) => {
     let success, res
     data['api_key'] = process.env.APP_API_KEY
     data['uuid'] = uuid
-    await axios.post(`${process.env.APP_API_URL}/api/${(ver != null) ? ver : 'v1'}${url}`, data, {
+    await axios.post(`/api/${(ver != null) ? ver : 'v1'}${url}`, data, {
         headers: { Authorization: `Bearer ${token}` }
     })
         .then(response => {
@@ -83,7 +83,7 @@ export const removeWithSwal = async (token, url, uuid, builder = [], ver = null)
         confirmButtonText: 'Ya, hapus!',
         cancelButtonText: 'Batal',
         preConfirm: async (login) => {
-            await axios.post(`${process.env.APP_API_URL}/api/${(ver != null) ? ver : 'v1'}${url}`, {
+            await axios.post(`/api/${(ver != null) ? ver : 'v1'}${url}`, {
                 api_key: process.env.APP_API_KEY,
                 uuid: uuid
             }, {

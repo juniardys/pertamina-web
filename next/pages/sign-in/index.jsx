@@ -29,8 +29,8 @@ class Index extends Component {
             toast.fire({ icon: 'warning', title: 'Email dan password tidak boleh kosong' })
             this.btnLogin.stop()
         } else {
-            console.log(process.env.APP_API_URL);
-            await axios.post(`${process.env.APP_API_URL}/api/v1/sign-in`, {
+            console.log(process.env.NODE_ENV);
+            await axios.post(`/api/v1/sign-in`, {
                 api_key: process.env.APP_API_KEY,
                 email: this.state.email,
                 password: this.state.password
