@@ -22,6 +22,8 @@ const handler = Next.getRequestHandler();
 Route.post('api/v1/sign-in', 'V1/AuthenticationController.signIn').middleware(['secureApi'])
 Route.post('api/v1/sign-in/client', 'V1/AuthenticationController.signInClient').middleware(['secureApi'])
 Route.group(() => {
+	// Access List
+	Route.get('acl', 'AclController.get')
 	// Profile
 	Route.get('profile', 'ProfileController.get')
 	// Role

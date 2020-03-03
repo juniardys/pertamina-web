@@ -239,7 +239,7 @@ class User extends Component {
                                         <td>
                                             <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profil ' + user.name, 'preview', user)}><i className="icon-profile"></i></button>
 
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit ' + user.name, 'edit', user)}><i className="icon-pencil7"></i></button>
+                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit Pengguna', 'edit', user)}><i className="icon-pencil7"></i></button>
 
                                             <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteUser(user.uuid)}><i className="icon-trash"></i></button>
                                         </td>

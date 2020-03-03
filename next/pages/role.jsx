@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 import { checkAuth } from '~/helpers'
+import CheckboxTree from 'react-checkbox-tree';
 
 class Role extends Component {
     constructor(props) {
@@ -14,6 +15,8 @@ class Role extends Component {
             title: 'Buat Jabatan',
             modalType: "create",
             isLoading: true,
+            checked: [],
+            expanded: [],
         }
     }
 
@@ -59,6 +62,18 @@ class Role extends Component {
     }
 
     renderModal = () => {
+
+        const nodes = [
+            {
+                value: 'mars',
+                label: 'Mars',
+                children: [
+                    { value: 'phobos', label: 'Phobos' },
+                    { value: 'deimos', label: 'Deimos' },
+                ],
+            }
+        ];
+
         return (
             <form className="form-horizontal" action="#">
                 <input type="hidden" name="uuid" value={this.state.uuid} />
@@ -73,6 +88,27 @@ class Role extends Component {
                     <div className="col-lg-10">
                         <input type="text" className="form-control" name="description" value={this.state.description} onChange={this.handleInputChange} />
                     </div>
+                </div>
+                <div>
+                    <CheckboxTree
+                        nodes={nodes}
+                        checked={this.state.checked}
+                        expanded={this.state.expanded}
+                        onCheck={checked => this.setState({ checked })}
+                        onExpand={expanded => this.setState({ expanded })}
+                        icons={{
+                            check: <i className="icon-checkbox-checked" />,
+                            uncheck: <i className="icon-checkbox-unchecked" />,
+                            halfCheck: <i className="icon-checkbox-partial" />,
+                            expandClose: <i className="icon-arrow-right13" />,
+                            expandOpen: <i className="icon-arrow-down12" />,
+                            expandAll: <i className="rct-icon rct-icon-expand-all" />,
+                            collapseAll: <i className="rct-icon rct-icon-collapse-all" />,
+                            parentClose: <i className="icon-folder" />,
+                            parentOpen: <i className="icon-folder-open" />,
+                            leaf: <i className="icon-file-empty" />,
+                        }}
+                    />
                 </div>
             </form>
         )
@@ -116,11 +152,11 @@ class Role extends Component {
                             <tbody>
                                 {roles.map((role, i) => (
                                     <tr key={i}>
-                                        <td>{i+1}</td>
+                                        <td>{i + 1}</td>
                                         <td>{role.name}</td>
                                         <td>{role.description}</td>
                                         <td>
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + role.name, 'edit', role)}><i className="icon-pencil7"></i></button>
+                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Role', 'edit', role)}><i className="icon-pencil7"></i></button>
 
                                             <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(role.uuid)}><i className="icon-trash"></i></button>
                                         </td>

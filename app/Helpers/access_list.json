@@ -1,0 +1,46 @@
+{
+    "dashboard": "",
+
+    "user-management": "",
+
+    "user-management.user": "",
+    "user-management.user.read": "",
+    "user-management.user.create": "",
+    "user-management.user.update": "",
+    "user-management.user.delete": "",
+    "user-management.role": "",
+    "user-management.role.read": "",
+    "user-management.role.create": "",
+    "user-management.role.update": "",
+    "user-management.role.delete": "",
+
+    "spbu": "",
+    "spbu.read": "",
+    "spbu.create": "",
+    "spbu.update": "",
+    "spbu.delete": "",
+    "spbu.manage": "",
+    "spbu.manage.report": "",
+    "spbu.manage.user": "",
+    "spbu.manage.shift": "",
+    "spbu.manage.island": "",
+    "spbu.manage.setting": "",
+
+    "product": "",
+    "product.read": "",
+    "product.create": "",
+    "product.update": "",
+    "product.delete": "",
+
+    "payment-method": "",
+    "payment-method.read": "",
+    "payment-method.create": "",
+    "payment-method.update": "",
+    "payment-method.delete": "",
+    
+    "company": "",
+    "company.read": "",
+    "company.create": "",
+    "company.update": "",
+    "company.delete": ""
+}

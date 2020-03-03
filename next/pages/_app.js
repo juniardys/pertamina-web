@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
 import { initStore } from "~/redux/store";
 import Script from "~/components/Script"
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
 class MyApp extends App {
     static async getInitialProps({ Component, ctx }) {
