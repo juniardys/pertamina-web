@@ -3,13 +3,9 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
-class Role extends Model {
+class AccessList extends Model {
     static get hidden() {
         return ['id']
-    }
-
-    accessList() {
-        return this.hasMany('App/Models/AccessList', 'uuid', 'role_uuid')
     }
 
     // Setters
@@ -21,4 +17,4 @@ class Role extends Model {
     }
 }
 
-module.exports = Role
+module.exports = AccessList

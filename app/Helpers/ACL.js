@@ -68,6 +68,7 @@ const makeTree = (key) => {
 
 const jsTree = () => {
     let result = []
+    hasReaded = []
     Object.keys(data).forEach(function (key) {
         if (!hasReaded.includes(key)) {
             result.push(makeTree(key))

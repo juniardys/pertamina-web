@@ -10,7 +10,6 @@ class RoleSchema extends Schema {
       table.uuid('uuid').unique()
       table.string('name')
       table.string('description').nullable()
-      table.text('slug').unique()
       table.timestamps()
     })
   }

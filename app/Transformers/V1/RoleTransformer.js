@@ -1,6 +1,7 @@
 'use strict'
 
 const BumblebeeTransformer = use('Bumblebee/Transformer')
+const AccessListTransformer = use('App/Transformers/V1/AccessListTransformer')
 const moment = use('moment')
 /**
  * RoleTransformer class
@@ -9,6 +10,10 @@ const moment = use('moment')
  * @constructor
  */
 class RoleTransformer extends BumblebeeTransformer {
+  static get defaultInclude() {
+    return ['accessList']
+  }
+
   /**
    * This method is used to transform the data.
    */
@@ -23,6 +28,10 @@ class RoleTransformer extends BumblebeeTransformer {
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
     }
+  }
+
+  includeAccessList(model) {
+    return this.collection(model.getRelated('accessList'), AccessListTransformer)
   }
 }
 

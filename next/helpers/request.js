@@ -11,9 +11,13 @@ export const get = async (token, url, queryBuilder = [], ver = null) => {
     if (queryBuilder['page']) query = query + '&page=' + queryBuilder.page
     if (queryBuilder['paginate']) query = query + '&paginate=' + queryBuilder.paginate
     if (queryBuilder['order_col']) query = query + '&order_col=' + queryBuilder.order_col
-    if (queryBuilder['order_val']) query = query + '&order_val=' + queryBuilder.order_val
     if (queryBuilder['filter_col']) query = query + '&filter_col=' + queryBuilder.filter_col
     if (queryBuilder['filter_val']) query = query + '&filter_val=' + queryBuilder.filter_val
+    if (Array.isArray(queryBuilder['with'])) {
+        queryBuilder['with'].forEach(function (relation, i) {
+            query = query + '&with[' + i + ']=' + relation
+        })
+    }
 
     const response = await axios.get(query, {
         headers: { Authorization: `Bearer ${token}` }
@@ -93,7 +97,8 @@ export const removeWithSwal = async (token, url, uuid, builder = [], ver = null)
                     res = response.data.data
                 })
                 .catch(error => {
-                    Swal.showValidationMessage(`Request failed: ${error}`)
+                    let err = error.response.data.message || error
+                    Swal.showValidationMessage(`Request failed: ${err}`)
                     console.log(error.response);
                 });
         },

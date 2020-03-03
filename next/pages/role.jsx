@@ -4,6 +4,8 @@ import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
 import { checkAuth } from '~/helpers'
 import CheckboxTree from 'react-checkbox-tree';
+import axios from 'axios'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Role extends Component {
     constructor(props) {
@@ -14,14 +16,36 @@ class Role extends Component {
             description: '',
             title: 'Buat Jabatan',
             modalType: "create",
-            isLoading: true,
-            checked: [],
+            dataItems: [],
+            checked: ['dashboard', 'user-management.user.read'],
             expanded: [],
+            nodes: []
         }
     }
 
-    componentDidMount() {
-        checkAuth()
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        this.token = await checkAuth()
+        const data = await get(this.token, '/role', {
+            with: ['accessList']
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+        console.log(data);
+        await axios.get(`/api/v1/acl-jstree?api_key=${process.env.APP_API_KEY}`, { headers: { Authorization: `Bearer ${this.token}` } })
+            .then(response => {
+                this.setState({
+                    nodes: response.data.data
+                })
+            })
+            .catch(error => {
+                console.log(error.response);
+            });
     }
 
     handleInputChange = async (e) => {
@@ -31,49 +55,64 @@ class Role extends Component {
     }
 
     _setModalState = async (title, modalType, item) => {
+        let acl = []
+        if (item.accessList) item.accessList.forEach((access) => acl.push(access.access))
+
         await this.setState({
             title: title,
             modalType: modalType,
             uuid: item.uuid || '',
             name: item.name || '',
             description: item.description || '',
+            checked: acl,
+            expanded: []
         })
     }
 
     _deleteRole = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!', 'Jabatan berhasil dihapus.', 'success')
-            }
-        })
+        const response = await removeWithSwal(this.token, '/role/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
-    _submit = async (uuid) => {
-        console.log(uuid);
+    _submit = async () => {
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            const response = await store(this.token, '/role/store', {
+                name: this.state.name,
+                description: this.state.description,
+                acl: this.state.checked
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update(this.token, '/role/update', this.state.uuid, {
+                name: this.state.name,
+                description: this.state.description,
+                acl: this.state.checked
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
-
-        const nodes = [
-            {
-                value: 'mars',
-                label: 'Mars',
-                children: [
-                    { value: 'phobos', label: 'Phobos' },
-                    { value: 'deimos', label: 'Deimos' },
-                ],
-            }
-        ];
-
         return (
             <form className="form-horizontal" action="#">
                 <input type="hidden" name="uuid" value={this.state.uuid} />
@@ -91,7 +130,7 @@ class Role extends Component {
                 </div>
                 <div>
                     <CheckboxTree
-                        nodes={nodes}
+                        nodes={this.state.nodes}
                         checked={this.state.checked}
                         expanded={this.state.expanded}
                         onCheck={checked => this.setState({ checked })}
@@ -122,14 +161,6 @@ class Role extends Component {
             }
         ]
 
-        const roles = [
-            {
-                uuid: 'qwer1234',
-                name: 'Superadmin',
-                description: 'ini superadmin',
-            }
-        ]
-
         return (
             <Layout title="Pengaturan Jabatan" breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
@@ -150,18 +181,24 @@ class Role extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {roles.map((role, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{role.name}</td>
-                                        <td>{role.description}</td>
-                                        <td>
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Role', 'edit', role)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(role.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                        this.state.dataItems.map((item, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{item.name}</td>
+                                                <td>{item.description}</td>
+                                                <td>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Role', 'edit', item)}><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(item.uuid)}><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                             </tbody>
                         </table>
                     </div>

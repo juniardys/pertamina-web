@@ -23,12 +23,12 @@ class UserSeeder {
         email: "admin@nalarnaluri.com",
         password: "12345678",
         name: "Admin",
-        role: "superadmin"
+        role: 1
       }
     ]
 
-    for (let i = 0; i < data.length; i++) {     
-      const role = await Role.query().where('slug', data[i].role).first()
+    for (let i = 0; i < data.length; i++) {
+      const role = await Role.query().where('id', data[i].role).first()
       const user = new User()
       user.uuid = uuid()
       user.name = data[i].name

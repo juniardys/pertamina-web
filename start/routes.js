@@ -24,6 +24,7 @@ Route.post('api/v1/sign-in/client', 'V1/AuthenticationController.signInClient').
 Route.group(() => {
 	// Access List
 	Route.get('acl', 'AclController.get')
+	Route.get('acl-jstree', 'AclController.getJsTree')
 	// Profile
 	Route.get('profile', 'ProfileController.get')
 	// Role

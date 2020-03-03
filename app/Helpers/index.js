@@ -15,9 +15,13 @@ const baseResp = (success, data, message = null, errors = null) => {
 
 const queryBuilder = async (model, request, search = []) => {
     let data = []
-    let query = model
-    if (request.order_col && request.order_val) query = query.orderBy(request.order_col, request.order_val);
-    if (request.filter_col && request.filter_val) query = query.where(request.filter_col, request.filter_val);
+    let query = model   
+    if (request.order_col) query = query.orderBy(request.order_col.split(':')[0], request.order_col.split(':')[1])
+    if (Array.isArray(request.filter_col)) {
+        request.filter_col.forEach(function (filter, i) {
+            if (filter && request.filter_val[i]) query = query.where(filter, request.filter_val[i]);
+        })
+    }
     if (request.search) {
         if (request.search.split('-').length == 5) {
             query = query.where('uuid', request.search)
@@ -26,6 +30,11 @@ const queryBuilder = async (model, request, search = []) => {
                 query = query.orWhere(search[i], 'LIKE', `%${request.search}%`)
             }
         }
+    }
+    if (Array.isArray(request.with)) {
+        request.with.forEach(function (relation) {
+            query = query.with(relation)
+        })
     }
 
     data = await query.paginate(request.page || 1, request.paginate || 20)
