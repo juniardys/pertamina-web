@@ -32,7 +32,6 @@ class RoleController {
             access.role_uuid = role.uuid
             access.access = acc
             await access.save()
-            console.log(access.toJSON());
         })
     }
 
