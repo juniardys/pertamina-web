@@ -22,15 +22,25 @@ class RoleSeeder {
     const data = [
       {
         name: "Superadmin",
-        description: "jabatan ini tidak bisa diedit dan dihapus karena jabatan utama."
+        description: "jabatan ini tidak bisa diedit dan dihapus karena jabatan utama.",
+        role: get()
       },
       {
         name: "Admin",
-        description: ""
+        description: "",
+        role: {
+          "spbu.manage": "Manajemen SPBU",
+          "spbu.manage.report": "Mengatur Report",
+          "spbu.manage.user": "Mengatur Pengguna",
+          "spbu.manage.shift": "Mengatur Shift",
+          "spbu.manage.island": "Mengatur Island",
+          "spbu.manage.setting": "Pengaturan SPBU"
+        }
       },
       {
         name: "Operator",
-        description: ""
+        description: "",
+        role: ""
       }
     ]
 
@@ -41,17 +51,14 @@ class RoleSeeder {
       role.description = data[i].description
       await role.save()
 
-      if (role.id == 1) {
-        const acl = get()
-        Object.keys(acl).forEach(async function (key) {
-          const accessList = new AccessList()
-          accessList.uuid = uuid()
-          accessList.type = 'role'
-          accessList.role_uuid = role.uuid
-          accessList.access = key
-          await accessList.save()
-        });
-      }
+      Object.keys(data[i].role).forEach(async function (key) {
+        const accessList = new AccessList()
+        accessList.uuid = uuid()
+        accessList.type = 'role'
+        accessList.role_uuid = role.uuid
+        accessList.access = key
+        await accessList.save()
+      });
     }
   }
 }
