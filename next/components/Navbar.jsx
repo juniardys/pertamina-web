@@ -121,7 +121,7 @@ class Navbar extends Component {
 						<li className="dropdown dropdown-user">
 							<a className="dropdown-toggle" data-toggle="dropdown">
 								<img src="../../../../global_assets/images/image.png" alt="" />
-								<span>Victoria</span>
+								<span>Admin</span>
 								<i className="caret"></i>
 							</a>
 
@@ -131,7 +131,7 @@ class Navbar extends Component {
 								<li><a href="#"><span className="badge badge-warning pull-right">58</span> <i className="icon-comment-discussion"></i> Messages</a></li>
 								<li className="divider"></li> */}
 								<Link href="/profile">
-									<li><a href="#"><i className="icon-cog5"></i> Setting Akun</a></li>
+									<li><a href="#"><i className="icon-cog5"></i> Pengaturan Akun</a></li>
 								</Link>
 								<li onClick={() => this._tryLogout()}><a href="#"><i className="icon-switch2"></i> Keluar</a></li>
 							</ul>
