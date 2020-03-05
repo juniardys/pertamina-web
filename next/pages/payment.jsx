@@ -136,7 +136,7 @@ class Payment extends Component {
 
         return (
             <Layout title="Pembayaran" breadcrumb={breadcrumb}>
-                <div className="panel panel-flat">
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pembayaran<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">

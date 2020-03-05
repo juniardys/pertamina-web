@@ -27,6 +27,8 @@ Route.group(() => {
 	Route.get('acl-jstree', 'AclController.getJsTree')
 	// Profile
 	Route.get('profile', 'ProfileController.get')
+	Route.post('profile', 'ProfileController.update')
+	Route.post('profile-password', 'ProfileController.updatePassword')
 	// Role
 	Route.get('role', 'RoleController.get')
 	Route.post('role/store', 'RoleController.store')

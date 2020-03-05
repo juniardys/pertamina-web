@@ -36,7 +36,6 @@ class Role extends Component {
             })
             helperUnblock('.container-data')
         }
-        console.log(data);
         await axios.get(`/api/v1/acl-jstree?api_key=${process.env.APP_API_KEY}`, { headers: { Authorization: `Bearer ${this.token}` } })
             .then(response => {
                 this.setState({
@@ -163,7 +162,7 @@ class Role extends Component {
 
         return (
             <Layout title="Pengaturan Jabatan" breadcrumb={breadcrumb}>
-                <div className="panel panel-flat">
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Role<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
