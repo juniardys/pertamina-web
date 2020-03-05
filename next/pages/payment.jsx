@@ -22,8 +22,7 @@ class Payment extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        this.token = await checkAuth()
-        const data = await get(this.token, '/payment-method')
+        const data = await get(localStorage.getItem('auth'), '/payment-method')
         if (data.success) {
             this.setState({
                 dataItems: data.data.data
@@ -51,7 +50,7 @@ class Payment extends Component {
     }
 
     _deletePayment = async (uuid) => {
-        const response = await removeWithSwal(this.token, '/payment-method/delete', uuid)
+        const response = await removeWithSwal(localStorage.getItem('auth'), '/payment-method/delete', uuid)
         if (response != null) {
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
             this.setState({ dataItems: dataItems })
@@ -61,7 +60,7 @@ class Payment extends Component {
     _submit = async () => {
         this.btnModal.start()
         if (this.state.uuid === '') {
-            const response = await store(this.token, '/payment-method/store', {
+            const response = await store(localStorage.getItem('auth'), '/payment-method/store', {
                 name: this.state.name,
                 code: this.state.code,
                 image_required: this.state.image_required
@@ -76,7 +75,7 @@ class Payment extends Component {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update(this.token, '/payment-method/update', this.state.uuid, {
+            const response = await update(localStorage.getItem('auth'), '/payment-method/update', this.state.uuid, {
                 name: this.state.name,
                 code: this.state.code,
                 image_required: this.state.image_required

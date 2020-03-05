@@ -17,24 +17,29 @@ export const toast = Swal.mixin({
 export const checkAuth = async () => {
     const auth = localStorage.getItem('auth')
     const { pathname } = Router
-    
+
     if (auth) {
-        await axios.get(`${process.env.APP_API_URL}/api/v1/profile?api_key=${process.env.APP_API_KEY}`,
-        { headers: { Authorization: `Bearer ${auth}` } })
+        let profile
+        await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}`,
+            { headers: { Authorization: `Bearer ${auth}` } })
             .then(response => {
                 console.log(response.data);
+                profile = response.data.data
             })
             .catch(error => {
                 Router.push('/')
                 localStorage.clear()
                 Router.push('/sign-in')
             });
-        
-            if (pathname == '/sign-in') {
-                Router.push('/')
-            } else {
-                return auth
+
+        if (pathname == '/sign-in') {
+            Router.push('/')
+        } else {
+            return {
+                profile: profile,
+                token: auth
             }
+        }
     } else {
         if (pathname != '/sign-in') Router.push('/sign-in')
     }

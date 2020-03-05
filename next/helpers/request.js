@@ -3,8 +3,7 @@ import Swal from 'sweetalert2'
 import { toast } from '~/helpers'
 
 export const get = async (token, url, queryBuilder = [], ver = null) => {
-    let query = process.env.APP_API_URL
-    query = `${query}/api/${(ver != null) ? ver : 'v1'}`
+    let query = `/api/${(ver != null) ? ver : 'v1'}`
     query = query + url
     query = query + `?api_key=${process.env.APP_API_KEY}`
     if (queryBuilder['search']) query = query + '&search=' + queryBuilder.search

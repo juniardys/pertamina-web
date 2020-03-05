@@ -25,10 +25,6 @@ class User extends Component {
         }
     }
 
-    componentDidMount() {
-        checkAuth()
-    }
-
     _setUserState = async (title, modalType, user) => {
         console.log(user.name);
         await this.setState({

@@ -26,8 +26,7 @@ class Role extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        this.token = await checkAuth()
-        const data = await get(this.token, '/role', {
+        const data = await get(localStorage.getItem('auth'), '/role', {
             with: ['accessList']
         })
         if (data != undefined && data.success) {
@@ -36,7 +35,7 @@ class Role extends Component {
             })
             helperUnblock('.container-data')
         }
-        await axios.get(`/api/v1/acl-jstree?api_key=${process.env.APP_API_KEY}`, { headers: { Authorization: `Bearer ${this.token}` } })
+        await axios.get(`/api/v1/acl-jstree?api_key=${process.env.APP_API_KEY}`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 this.setState({
                     nodes: response.data.data
@@ -69,7 +68,7 @@ class Role extends Component {
     }
 
     _deleteRole = async (uuid) => {
-        const response = await removeWithSwal(this.token, '/role/delete', uuid)
+        const response = await removeWithSwal(localStorage.getItem('auth'), '/role/delete', uuid)
         if (response != null) {
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
             this.setState({ dataItems: dataItems })
@@ -79,7 +78,7 @@ class Role extends Component {
     _submit = async () => {
         this.btnModal.start()
         if (this.state.uuid === '') {
-            const response = await store(this.token, '/role/store', {
+            const response = await store(localStorage.getItem('auth'), '/role/store', {
                 name: this.state.name,
                 description: this.state.description,
                 acl: this.state.checked
@@ -94,7 +93,7 @@ class Role extends Component {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update(this.token, '/role/update', this.state.uuid, {
+            const response = await update(localStorage.getItem('auth'), '/role/update', this.state.uuid, {
                 name: this.state.name,
                 description: this.state.description,
                 acl: this.state.checked

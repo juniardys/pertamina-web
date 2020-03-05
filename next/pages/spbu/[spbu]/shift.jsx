@@ -10,10 +10,6 @@ class Report extends Component {
         return { query }
     }
 
-    componentDidMount() {
-        checkAuth()
-    }
-
     constructor(props) {
         super(props)
         this.state = {

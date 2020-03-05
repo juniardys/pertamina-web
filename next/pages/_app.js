@@ -1,8 +1,8 @@
 import React from "react";
 import App from "next/app";
 import { Provider } from "react-redux";
-import withRedux from "next-redux-wrapper";
 import { initStore } from "~/redux/store";
+import withRedux from "next-redux-wrapper";
 import Script from "~/components/Script"
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
@@ -14,9 +14,9 @@ class MyApp extends App {
     }
 
     render() {
-        const { Component, pageProps, store } = this.props;
+        const { Component, pageProps } = this.props;
         return (
-            <Provider store={store}>
+            <Provider store={initStore}>
                 <Component {...pageProps} />
                 <Script />
             </Provider>
@@ -25,4 +25,4 @@ class MyApp extends App {
 }
 
 
-export default withRedux(initStore)(MyApp);
+export default MyApp;

@@ -4,10 +4,6 @@ import Link from "next/link"
 import { checkAuth } from '~/helpers'
 
 class Index extends Component {
-    async componentDidMount() {
-        await checkAuth()
-    }
-
     render() {
         return (
             <Layout title="Dashboard">

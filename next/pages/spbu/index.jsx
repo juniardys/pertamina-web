@@ -25,8 +25,7 @@ class Index extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        this.token = await checkAuth()
-        const data = await get(this.token, '/spbu')
+        const data = await get(localStorage.getItem('auth'), '/spbu')
         if (data.success) {
             this.setState({
                 dataItems: data.data.data
@@ -54,7 +53,7 @@ class Index extends Component {
     }
 
     _deleteSPBU = async (uuid) => {
-        const response = await removeWithSwal(this.token, '/spbu/delete', uuid)
+        const response = await removeWithSwal(localStorage.getItem('auth'), '/spbu/delete', uuid)
         if (response != null) {
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
             this.setState({ dataItems: dataItems })
@@ -64,7 +63,7 @@ class Index extends Component {
     _submit = async () => {
         this.btnModal.start()
         if (this.state.uuid === '') {
-            const response = await store(this.token, '/spbu/store', {
+            const response = await store(localStorage.getItem('auth'), '/spbu/store', {
                 name: this.state.name,
                 address: this.state.address,
                 phone: this.state.phone,
@@ -80,7 +79,7 @@ class Index extends Component {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update(this.token, '/spbu/update', this.state.uuid, {
+            const response = await update(localStorage.getItem('auth'), '/spbu/update', this.state.uuid, {
                 uuid: this.state.uuid,
                 name: this.state.name,
                 address: this.state.address,

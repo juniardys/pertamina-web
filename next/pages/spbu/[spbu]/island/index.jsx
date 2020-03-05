@@ -23,10 +23,6 @@ class Index extends Component {
         }
     }
 
-    componentDidMount() {
-        checkAuth()
-    }
-
     handleInputChange = async (e) => {
         await this.setState({
             [e.target.name]: e.target.value

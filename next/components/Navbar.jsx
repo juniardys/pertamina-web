@@ -1,8 +1,14 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
-import { logout } from '~/helpers'
+import { logout, checkAuth } from '~/helpers'
+import { connect } from 'react-redux';
+import * as actions from '~/redux/actions/profileAction';
 
 class Navbar extends Component {
+	async componentDidMount() {
+		const auth = await checkAuth()
+		if (auth) this.props.setProfile(auth.profile)
+	}
 
 	_tryLogout() {
 		logout()
@@ -28,100 +34,100 @@ class Navbar extends Component {
 					</ul>
 
 					<ul className="nav navbar-nav navbar-right">
-					<li className="dropdown">
-					<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-						<i className="icon-bell2"></i>
-						<span className="visible-xs-inline-block position-right">Notification</span>
-						<span className="badge bg-warning-400">2</span>
-					</a>
-					
-					<div className="dropdown-menu dropdown-content width-350">
-						<div className="dropdown-content-heading">
-							Notifikasi
+						<li className="dropdown">
+							<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+								<i className="icon-bell2"></i>
+								<span className="visible-xs-inline-block position-right">Notification</span>
+								<span className="badge bg-warning-400">2</span>
+							</a>
+
+							<div className="dropdown-menu dropdown-content width-350">
+								<div className="dropdown-content-heading">
+									Notifikasi
 							{/* <ul className="icons-list">
 								<li><a href="#"><i className="icon-compose"></i></a></li>
 							</ul> */}
-						</div>
-
-						<ul className="media-list dropdown-content-body">
-							<li className="media">
-								<div className="media-left">
-									<img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt=""/>
-									<span className="badge bg-danger-400 media-badge">5</span>
 								</div>
 
-								<div className="media-body">
-									<a href="#" className="media-heading">
-										<span className="text-semibold">James Alexander</span>
-										<span className="media-annotation pull-right">04:58</span>
-									</a>
+								<ul className="media-list dropdown-content-body">
+									<li className="media">
+										<div className="media-left">
+											<img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt="" />
+											<span className="badge bg-danger-400 media-badge">5</span>
+										</div>
 
-									<span className="text-muted">who knows, maybe that would be the best thing for me...</span>
+										<div className="media-body">
+											<a href="#" className="media-heading">
+												<span className="text-semibold">James Alexander</span>
+												<span className="media-annotation pull-right">04:58</span>
+											</a>
+
+											<span className="text-muted">who knows, maybe that would be the best thing for me...</span>
+										</div>
+									</li>
+
+									<li className="media">
+										<div className="media-left">
+											<img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt="" />
+											<span className="badge bg-danger-400 media-badge">4</span>
+										</div>
+
+										<div className="media-body">
+											<a href="#" className="media-heading">
+												<span className="text-semibold">Margo Baker</span>
+												<span className="media-annotation pull-right">12:16</span>
+											</a>
+
+											<span className="text-muted">That was something he was unable to do because...</span>
+										</div>
+									</li>
+
+									<li className="media">
+										<div className="media-left"><img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt="" /></div>
+										<div className="media-body">
+											<a href="#" className="media-heading">
+												<span className="text-semibold">Jeremy Victorino</span>
+												<span className="media-annotation pull-right">22:48</span>
+											</a>
+
+											<span className="text-muted">But that would be extremely strained and suspicious...</span>
+										</div>
+									</li>
+
+									<li className="media">
+										<div className="media-left"><img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt="" /></div>
+										<div className="media-body">
+											<a href="#" className="media-heading">
+												<span className="text-semibold">Beatrix Diaz</span>
+												<span className="media-annotation pull-right">Tue</span>
+											</a>
+
+											<span className="text-muted">What a strenuous career it is that I've chosen...</span>
+										</div>
+									</li>
+
+									<li className="media">
+										<div className="media-left"><img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt="" /></div>
+										<div className="media-body">
+											<a href="#" className="media-heading">
+												<span className="text-semibold">Richard Vango</span>
+												<span className="media-annotation pull-right">Mon</span>
+											</a>
+
+											<span className="text-muted">Other travelling salesmen live a life of luxury...</span>
+										</div>
+									</li>
+								</ul>
+
+								<div className="dropdown-content-footer">
+									<a href="#" data-popup="tooltip" title="" data-original-title="Semua Notifikasi"><i className="icon-menu display-block"></i></a>
 								</div>
-							</li>
-
-							<li className="media">
-								<div className="media-left">
-									<img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt=""/>
-									<span className="badge bg-danger-400 media-badge">4</span>
-								</div>
-
-								<div className="media-body">
-									<a href="#" className="media-heading">
-										<span className="text-semibold">Margo Baker</span>
-										<span className="media-annotation pull-right">12:16</span>
-									</a>
-
-									<span className="text-muted">That was something he was unable to do because...</span>
-								</div>
-							</li>
-
-							<li className="media">
-								<div className="media-left"><img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt=""/></div>
-								<div className="media-body">
-									<a href="#" className="media-heading">
-										<span className="text-semibold">Jeremy Victorino</span>
-										<span className="media-annotation pull-right">22:48</span>
-									</a>
-
-									<span className="text-muted">But that would be extremely strained and suspicious...</span>
-								</div>
-							</li>
-
-							<li className="media">
-								<div className="media-left"><img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt=""/></div>
-								<div className="media-body">
-									<a href="#" className="media-heading">
-										<span className="text-semibold">Beatrix Diaz</span>
-										<span className="media-annotation pull-right">Tue</span>
-									</a>
-
-									<span className="text-muted">What a strenuous career it is that I've chosen...</span>
-								</div>
-							</li>
-
-							<li className="media">
-								<div className="media-left"><img src="../../../../global_assets/images/placeholders/placeholder.jpg" className="img-circle img-sm" alt=""/></div>
-								<div className="media-body">
-									<a href="#" className="media-heading">
-										<span className="text-semibold">Richard Vango</span>
-										<span className="media-annotation pull-right">Mon</span>
-									</a>
-									
-									<span className="text-muted">Other travelling salesmen live a life of luxury...</span>
-								</div>
-							</li>
-						</ul>
-
-						<div className="dropdown-content-footer">
-							<a href="#" data-popup="tooltip" title="" data-original-title="Semua Notifikasi"><i className="icon-menu display-block"></i></a>
-						</div>
-					</div>
-				</li>
+							</div>
+						</li>
 						<li className="dropdown dropdown-user">
 							<a className="dropdown-toggle" data-toggle="dropdown">
 								<img src="../../../../global_assets/images/image.png" alt="" />
-								<span>Admin</span>
+								<span>{this.props.name}</span>
 								<i className="caret"></i>
 							</a>
 
@@ -143,4 +149,12 @@ class Navbar extends Component {
 	}
 }
 
-export default Navbar;
+const mapStateToProps = state => ({
+	name: state.profile.name
+})
+
+const mapDispatchToProps = dispatch => ({
+    setProfile: (value) => dispatch(actions.setProfile(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

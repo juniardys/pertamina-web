@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import { checkAuth, toast } from '~/helpers'
 import axios from 'axios'
+import { connect } from 'react-redux';
+import * as actions from '~/redux/actions/profileAction';
 
 class Index extends Component {
     constructor(props) {
@@ -19,8 +21,7 @@ class Index extends Component {
         helperBlock('.container-data')
         this.btnProfile = Ladda.create(document.querySelector('.btn-profile-spinner'))
         this.btnPswd = Ladda.create(document.querySelector('.btn-password-spinner'))
-        this.token = await checkAuth()
-        await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}`, { headers: { Authorization: `Bearer ${this.token}` } })
+        await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 const data = response.data.data
                 this.setState({
@@ -40,6 +41,8 @@ class Index extends Component {
         await this.setState({
             [e.target.name]: e.target.value
         })
+
+        this.props.setProfile(this.state)
     }
 
     _changeProfile = async () => {
@@ -50,7 +53,7 @@ class Index extends Component {
             email: this.state.email,
             phone: this.state.phone,
             address: this.state.address,
-        }, { headers: { Authorization: `Bearer ${this.token}` } })
+        }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 const data = response.data.data
                 this.setState({
@@ -76,7 +79,7 @@ class Index extends Component {
         this.btnPswd.start()
         await axios.post(`/api/v1/profile-password?api_key=${process.env.APP_API_KEY}`, {
             password: this.state.password,
-        }, { headers: { Authorization: `Bearer ${this.token}` } })
+        }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 this.btnPswd.stop()
                 helperUnblock('.container-data-password')
@@ -181,4 +184,13 @@ class Index extends Component {
     }
 }
 
-export default Index;
+const mapStateToProps = state => ({
+    name: state.profile.name,
+    profile: state.profile
+})
+
+const mapDispatchToProps = dispatch => ({
+    setProfile: (value) => dispatch(actions.setProfile(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

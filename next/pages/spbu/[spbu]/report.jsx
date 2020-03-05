@@ -16,10 +16,6 @@ class Report extends Component {
         }
     }
 
-    componentDidMount() {
-        checkAuth()
-    }
-
     render() {
         const breadcrumb = [
             {
