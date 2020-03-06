@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
-import { checkAuth } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Product extends Component {
@@ -23,8 +21,7 @@ class Product extends Component {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get(localStorage.getItem('auth'), '/product')
-        console.log(data);
-        if (data.success) {
+        if (data) {
             this.setState({
                 dataItems: data.data.data
             })

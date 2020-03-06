@@ -42,6 +42,12 @@ const Sidebar = () => {
 		},
 		{
 			type: 'menu',
+			title: 'Pemesanan',
+			icon: 'icon-transmission',
+			url: '/order'
+		},
+		{
+			type: 'menu',
 			title: 'Metode Pembayaran',
 			icon: ' icon-coin-dollar',
 			url: '/payment'

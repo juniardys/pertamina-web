@@ -23,7 +23,7 @@ class Payment extends Component {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get(localStorage.getItem('auth'), '/payment-method')
-        if (data.success) {
+        if (data) {
             this.setState({
                 dataItems: data.data.data
             })
