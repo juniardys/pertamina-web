@@ -18,7 +18,7 @@ class Navbar extends Component {
 		return (
 			<div className="navbar navbar-default header-highlight">
 				<div className="navbar-header">
-					<a className="navbar-brand" href="index.html"><img src="/logo-white.png" alt="" /></a>
+					<a className="navbar-brand" href="index.html"><img src="/logo-white.png" alt="Pertamina" style={{marginTop: '-8px', height: '32px'}}/></a>
 
 					<ul className="nav navbar-nav pull-right visible-xs-block">
 						<li><a data-toggle="collapse" data-target="#navbar-mobile"><i className="icon-tree5"></i></a></li>
