@@ -2,8 +2,9 @@
 
 const User = use('App/Models/User')
 const { validate } = use('Validator')
-const { baseResp } = use('App/Helpers')
+const { baseResp, uploadImage } = use('App/Helpers')
 const UserTransformer = use('App/Transformers/V1/UserTransformer')
+const sharp = use('sharp')
 
 class ProfileController {
     async get({ transform, response, auth }) {
@@ -31,11 +32,44 @@ class ProfileController {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
+        // let transformImage = sharp()
+        // request.file('image', {}, async file => {
+        //     console.log('asd');
+        //     const data = await transformImage
+        //         .resize({ width: 200 })
+        //         .jpeg({
+        //             quality: 100,
+        //             chromaSubsampling: '4:4:4'
+        //         })
+        //         .toFormat('jpeg')
+
+        //     file.stream.pipe(transformImage).pipe(file.stream)
+
+        //     // await Drive.disk('do').put(file.clientName, data, {
+        //     //     ACL: 'public-read',
+        //     //     ContentType: 'image/jpeg'
+        //     // })
+
+        //     const moveImage = await data.move(Helpers.publicPath(folder), {
+        //         name: fileName,
+        //         overwrite: true
+        //     })
+        // })
+
         try {
             if (req.name) user.name = req.name
             if (req.email) user.email = req.email
             if (req.phone) user.phone = req.phone
             if (req.address) user.address = req.address
+
+            if (request.file('image')) {
+                const upload = await uploadImage(request, 'image', 'profile-image/')
+                if (upload) {
+                    user.image = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await user.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))

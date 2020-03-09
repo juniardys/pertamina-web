@@ -18,6 +18,9 @@ class Index extends Component {
     }
 
     async componentDidMount() {
+        $(".file-styled").uniform({
+            fileButtonClass: 'action btn btn-default'
+        });
         helperBlock('.container-data')
         this.btnProfile = Ladda.create(document.querySelector('.btn-profile-spinner'))
         this.btnPswd = Ladda.create(document.querySelector('.btn-password-spinner'))
@@ -121,6 +124,11 @@ class Index extends Component {
                         </div>
 
                         <div className="panel-body">
+                            <div className="form-group">
+                                <label>Ganti Foto:</label>
+                                <input type="file" className="file-styled"/>
+                            </div>
+
                             <div className="form-group">
                                 <label>Nama:</label>
                                 <input type="text" className="form-control" name="name" placeholder="Ketik nama anda disini" value={this.state.name} onChange={this.handleInputChange} required />

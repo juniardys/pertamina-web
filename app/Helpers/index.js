@@ -83,7 +83,7 @@ const slugify = async (text, table = null, column = null) => {
     }
 }
 
-const uploadImage = async (request, session, fileParam, folder = null) => {
+const uploadImage = async (request, fileParam, folder = null) => {
     const img = request.file(fileParam, {
         types: ['image'],
         size: '2mb'
@@ -92,23 +92,17 @@ const uploadImage = async (request, session, fileParam, folder = null) => {
     if (folder == null) folder = '/'
 
     const fileName = new Date().getTime() + '-' + uuid() + "." + img.subtype
-
+    
     await img.move(Helpers.publicPath(folder), {
         name: fileName,
         overwrite: true
     })
 
-    if (!img.moved()) {
-        session.flash({
-            sweetalert: {
-                type: 'error',
-                title: 'Error Image Validation!',
-                message: img.error().message,
-                name: fileParam
-            }
-        })
-        session.flashAll()
+    console.log(!img.moved());
+    console.log(folder + fileName);
 
+    if (!img.moved()) {
+        console.log(img.error().message);
         return false
     }
 

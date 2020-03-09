@@ -2,7 +2,6 @@ import React from "react";
 import App from "next/app";
 import { Provider } from "react-redux";
 import { initStore } from "~/redux/store";
-import withRedux from "next-redux-wrapper";
 import Script from "~/components/Script"
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
