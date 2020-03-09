@@ -13,14 +13,19 @@ class UserController {
             name: 'required|max:254',
             email: 'required|email|unique:users|max:254',
             password: 'required|min:8|max:254',
-            roles_uuid: 'required',
-            phone: 'number'
+            role_uuid: 'required',
+            phone: 'number',
+            ktp: 'number'
         }
     }
 
     async get({ request, response, transform }) {
         const builder = await queryBuilder(User.query(), request.all(), ['email', 'name', 'phone', 'address'])
-        const data = await transform.paginate(builder, UserTransformer)
+        let data = transform
+        if (request.get().with) {
+            data = data.include(request.get().with)
+        }
+        data = await data.paginate(builder, UserTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Pengguna sukses diterima'))
     }
@@ -30,22 +35,23 @@ class UserController {
         const validation = await validate(req, this.getRules())
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        const user = new User()
+        let user = new User()
         try {
             user.uuid = uuid()
-            user.roles_uuid = req.roles_uuid
+            user.role_uuid = req.role_uuid
             user.spbu_uuid = req.spbu_uuid
             user.name = req.name
             user.email = req.email
             user.password = req.password
             user.phone = req.phone
             user.address = req.address
+            user.ktp = req.ktp
             await user.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
-        user = await transform.item(user, UserTransformer)
+        user = await transform.include(['role', 'spbu']).item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Membuat Pengguna Baru'))
     }
@@ -58,6 +64,7 @@ class UserController {
         if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid}|max:254`
         if (req.password) rules['password'] = 'required|min:8|max:254'
         if (req.phone) rules['phone'] = 'number'
+        if (req.ktp) rules['ktp'] = 'number'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
@@ -71,20 +78,21 @@ class UserController {
         }
 
         try {
-            if (req.roles_uuid) user.roles_uuid = req.roles_uuid
+            if (req.role_uuid) user.role_uuid = req.role_uuid
             if (req.spbu_uuid) user.spbu_uuid = req.spbu_uuid
             if (req.name) user.name = req.name
             if (req.email && user.email != req.email) user.email = req.email
             if (req.password) user.password = req.password
             if (req.phone) user.phone = req.phone
             if (req.address) user.address = req.address
+            if (req.ktp) user.ktp = req.ktp
             await user.save()
         } catch (error) {
             console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        user = await transform.item(user, UserTransformer)
+        user = await transform.include(['role', 'spbu']).item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Mengedit Pengguna ' + user.name))
     }

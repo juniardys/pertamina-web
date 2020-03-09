@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
-import { checkAuth } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
+import { toast } from '~/helpers'
 
 class User extends Component {
     constructor(props) {
@@ -13,20 +14,43 @@ class User extends Component {
             email: '',
             phone: '',
             address: '',
-            role: '',
-            spbu: '',
+            password: '',
+            password_confirmation: '',
+            role_uuid: '',
+            spbu_uuid: '',
             ktp: '',
             image: '',
-            filterRole: 'all',
-            filterSPBU: 'all',
+            filterRole: '',
+            roleData: [],
+            filterSPBU: '',
+            SPBUData: [],
             title: 'Buat User',
             modalType: "create",
-            isLoading: true,
+            dataItems: [],
         }
     }
 
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const data = await get('/user', {
+            with: ['role', 'spbu']
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+
+        const roles = await get('/role')
+        if (roles) this.setState({ roleData: roles.data.data })
+        const spbu = await get('/spbu')
+        if (spbu) this.setState({ SPBUData: spbu.data.data })
+        console.log(this.state.roleData[0])
+    }
+
     _setUserState = async (title, modalType, user) => {
-        console.log(user.name);
         await this.setState({
             title: title,
             modalType: modalType,
@@ -35,10 +59,12 @@ class User extends Component {
             email: user.email || '',
             phone: user.phone || '',
             address: user.address || '',
-            role: user.role || '',
-            spbu: user.spbu || '',
+            role_uuid: (modalType == 'create') ? this.state.roleData[0].uuid : user.role.uuid || '',
+            spbu_uuid: (user.spbu == null) ? '' : user.spbu.uuid || '',
             ktp: user.ktp || '',
-            image: user.image || ''
+            image: user.image || '',
+            password: '',
+            password_confirmation: ''
         })
     }
 
@@ -48,25 +74,92 @@ class User extends Component {
         })
     }
 
-    _deleteUser = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!', 'User berhasil dihapus.', 'success')
-            }
+    handleSelectChange = async (e) => {
+        let column = []
+        let value = []
+        await this.setState({
+            [e.target.name]: e.target.value
         })
+
+        if (this.state.filterRole != '') {
+            column.push('role_uuid')
+            value.push(this.state.filterRole)
+        }
+        if (this.state.filterSPBU != '') {
+            column.push('spbu_uuid')
+            value.push(this.state.filterSPBU)
+        }
+
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const data = await get('/user', {
+            with: ['role', 'spbu'],
+            filter_col: column,
+            filter_val: value
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+    }
+
+    _deleteUser = async (uuid) => {
+        const response = await removeWithSwal('/user/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
     _submit = async (uuid) => {
-        console.log(uuid);
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            if (this.state.password != this.state.password_confirmation) {
+                toast.fire({ icon: 'warning', title: 'Password Konfirmasi tidak sama' })
+                this.btnModal.stop()
+                return;
+            }
+            const response = await store('/user/store', {
+                name: this.state.name,
+                email: this.state.email,
+                phone: this.state.phone,
+                address: this.state.address,
+                password: this.state.password,
+                role_uuid: this.state.role_uuid,
+                spbu_uuid: this.state.spbu_uuid,
+                ktp: this.state.ktp,
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update('/user/update', this.state.uuid, {
+                name: this.state.name,
+                email: this.state.email,
+                phone: this.state.phone,
+                address: this.state.address,
+                role_uuid: this.state.role_uuid,
+                spbu_uuid: this.state.spbu_uuid,
+                ktp: this.state.ktp,
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -101,6 +194,24 @@ class User extends Component {
                             <input type="text" className="form-control" name="email" value={this.state.email} onChange={this.handleInputChange} />
                         </div>
                     </div>
+                    {
+                        (this.state.modalType == 'create') ? (
+                            <div>
+                                <div className="form-group row">
+                                    <label className="control-label col-lg-2">Password</label>
+                                    <div className="col-lg-10">
+                                        <input type="password" className="form-control" name="password" value={this.state.password} onChange={this.handleInputChange} />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <label className="control-label col-lg-2">Konfirmasi Password</label>
+                                    <div className="col-lg-10">
+                                        <input type="password" className="form-control" name="password_confirmation" value={this.state.password_confirmation} onChange={this.handleInputChange} />
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null
+                    }
                     <div className="form-group row">
                         <label className="control-label col-lg-2">Nomor Handphone</label>
                         <div className="col-lg-10">
@@ -110,7 +221,7 @@ class User extends Component {
                     <div className="form-group row">
                         <label className="control-label col-lg-2">Alamat</label>
                         <div className="col-lg-10">
-                            <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
+                            <textarea name="address" className="form-control" cols="30" rows="10" onChange={this.handleInputChange} style={{ resize: 'vertical' }} defaultValue={this.state.address}></textarea>
                         </div>
                     </div>
                     <div className="form-group row">
@@ -122,20 +233,25 @@ class User extends Component {
                     <div className="form-group row">
                         <label className="control-label col-lg-2">Jabatan</label>
                         <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="role" onChange={this.handleInputChange}>
-                                <option value="1">Superadmin</option>
-                                <option value="2">Admin</option>
-                                <option value="3">Operator</option>
+                            <select className="form-control col-lg-10" name="role_uuid" onChange={this.handleInputChange}>
+                                {
+                                    this.state.roleData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={(this.state.modalType != 'create' && item.uuid == this.state.role_uuid) ? 'selected' : ''}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
                     <div className="form-group row">
                         <label className="control-label col-lg-2">SPBU</label>
                         <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="role" onChange={this.handleInputChange}>
-                                <option value="1762v36x">G-Walk</option>
-                                <option value="1273uasb">Lidah Wetan</option>
-                                <option value="ashjdk16">Lakarsantri</option>
+                            <select className="form-control col-lg-10" name="spbu_uuid" onChange={this.handleInputChange} >
+                                <option key={0} value="">-</option>
+                                {
+                                    this.state.SPBUData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={(this.state.modalType != 'create' && item.uuid == this.state.spbu_uuid) ? 'selected' : ''}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
@@ -152,42 +268,32 @@ class User extends Component {
             }
         ]
 
-        const users = [
-            {
-                uuid: 'qwer1234',
-                name: 'Nizar Alfarizi',
-                email: 'fariz@nalarnaluri.com',
-                phone: '085102725497',
-                address: 'Pesona Permata Gading 1 Blok B4',
-                role: 'Superadmin',
-                spbu: 'pusat',
-                ktp: '12345678910',
-                image: '/global_assets/images/placeholders/placeholder.jpg'
-            }
-        ]
-
         return (
             <Layout title="Manajemen Pengguna" breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Jabatan</label>
-                            <select className="form-control" name="filterRole" onChange={this.handleInputChange}>
-                                <option value="all">Semua</option>
-                                <option value="superadmin">Superadmin</option>
-                                <option value="admin">Admin</option>
-                                <option value="operator">Operator</option>
+                            <select className="form-control" name="filterRole" onChange={this.handleSelectChange}>
+                                <option key={0} value="">Semua</option>
+                                {
+                                    this.state.roleData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>SPBU</label>
-                            <select className="form-control" name="filterSPBU" onChange={this.handleInputChange}>
-                                <option value="all">Semua</option>
-                                <option value="1762v36x">G-Walk</option>
-                                <option value="1273uasb">Lidah Wetan</option>
-                                <option value="ashjdk16">Lakarsantri</option>
+                            <select className="form-control" name="filterSPBU" onChange={this.handleSelectChange}>
+                                <option key={0} value="">Semua</option>
+                                {
+                                    this.state.SPBUData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
@@ -204,7 +310,7 @@ class User extends Component {
                     </div>
                 </div>
 
-                <div className="panel panel-flat">
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pengguna <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
@@ -225,22 +331,28 @@ class User extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {users.map((user, i) => (
-                                    <tr key={i}>
-                                        <td>1</td>
-                                        <td>{user.name}</td>
-                                        <td>{user.email}</td>
-                                        <td>{user.spbu}</td>
-                                        <td>{user.role}</td>
-                                        <td>
-                                            <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profil ' + user.name, 'preview', user)}><i className="icon-profile"></i></button>
-
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit Pengguna', 'edit', user)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteUser(user.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                        this.state.dataItems.map((item, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{item.name}</td>
+                                                <td>{item.email}</td>
+                                                <td>{(item.spbu != null) ? item.spbu.name : '-'}</td>
+                                                <td>{(item.role != null) ? item.role.name : '-'}</td>
+                                                <td>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profil ' + item.name, 'preview', item)}><i className="icon-profile"></i></button>
+
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit Pengguna', 'edit', item)}><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteUser(item.uuid)}><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                             </tbody>
                         </table>
                     </div>

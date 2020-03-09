@@ -18,7 +18,11 @@ class RoleController {
 
     async get({ request, response, transform }) {
         const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'])
-        const data = await transform.include(request.get().with).paginate(builder, RoleTransformer)
+        let data = transform
+        if (request.get().with) {
+            data = data.include(request.get().with)
+        }
+        data = await data.paginate(builder, RoleTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Jabatan sukses diterima'))
     }

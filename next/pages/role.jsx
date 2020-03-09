@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
-import { checkAuth } from '~/helpers'
 import CheckboxTree from 'react-checkbox-tree';
 import axios from 'axios'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
@@ -26,7 +24,7 @@ class Role extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        const data = await get(localStorage.getItem('auth'), '/role', {
+        const data = await get('/role', {
             with: ['accessList']
         })
         if (data != undefined && data.success) {
@@ -68,7 +66,7 @@ class Role extends Component {
     }
 
     _deleteRole = async (uuid) => {
-        const response = await removeWithSwal(localStorage.getItem('auth'), '/role/delete', uuid)
+        const response = await removeWithSwal('/role/delete', uuid)
         if (response != null) {
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
             this.setState({ dataItems: dataItems })
@@ -78,7 +76,7 @@ class Role extends Component {
     _submit = async () => {
         this.btnModal.start()
         if (this.state.uuid === '') {
-            const response = await store(localStorage.getItem('auth'), '/role/store', {
+            const response = await store('/role/store', {
                 name: this.state.name,
                 description: this.state.description,
                 acl: this.state.checked
@@ -93,7 +91,7 @@ class Role extends Component {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update(localStorage.getItem('auth'), '/role/update', this.state.uuid, {
+            const response = await update('/role/update', this.state.uuid, {
                 name: this.state.name,
                 description: this.state.description,
                 acl: this.state.checked

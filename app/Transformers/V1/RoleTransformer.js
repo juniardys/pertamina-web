@@ -10,7 +10,7 @@ const moment = use('moment')
  * @constructor
  */
 class RoleTransformer extends BumblebeeTransformer {
-  static get defaultInclude() {
+  static get availableInclude() {
     return ['accessList']
   }
 

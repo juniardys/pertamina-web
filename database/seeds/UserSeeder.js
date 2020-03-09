@@ -34,7 +34,7 @@ class UserSeeder {
       user.name = data[i].name
       user.email = data[i].email
       user.password = data[i].password
-      user.roles_uuid = role.uuid
+      user.role_uuid = role.uuid
       await user.save()
     }
   }

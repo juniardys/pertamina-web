@@ -22,7 +22,7 @@ class Payment extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        const data = await get(localStorage.getItem('auth'), '/payment-method')
+        const data = await get('/payment-method')
         if (data) {
             this.setState({
                 dataItems: data.data.data
@@ -50,7 +50,7 @@ class Payment extends Component {
     }
 
     _deletePayment = async (uuid) => {
-        const response = await removeWithSwal(localStorage.getItem('auth'), '/payment-method/delete', uuid)
+        const response = await removeWithSwal('/payment-method/delete', uuid)
         if (response != null) {
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
             this.setState({ dataItems: dataItems })
@@ -60,12 +60,12 @@ class Payment extends Component {
     _submit = async () => {
         this.btnModal.start()
         if (this.state.uuid === '') {
-            const response = await store(localStorage.getItem('auth'), '/payment-method/store', {
+            const response = await store('/payment-method/store', {
                 name: this.state.name,
                 code: this.state.code,
                 image_required: this.state.image_required
             })
-            if (response.success) {
+            if (response) {
                 this.setState({
                     dataItems: [...this.state.dataItems, response.res.data]
                 })
@@ -75,12 +75,12 @@ class Payment extends Component {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update(localStorage.getItem('auth'), '/payment-method/update', this.state.uuid, {
+            const response = await update('/payment-method/update', this.state.uuid, {
                 name: this.state.name,
                 code: this.state.code,
                 image_required: this.state.image_required
             })
-            if (response.success) {
+            if (response) {
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
                 this.setState({ dataItems: dataItems })
 

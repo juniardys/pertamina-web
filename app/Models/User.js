@@ -41,6 +41,14 @@ class User extends Model {
     return ['password']
   }
 
+  role() {
+    return this.belongsTo('App/Models/Role', 'role_uuid', 'uuid')
+  }
+
+  spbu() {
+    return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
+  }
+
   // Setters
   setDeletedAt(deleted_at) {
     return new Date(deleted_at).toISOString()

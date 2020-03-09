@@ -26,7 +26,7 @@ class OrderDetail extends Component {
     async componentDidMount() {
         // helperBlock('.container-data')
         // this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        // const data = await get(localStorage.getItem('auth'), '/product')
+        // const data = await get('/product')
         // if (data) {
         //     this.setState({
         //         dataItems: data.data.data
@@ -56,7 +56,7 @@ class OrderDetail extends Component {
     }
 
     _deleteProduct = async (uuid) => {
-        // const response = await removeWithSwal(localStorage.getItem('auth'), '/product/delete', uuid)
+        // const response = await removeWithSwal('/product/delete', uuid)
         // if (response != null) {
         //     const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
         //     this.setState({ dataItems: dataItems })
@@ -66,7 +66,7 @@ class OrderDetail extends Component {
     _submit = async () => {
         // this.btnModal.start()
         // if (this.state.uuid === '') {
-        //     const response = await store(localStorage.getItem('auth'), '/product/store', {
+        //     const response = await store('/product/store', {
         //         name: this.state.name,
         //         code: this.state.code,
         //         price: this.state.price
@@ -81,7 +81,7 @@ class OrderDetail extends Component {
         //         this.btnModal.stop()
         //     }
         // } else {
-        //     const response = await update(localStorage.getItem('auth'), '/product/update', this.state.uuid, {
+        //     const response = await update('/product/update', this.state.uuid, {
         //         name: this.state.name,
         //         code: this.state.code,
         //         price: this.state.price
