@@ -4,6 +4,10 @@ import Modal from '~/components/Modal'
 import Link from 'next/link'
 
 class Order extends Component {
+    static getInitialProps({ query }) {
+        return { query }
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -93,51 +97,15 @@ class Order extends Component {
         // }
     }
 
-    renderModal = () => {
-        return (
-            <form className="form-horizontal" action="#">
-                <input type="hidden" name="uuid" value={this.state.uuid} />
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">SPBU</label>
-                    <div className="col-lg-10">
-                        <select className="form-control" name="spbu_uuid" onChange={this.handleInputChange}>
-                            <option value="1762v36x">G-Walk</option>
-                            <option value="1273uasb">Lidah Wetan</option>
-                            <option value="ashjdk16">Lakarsantri</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Produk</label>
-                    <div className="col-lg-10">
-                        <select className="form-control" name="filterRole" onChange={this.handleInputChange}>
-                            <option key={1} value='Pertamax'>Pertamax</option>
-                            <option key={2} value='Premium'>Premium</option>
-                            <option key={3} value='Pertalite'>Pertalite</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Nomor Pemesanan</label>
-                    <div className="col-lg-10">
-                        <input type="text" className="form-control" name="no_order" value={this.state.no_order} onChange={this.handleInputChange} />
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Kuantitas</label>
-                    <div className="col-lg-10">
-                        <input type="text" className="form-control" name="quantity" value={this.state.quantity} onChange={this.handleInputChange} />
-                    </div>
-                </div>
-            </form>
-        )
-    }
-
     render() {
         const breadcrumb = [
             {
+                title: 'SPBU',
+                url: '/spbu'
+            },
+            {
                 title: 'Pemesanan',
-                url: '/order'
+                url: `/spbu/${this.props.query.spbu}/order`
             }
         ]
 
@@ -158,16 +126,6 @@ class Order extends Component {
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
-                            <label>SPBU</label>
-                            <select className="form-control" name="filterSPBU" onChange={this.handleSelectChange}>
-                                <option key={0} value="">Semua</option>
-                                <option key={1} value='SPBU G-Walk'>SPBU G-Walk</option>
-                                <option key={2} value='SPBU Wiyung'>SPBU Wiyung</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="col-md-3">
-                        <div className="form-group">
                             <label>Produk</label>
                             <select className="form-control" name="filterProduct" onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
@@ -185,14 +143,13 @@ class Order extends Component {
                     </div>
                     <div className="col-md-3">
                     </div>
+                    <div className="col-md-3">
+                    </div>
                 </div>
 
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pemesanan<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
-                        <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Pemesanan', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
-                        </div>
                     </div>
 
                     <div className="table-responsive">
@@ -200,7 +157,6 @@ class Order extends Component {
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>SPBU</th>
                                     <th>Produk</th>
                                     <th>Tanggal Pemesanan</th>
                                     <th>Nomor Pemesanan</th>
@@ -218,20 +174,15 @@ class Order extends Component {
                                         dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
-                                                <td>SPBU G-Walk</td>
                                                 <td>Pertamax</td>
                                                 <td>{item.date_order}</td>
                                                 <td>{item.no_order}</td>
                                                 <td>{item.quantity}</td>
                                                 <td>{item.status}</td>
                                                 <td>
-                                                    <Link href={'/order/[order]'} as={'/order/' + item.uuid}>
+                                                    <Link href={'/spbu/[spbu]/order/[order]'} as={'/spbu/' + this.props.query.spbu + '/order/' + item.uuid}>
                                                         <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail Pesanan"><i className="icon-transmission"></i></button>
                                                     </Link>
-
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>
-
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
                                                 </td>
                                             </tr>
                                         ))
@@ -240,10 +191,6 @@ class Order extends Component {
                         </table>
                     </div>
                 </div>
-
-                <Modal title={this.state.title} buttonYes='Submit' onClick={() => this._submit()}>
-                    {this.renderModal()}
-                </Modal>
             </Layout>
         )
     }

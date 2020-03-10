@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import { toast } from '~/helpers'
 
 class Product extends Component {
     constructor(props) {
@@ -68,6 +69,7 @@ class Product extends Component {
                 })
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat Produk Baru' })
             } else {
                 this.btnModal.stop()
             }
@@ -83,6 +85,7 @@ class Product extends Component {
 
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Produk' })
             } else {
                 this.btnModal.stop()
             }

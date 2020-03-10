@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
+import Link from 'next/link'
 
 class OrderDetail extends Component {
     constructor(props) {
@@ -12,6 +13,7 @@ class OrderDetail extends Component {
             no_delivery_order: '',
             police_number: '',
             driver_name: '',
+            receiver: '',
             image_delivery_order: '',
             dataItems: [],
             title: 'Konfirmasi Pengiriman',
@@ -51,6 +53,7 @@ class OrderDetail extends Component {
             no_delivery_order: item.no_delivery_order || '',
             police_number: item.police_number || '',
             driver_name: item.driver_name || '',
+            receiver: item.receiver || '',
             image_delivery_order: item.image_delivery_order || '',
         })
     }
@@ -129,13 +132,19 @@ class OrderDetail extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Nama Sopir</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="driver_number" value={this.state.driver_number} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="driver_name" value={this.state.driver_name} onChange={this.handleInputChange} />
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Penerima</label>
+                    <div className="col-lg-10">
+                        <input type="text" className="form-control" name="receiver" value={this.state.receiver} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Foto Surat Jalan</label>
                     <div className="col-lg-10">
-                        
+
                     </div>
                 </div>
             </form>
@@ -163,15 +172,39 @@ class OrderDetail extends Component {
                 police_number: "L H2G81A",
                 driver_name: "Hartono",
                 image_delivery_order: "",
+                receiver: "Danang",
             }
         ]
 
         return (
             <Layout title="Pengiriman" breadcrumb={breadcrumb}>
+                <div className="panel">
+                    <div className="panel-body">
+                        <h6 className="text-semibold no-margin-top">
+                            <a href="#">SPBU G-Walk</a> <span className="label bg-purple" style={{ marginLeft: '12px' }}>R16U12G</span>
+                        </h6>
+                        <span className="label border-left-primary label-striped"><i className="icon-box position-left"></i> Pertamax, 10.000 Liter</span>
+                    </div>
+
+                    <div className="panel-footer panel-footer-condensed">
+                        <div className="heading-elements not-collapsible">
+                            <span className="heading-text">
+                                <i className="icon-history position-left"></i>2020-03-05
+                            </span>
+
+                            <span className="heading-text pull-right label label-info">
+                                Proses
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pengiriman<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
+                            <Link href={`/order`}>
+                                <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
+                            </Link>
                             <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Konfirmasi Pengiriman', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Konfirmasi</button>
                         </div>
                     </div>
@@ -186,6 +219,7 @@ class OrderDetail extends Component {
                                     <th>Nomor Pengiriman</th>
                                     <th>Nomor Polisi</th>
                                     <th>Nama Sopir</th>
+                                    <th>Penerima</th>
                                     <th>Gambar</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -204,6 +238,7 @@ class OrderDetail extends Component {
                                                 <td>{item.no_delivery_order}</td>
                                                 <td>{item.police_number}</td>
                                                 <td>{item.driver_name}</td>
+                                                <td>{item.receiver}</td>
                                                 <td>{item.image_delivery_order}</td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>

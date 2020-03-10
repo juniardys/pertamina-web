@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
+import Link from 'next/link'
 
 class User extends Component {
     constructor(props) {
@@ -137,46 +137,69 @@ class User extends Component {
                 })
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat pengguna baru' })
             } else {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update('/user/update', this.state.uuid, {
-                name: this.state.name,
-                email: this.state.email,
-                phone: this.state.phone,
-                address: this.state.address,
-                role_uuid: this.state.role_uuid,
-                spbu_uuid: this.state.spbu_uuid,
-                ktp: this.state.ktp,
-            })
-            if (response.success) {
-                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
-                this.setState({ dataItems: dataItems })
-
-                this.btnModal.stop()
-                helperModalHide()
+            if (this.state.modalType == 'edit-password') {
+                const response = await update('/user/update', this.state.uuid, {
+                    password: this.state.password,
+                })
+                if (response.success) {
+                    const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                    this.setState({ dataItems: dataItems })
+    
+                    this.btnModal.stop()
+                    helperModalHide()
+                    toast.fire({ icon: 'success', title: 'Berhasil mengubah password' })
+                } else {
+                    this.btnModal.stop()
+                }
             } else {
-                this.btnModal.stop()
+                const response = await update('/user/update', this.state.uuid, {
+                    name: this.state.name,
+                    email: this.state.email,
+                    phone: this.state.phone,
+                    address: this.state.address,
+                    role_uuid: this.state.role_uuid,
+                    spbu_uuid: this.state.spbu_uuid,
+                    ktp: this.state.ktp,
+                })
+                if (response.success) {
+                    const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                    this.setState({ dataItems: dataItems })
+    
+                    this.btnModal.stop()
+                    helperModalHide()
+                    toast.fire({ icon: 'success', title: 'Berhasil mengubah data pengguna' })
+                } else {
+                    this.btnModal.stop()
+                }
             }
         }
     }
 
     renderModal = () => {
-        if (this.state.modalType === 'preview') {
+        if (this.state.modalType === 'edit-password') {
             return (
-                <div className="thumbnail">
-                    <div className="thumb thumb-rounded">
-                        <img src={this.state.image} alt="" style={{ width: '200px' }} />
+                <form className="form-horizontal" action="#">
+                    <input type="hidden" name="uuid" value={this.state.uuid} />
+                    <div>
+                        <div className="form-group row">
+                            <label className="control-label col-lg-2">Password Baru</label>
+                            <div className="col-lg-10">
+                                <input type="password" className="form-control" name="password" value={this.state.password} onChange={this.handleInputChange} />
+                            </div>
+                        </div>
+                        <div className="form-group row">
+                            <label className="control-label col-lg-2">Konfirmasi Password</label>
+                            <div className="col-lg-10">
+                                <input type="password" className="form-control" name="password_confirmation" value={this.state.password_confirmation} onChange={this.handleInputChange} />
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="caption text-center">
-                        <h6 className="text-semibold no-margin">{this.state.name}</h6>
-                        <h6><small className="display-block"><i className="icon-mail5" style={{ fontSize: '12px' }}></i> {this.state.email}</small></h6>
-                        <h6><small className="display-block"><i className="icon-phone2" style={{ fontSize: '12px' }}></i> {this.state.phone}</small></h6>
-                        <h6><small className="display-block"><i className="icon-location3" style={{ fontSize: '12px' }}></i> {this.state.address}</small></h6>
-                    </div>
-                </div>
+                </form>
             )
         } else {
             return (
@@ -344,7 +367,12 @@ class User extends Component {
                                                 <td>{(item.spbu != null) ? item.spbu.name : '-'}</td>
                                                 <td>{(item.role != null) ? item.role.name : '-'}</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Profil ' + item.name, 'preview', item)}><i className="icon-profile"></i></button>
+                                                    <Link href={'/user/[user]'} as={'/user/' + item.uuid}>
+
+                                                        <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-profile"></i></button>
+                                                    </Link>
+
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Ubah Password" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit Password Pengguna', 'edit-password', item)}><i className="icon-key"></i></button>
 
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setUserState('Edit Pengguna', 'edit', item)}><i className="icon-pencil7"></i></button>
 

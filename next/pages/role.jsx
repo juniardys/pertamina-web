@@ -4,6 +4,7 @@ import Modal from '~/components/Modal'
 import CheckboxTree from 'react-checkbox-tree';
 import axios from 'axios'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import { toast } from '~/helpers'
 
 class Role extends Component {
     constructor(props) {
@@ -87,6 +88,7 @@ class Role extends Component {
                 })
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat Jabatan Baru' })
             } else {
                 this.btnModal.stop()
             }
@@ -102,6 +104,7 @@ class Role extends Component {
 
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah Jabatan' })
             } else {
                 this.btnModal.stop()
             }

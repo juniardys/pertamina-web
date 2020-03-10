@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Link from "next/link"
 import Modal from '~/components/Modal'
-import { checkAuth } from '~/helpers'
+import { toast } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Index extends Component {
@@ -75,6 +75,7 @@ class Index extends Component {
                 })
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat SPBU baru' })
             } else {
                 this.btnModal.stop()
             }
@@ -92,6 +93,7 @@ class Index extends Component {
 
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data SPBU' })
             } else {
                 this.btnModal.stop()
             }

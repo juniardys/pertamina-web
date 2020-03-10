@@ -40,10 +40,10 @@ const SubSidebar = () => {
 			},
 			{
 				type: 'menu',
-				title: 'Pengiriman',
+				title: 'Pemesanan',
 				icon: 'icon-transmission',
-				url: `/spbu/${spbu}/delivery`,
-				path: '/spbu/[spbu]/delivery'
+				url: `/spbu/${spbu}/order`,
+				path: '/spbu/[spbu]/order'
 			},
 			{
 				type: 'menu',

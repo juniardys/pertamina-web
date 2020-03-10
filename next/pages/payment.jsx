@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
-import { checkAuth } from '~/helpers'
+import { toast } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Payment extends Component {
@@ -71,6 +70,7 @@ class Payment extends Component {
                 })
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat Metode Pembayaran Baru' })
             } else {
                 this.btnModal.stop()
             }
@@ -86,6 +86,7 @@ class Payment extends Component {
 
                 this.btnModal.stop()
                 helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Metode Pembayaran' })
             } else {
                 this.btnModal.stop()
             }
