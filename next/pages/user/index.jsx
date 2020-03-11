@@ -5,7 +5,7 @@ import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
 import Link from 'next/link'
 
-class User extends Component {
+class Index extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -396,4 +396,4 @@ class User extends Component {
 
 
 
-export default User;
+export default Index;
