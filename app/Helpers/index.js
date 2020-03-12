@@ -13,7 +13,7 @@ const baseResp = (success, data, message = null, errors = null) => {
     }
 }
 
-const queryBuilder = async (model, request, search = []) => {
+const queryBuilder = async (model, request, search = [], defaultWith = []) => {
     let data = []
     let query = model   
     if (request.search) {
@@ -35,6 +35,12 @@ const queryBuilder = async (model, request, search = []) => {
     }
     if (Array.isArray(request.with)) {
         request.with.forEach(function (relation) {
+            query = query.with(relation)
+        })
+    }
+    // Default With
+    if (defaultWith.length > 0) {
+        defaultWith.forEach(function (relation) {
             query = query.with(relation)
         })
     }

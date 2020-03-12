@@ -5,7 +5,12 @@ import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
 import Link from 'next/link'
 
-class Index extends Component {
+class User extends Component {
+
+    static getInitialProps({ query }) {
+        return { query }
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -31,11 +36,36 @@ class Index extends Component {
         }
     }
 
+    generateFilter = async (e) => {
+        let column = []
+        let value = []
+        if (this.state.filterRole != '') {
+            column.push('role_uuid')
+            value.push(this.state.filterRole)
+        }
+        if (this.state.filterSPBU != '') {
+            column.push('spbu_uuid')
+            value.push(this.state.filterSPBU)
+        }
+
+        return {
+            column: column,
+            value: value
+        }
+    }
+
     async componentDidMount() {
+        await this.setState({
+            filterSPBU: this.props.query.spbu,
+            spbu_uuid: this.props.query.spbu
+        })
         helperBlock('.container-data')
+        const filter = await this.generateFilter()
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/user', {
             with: ['role', 'spbu'],
+            filter_col: filter.column,
+            filter_val: filter.value,
             not_col: ['uuid'],
             not_val: [localStorage.getItem('user_uuid')]
         })
@@ -62,7 +92,6 @@ class Index extends Component {
             phone: user.phone || '',
             address: user.address || '',
             role_uuid: (modalType == 'create') ? this.state.roleData[0].uuid : user.role.uuid || '',
-            spbu_uuid: (user.spbu == null) ? '' : user.spbu.uuid || '',
             ktp: user.ktp || '',
             image: user.image || '',
             password: '',
@@ -77,27 +106,16 @@ class Index extends Component {
     }
 
     handleSelectChange = async (e) => {
-        let column = []
-        let value = []
         await this.setState({
             [e.target.name]: e.target.value
         })
-
-        if (this.state.filterRole != '') {
-            column.push('role_uuid')
-            value.push(this.state.filterRole)
-        }
-        if (this.state.filterSPBU != '') {
-            column.push('spbu_uuid')
-            value.push(this.state.filterSPBU)
-        }
-
+        const filter = await this.generateFilter()
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/user', {
             with: ['role', 'spbu'],
-            filter_col: column,
-            filter_val: value,
+            filter_col: filter.column,
+            filter_val: filter.value,
             not_col: ['uuid'],
             not_val: [localStorage.getItem('user_uuid')]
         })
@@ -125,6 +143,7 @@ class Index extends Component {
                 this.btnModal.stop()
                 return;
             }
+            console.log(this.state.spbu_uuid);
             const response = await store('/user/store', {
                 name: this.state.name,
                 email: this.state.email,
@@ -190,15 +209,14 @@ class Index extends Component {
     }
 
     _search = async () => {
-        await this.setState({
-            filterRole: '',
-            filterSPBU: ''
-        })
+        const filter = await this.generateFilter()
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/user', {
             with: ['role', 'spbu'],
             search: this.state.search,
+            filter_col: filter.column,
+            filter_val: filter.value,
             not_col: ['uuid'],
             not_val: [localStorage.getItem('user_uuid')]
         })
@@ -295,19 +313,6 @@ class Index extends Component {
                             </select>
                         </div>
                     </div>
-                    <div className="form-group row">
-                        <label className="control-label col-lg-2">SPBU</label>
-                        <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="spbu_uuid" defaultValue="" onChange={this.handleInputChange} >
-                                <option key={0} value="" selected={this.state.spbu_uuid == ''}>-</option>
-                                {
-                                    this.state.SPBUData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType != 'create' && item.uuid == this.state.spbu_uuid}>{item.name}</option>
-                                    ))
-                                }
-                            </select>
-                        </div>
-                    </div>
                 </form>
             )
         }
@@ -316,18 +321,22 @@ class Index extends Component {
     render() {
         const breadcrumb = [
             {
+                title: 'SPBU',
+                url: '/spbu'
+            },
+            {
                 title: 'Pengguna',
-                url: '/user'
+                url: `/spbu/${this.props.query.spbu}/user`
             }
         ]
 
         return (
-            <Layout title="Manajemen Pengguna" breadcrumb={breadcrumb}>
+            <Layout title={'Pengguna ' + this.props.query.spbu} breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Jabatan</label>
-                            <select className="form-control" name="filterRole" defaultValue="" onChange={this.handleSelectChange}>
+                            <select className="form-control" name="filterRole" defaultValue='' onChange={this.handleSelectChange}>
                                 <option key={0} value="" selected={this.state.filterRole == ''}>Semua</option>
                                 {
                                     this.state.roleData.map((item, i) => (
@@ -338,17 +347,7 @@ class Index extends Component {
                         </div>
                     </div>
                     <div className="col-md-3">
-                        <div className="form-group">
-                            <label>SPBU</label>
-                            <select className="form-control" name="filterSPBU" defaultValue="" onChange={this.handleSelectChange}>
-                                <option key={0} value="" selected={this.state.filterSPBU == ''}>Semua</option>
-                                {
-                                    this.state.SPBUData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={this.state.filterSPBU == item.value}>{item.name}</option>
-                                    ))
-                                }
-                            </select>
-                        </div>
+
                     </div>
                     <div className="col-md-3">
                     </div>
@@ -363,7 +362,7 @@ class Index extends Component {
                     </div>
                 </div>
 
-                <div className="panel panel-flat container-data">
+                <div className="panel panel-flat">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pengguna <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
@@ -378,7 +377,6 @@ class Index extends Component {
                                     <th>#</th>
                                     <th>Nama</th>
                                     <th>Email</th>
-                                    <th>SPBU</th>
                                     <th>Jabatan</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -386,7 +384,7 @@ class Index extends Component {
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="6"><center>Data Belum ada</center></td>
+                                        <td colSpan="5"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                         this.state.dataItems.map((item, i) => (
@@ -394,11 +392,9 @@ class Index extends Component {
                                                 <td>{i + 1}</td>
                                                 <td>{item.name}</td>
                                                 <td>{item.email}</td>
-                                                <td>{(item.spbu != null) ? item.spbu.name : '-'}</td>
                                                 <td>{(item.role != null) ? item.role.name : '-'}</td>
                                                 <td>
-                                                    <Link href={'/user/[user]'} as={'/user/' + item.uuid}>
-
+                                                    <Link href={'/spbu/[spbu]/user/[user]'} as={`/spbu/${this.props.query.spbu}/user/${item.uuid}`}>
                                                         <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-profile"></i></button>
                                                     </Link>
 
@@ -424,6 +420,4 @@ class Index extends Component {
     }
 }
 
-
-
-export default Index;
+export default User;

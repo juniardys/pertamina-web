@@ -112,12 +112,18 @@ class User extends Component {
     render() {
         const breadcrumb = [
             {
+                title: 'SPBU',
+                url: '/spbu',
+                as: '/spbu'
+            },
+            {
                 title: 'Pengguna',
-                url: '/user'
+                url: '/spbu/[spbu]/user',
+                as: `/spbu/${this.props.query.spbu}/user`
             },
             {
                 title: this.state.name,
-                url: '/user/' + this.props.query.user
+                url: `/spbu/${this.props.query.spbu}/user/${this.props.query.user}`
             }
         ]
 
@@ -128,7 +134,7 @@ class User extends Component {
                         <div className="panel-heading">
                             <h6 className="panel-title">Detail Pengguna<a className="heading-elements-toggle"><i className="icon-more"></i></a></h6>
                             <div className="heading-elements">
-                                <Link href={`/user`}>
+                                <Link href="/spbu/[spbu]/user" as={`/spbu/${this.props.query.spbu}/user`}>
                                     <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
                                 </Link>
                                 <ul className="icons-list">
@@ -164,7 +170,7 @@ class User extends Component {
                             <div className="row">
                                 <div className="form-group col-md-6">
                                     <label className="control-label">SPBU</label>
-                                    <select className="form-control " name="spbu_uuid" defaultValue="" onChange={this.handleInputChange} >
+                                    <select className="form-control " name="spbu_uuid" defaultValue="" disabled>
                                         <option key={0} value="">-</option>
                                         {
                                             this.state.SPBUData.map((item, i) => (

@@ -19,6 +19,20 @@ class Role extends Model {
     setUpdatedAt(updated_at) {
         return new Date(updated_at).toISOString()
     }
+
+    // static get computed() {
+    //     return ['level']
+    // }
+
+    // async getLevel({name}) {
+    //     const acl = this.accessList()
+    //     const result = await acl.getCount()
+    //     console.log(name);
+        
+    //     console.log(result);
+    //     // return parseInt(result)
+    //     return name
+    // }
 }
 
 module.exports = Role

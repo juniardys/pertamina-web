@@ -7,7 +7,7 @@ const Breadcrumb = (props) => {
     return (
         <div className="breadcrumb-line">
             <ul className="breadcrumb">
-                <Link href="/">
+                <Link href="/" as="/">
                     <li><a><i className="icon-home2 position-left"></i> Dashboard</a></li>
                 </Link>
                 {data.map((menu, i) => {
@@ -17,7 +17,7 @@ const Breadcrumb = (props) => {
                         )
                     } else {
                         return (
-                            <Link href={menu.url} key={i}>
+                            <Link href={menu.url} as={menu.as} key={i}>
                                 <li><a>{menu.title}</a></li>
                             </Link>
                         )
