@@ -54,6 +54,11 @@ Route.group(() => {
 	Route.post('payment-method/store', 'PaymentMethodController.store')
 	Route.post('payment-method/update', 'PaymentMethodController.update')
 	Route.post('payment-method/delete', 'PaymentMethodController.delete')
+	// Shift
+	Route.get('shift/', 'ShiftController.get')
+	Route.post('shift/store', 'ShiftController.store')
+	Route.post('shift/update', 'ShiftController.update')
+	Route.post('shift/delete', 'ShiftController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

@@ -2,7 +2,8 @@ import React, { Component, useEffect } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Swal from 'sweetalert2'
-import { checkAuth } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
+import { toast } from '~/helpers'
 
 class Report extends Component {
 
@@ -17,9 +18,25 @@ class Report extends Component {
             name: '',
             start: '',
             end: '',
+            dataItems: [],
             title: 'Buat Shift',
-            modalType: "create",
-            isLoading: true,
+            modalType: "create"
+        }
+    }
+
+    async componentDidMount() {
+        anyTimePicker("#time-start, #time-end")
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const data = await get('/shift',{
+            filter_col: ['spbu_uuid'],
+            filter_val: [this.props.query.spbu],
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
         }
     }
 
@@ -30,7 +47,6 @@ class Report extends Component {
     }
 
     _setModalState = async (title, modalType, item) => {
-        anyTimePicker("#time-start, #time-end")
         await this.setState({
             title: title,
             modalType: modalType,
@@ -42,24 +58,50 @@ class Report extends Component {
     }
 
     _deleteRole = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!', 'Shift berhasil dihapus.', 'success')
-            }
-        })
+        const response = await removeWithSwal('/shift/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
-    _submit = async (uuid) => {
-        console.log(uuid);
+    _submit = async () => {
+        this.btnModal.start()
+        
+        if (this.state.uuid === '') {
+            const response = await store('/shift/store', {
+                spbu_uuid: this.props.query.spbu,
+                name: this.state.name,
+                start: document.querySelector('input[name=start]').value,
+                end: document.querySelector('input[name=end]').value
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat Shift Baru' })
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update('/shift/update', this.state.uuid, {
+                name: this.state.name,
+                start: document.querySelector('input[name=start]').value,
+                end: document.querySelector('input[name=end]').value
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Shift' })
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -100,19 +142,9 @@ class Report extends Component {
             }
         ]
 
-        const shifts = [
-            {
-                uuid: 'qwer1234',
-                name: 'Shift 1',
-                start: '07:00',
-                end: '13:00',
-            }
-        ]
-
-
         return (
-            <Layout title={'Shift ' + this.props.query.spbu} breadcrumb={breadcrumb}>
-                <div className="panel panel-flat">
+            <Layout title={'Shift'} breadcrumb={breadcrumb}>
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Shift <i className="icon-info22" data-popup="tooltip" data-original-title="Satuan waktu 24 jam"></i> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
@@ -131,19 +163,25 @@ class Report extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {shifts.map((shift, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{shift.name}</td>
-                                        <td>{shift.start}</td>
-                                        <td>{shift.end}</td>
-                                        <td>
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                            {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="5"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    this.state.dataItems.map((shift, i) => (
+                                        <tr key={i}>
+                                            <td>{i + 1}</td>
+                                            <td>{shift.name}</td>
+                                            <td>{shift.start}</td>
+                                            <td>{shift.end}</td>
+                                            <td>
+                                                <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
+    
+                                                <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>

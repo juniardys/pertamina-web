@@ -7,7 +7,7 @@ class ClientTokenSchema extends Schema {
   up () {
     this.create('client_tokens', (table) => {
       table.increments()
-      table.integer('client_id').unsigned().references('id').inTable('clients')
+      table.integer('client_id').unsigned().references('id').inTable('clients').onDelete('cascade')
       table.string('token', 255).notNullable().unique().index()
       table.string('type', 80).notNullable()
       table.boolean('is_revoked').defaultTo(false)

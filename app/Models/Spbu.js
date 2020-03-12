@@ -14,6 +14,14 @@ class Spbu extends Model {
         return 'spbu'
     }
 
+    users() {
+        return this.hasMany('App/Models/User', 'uuid', 'spbu_uuid')
+    }
+
+    shifts() {
+        return this.hasMany('App/Models/Shift', 'uuid', 'spbu_uuid')
+    }
+
     // Setters
     setDeletedAt(deleted_at) {
         return new Date(deleted_at).toISOString()

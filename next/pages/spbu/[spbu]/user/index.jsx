@@ -331,7 +331,7 @@ class User extends Component {
         ]
 
         return (
-            <Layout title={'Pengguna ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Manajemen Pengguna'} breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
