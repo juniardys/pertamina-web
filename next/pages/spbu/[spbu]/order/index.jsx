@@ -127,7 +127,7 @@ class Order extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Produk</label>
-                            <select className="form-control" name="filterProduct" onChange={this.handleSelectChange}>
+                            <select className="form-control" name="filterProduct" defaultValue="" onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
                                 <option key={1} value='Pertamax'>Pertamax</option>
                                 <option key={2} value='Premium'>Premium</option>

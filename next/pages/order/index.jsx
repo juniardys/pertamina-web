@@ -100,7 +100,7 @@ class Order extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">SPBU</label>
                     <div className="col-lg-10">
-                        <select className="form-control" name="spbu_uuid" onChange={this.handleInputChange}>
+                        <select className="form-control" name="spbu_uuid" defaultValue="" onChange={this.handleInputChange}>
                             <option value="1762v36x">G-Walk</option>
                             <option value="1273uasb">Lidah Wetan</option>
                             <option value="ashjdk16">Lakarsantri</option>
@@ -110,7 +110,7 @@ class Order extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Produk</label>
                     <div className="col-lg-10">
-                        <select className="form-control" name="filterRole" onChange={this.handleInputChange}>
+                        <select className="form-control" name="filterRole" defaultValue="" onChange={this.handleInputChange}>
                             <option key={1} value='Pertamax'>Pertamax</option>
                             <option key={2} value='Premium'>Premium</option>
                             <option key={3} value='Pertalite'>Pertalite</option>
@@ -159,7 +159,7 @@ class Order extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>SPBU</label>
-                            <select className="form-control" name="filterSPBU" onChange={this.handleSelectChange}>
+                            <select className="form-control" name="filterSPBU" defaultValue="" onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
                                 <option key={1} value='SPBU G-Walk'>SPBU G-Walk</option>
                                 <option key={2} value='SPBU Wiyung'>SPBU Wiyung</option>
@@ -169,7 +169,7 @@ class Order extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Produk</label>
-                            <select className="form-control" name="filterProduct" onChange={this.handleSelectChange}>
+                            <select className="form-control" name="filterProduct" defaultValue="" onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
                                 <option key={1} value='Pertamax'>Pertamax</option>
                                 <option key={2} value='Premium'>Premium</option>

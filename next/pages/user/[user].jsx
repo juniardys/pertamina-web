@@ -161,7 +161,7 @@ class User extends Component {
                             <div className="row">
                                 <div className="form-group col-md-6">
                                     <label className="control-label">SPBU</label>
-                                    <select className="form-control " name="spbu_uuid" onChange={this.handleInputChange} >
+                                    <select className="form-control " name="spbu_uuid" defaultValue="" onChange={this.handleInputChange} >
                                         <option key={0} value="">-</option>
                                         {
                                             this.state.SPBUData.map((item, i) => (
@@ -172,7 +172,7 @@ class User extends Component {
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label className="control-label">Jabatan</label>
-                                    <select className="form-control" name="role_uuid" onChange={this.handleInputChange}>
+                                    <select className="form-control" name="role_uuid" defaultValue="" onChange={this.handleInputChange}>
                                         {
                                             this.state.roleData.map((item, i) => (
                                                 <option key={i + 1} value={item.uuid} selected={(item.uuid == this.state.role_uuid) ? 'selected' : ''}>{item.name}</option>

@@ -42,7 +42,7 @@ class Report extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Shift</label>
-                            <select className="form-control" name="filterShift" onChange={this.handleInputChange}>
+                            <select className="form-control" name="filterShift" defaultValue="" onChange={this.handleInputChange}>
                                 <option defaultValue="all">Semua</option>
                                 <option defaultValue="1">Shift 1</option>
                                 <option defaultValue="2">Shift 2</option>

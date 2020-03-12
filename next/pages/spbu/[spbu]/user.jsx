@@ -124,7 +124,7 @@ class User extends Component {
                     <div className="form-group row">
                         <label className="control-label col-lg-2">Jabatan</label>
                         <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="role" onChange={this.handleInputChange}>
+                            <select className="form-control col-lg-10" name="role" defaultValue="" onChange={this.handleInputChange}>
                                 <option value="2">Admin</option>
                                 <option value="3">Operator</option>
                             </select>
@@ -166,7 +166,7 @@ class User extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Jabatan</label>
-                            <select className="form-control" name="filterRole" onChange={this.handleInputChange}>
+                            <select className="form-control" name="filterRole" defaultValue="" onChange={this.handleInputChange}>
                                 <option value="all">Semua</option>
                                 <option value="admin">Admin</option>
                                 <option value="operator">Operator</option>

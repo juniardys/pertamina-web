@@ -81,7 +81,7 @@ class Index extends Component {
                 <div class="form-group row">
                     <label class="control-label col-lg-2">Produk</label>
                     <div class="col-lg-10">
-                        <select class="form-control col-lg-10" name="role">
+                        <select class="form-control col-lg-10" defaultValue="" name="role">
                             <option value="1">Premium</option>
                             <option value="2">Pertalite</option>
                             <option value="3">Pertamax</option>

@@ -282,10 +282,10 @@ class Index extends Component {
                     <div className="form-group row">
                         <label className="control-label col-lg-2">Jabatan</label>
                         <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="role_uuid" onChange={this.handleInputChange}>
+                            <select className="form-control col-lg-10" defaultValue="" name="role_uuid" onChange={this.handleInputChange}>
                                 {
                                     this.state.roleData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={(this.state.modalType != 'create' && item.uuid == this.state.role_uuid) ? 'selected' : ''}>{item.name}</option>
+                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType != 'create' && item.uuid == this.state.role_uuid}>{item.name}</option>
                                     ))
                                 }
                             </select>
@@ -294,11 +294,11 @@ class Index extends Component {
                     <div className="form-group row">
                         <label className="control-label col-lg-2">SPBU</label>
                         <div className="col-lg-10">
-                            <select className="form-control col-lg-10" name="spbu_uuid" onChange={this.handleInputChange} >
-                                <option key={0} value="">-</option>
+                            <select className="form-control col-lg-10" name="spbu_uuid" defaultValue="" onChange={this.handleInputChange} >
+                                <option key={0} value="" selected={this.state.spbu_uuid == ''}>-</option>
                                 {
                                     this.state.SPBUData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={(this.state.modalType != 'create' && item.uuid == this.state.spbu_uuid) ? 'selected' : ''}>{item.name}</option>
+                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType != 'create' && item.uuid == this.state.spbu_uuid}>{item.name}</option>
                                     ))
                                 }
                             </select>
