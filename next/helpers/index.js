@@ -35,6 +35,7 @@ export const checkAuth = async () => {
         if (pathname == '/sign-in') {
             Router.push('/')
         } else {
+            localStorage.setItem('user_uuid', profile.uuid)
             return {
                 profile: profile,
                 token: auth

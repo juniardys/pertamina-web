@@ -16,26 +16,36 @@ const baseResp = (success, data, message = null, errors = null) => {
 const queryBuilder = async (model, request, search = []) => {
     let data = []
     let query = model   
-    if (request.order_col) query = query.orderBy(request.order_col.split(':')[0], request.order_col.split(':')[1])
-    if (Array.isArray(request.filter_col)) {
-        request.filter_col.forEach(function (filter, i) {
-            if (filter && request.filter_val[i]) query = query.where(filter, request.filter_val[i]);
-        })
-    }
     if (request.search) {
         if (request.search.split('-').length == 5) {
             query = query.where('uuid', request.search)
         } else {
-            for (let i = 0; i < search.length; i++) {
-                query = query.orWhere(search[i], 'LIKE', `%${request.search}%`)
-            }
+            query = query.where(function() {
+                for (let i = 0; i < search.length; i++) {
+                    this.orWhere(search[i], 'LIKE', `%${request.search}%`)
+                }
+            })
         }
+    }
+    if (request.order_col) query = query.orderBy(request.order_col.split(':')[0], request.order_col.split(':')[1])
+    if (Array.isArray(request.filter_col)) {
+        request.filter_col.forEach(function (column, i) {
+            if (column && request.filter_val[i]) query = query.where(column, request.filter_val[i]);
+        })
     }
     if (Array.isArray(request.with)) {
         request.with.forEach(function (relation) {
             query = query.with(relation)
         })
     }
+    if (Array.isArray(request.not_col)) {
+        request.not_col.forEach(function (column, i) {
+            if (column && request.not_val[i]) query = query.whereNot(column, request.not_val[i]);
+        })
+    }
+
+    if (request.with_trashed) query = query.withTrashed()
+    if (request.only_trashed) query = query.onlyTrashed()
 
     data = await query.paginate(request.page || 1, request.paginate || 20)
 

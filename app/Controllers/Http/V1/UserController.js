@@ -79,13 +79,13 @@ class UserController {
 
         try {
             if (req.role_uuid) user.role_uuid = req.role_uuid
-            if (req.spbu_uuid) user.spbu_uuid = req.spbu_uuid
+            user.spbu_uuid = req.spbu_uuid
             if (req.name) user.name = req.name
             if (req.email && user.email != req.email) user.email = req.email
             if (req.password) user.password = req.password
-            if (req.phone) user.phone = req.phone
-            if (req.address) user.address = req.address
-            if (req.ktp) user.ktp = req.ktp
+            user.phone = req.phone
+            user.address = req.address
+            user.ktp = req.ktp
             await user.save()
         } catch (error) {
             console.log(error);

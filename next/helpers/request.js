@@ -25,6 +25,18 @@ export const get = async (url, queryBuilder = [], ver = null) => {
             query = query + '&with[' + i + ']=' + relation
         })
     }
+    if (Array.isArray(queryBuilder['not_col'])) {
+        queryBuilder['not_col'].forEach(function (col, i) {
+            query = query + '&not_col[' + i + ']=' + col
+        })
+    }
+    if (Array.isArray(queryBuilder['not_val'])) {
+        queryBuilder['not_val'].forEach(function (val, i) {
+            query = query + '&not_val[' + i + ']=' + val
+        })
+    }
+    if (queryBuilder['with_trashed']) query = query + '&with_trashed=' + queryBuilder.page
+    if (queryBuilder['only_trashed']) query = query + '&only_trashed=' + queryBuilder.page
 
     const response = await axios.get(query, {
         headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` }

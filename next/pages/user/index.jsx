@@ -27,6 +27,7 @@ class Index extends Component {
             title: 'Buat User',
             modalType: "create",
             dataItems: [],
+            search: ''
         }
     }
 
@@ -34,7 +35,9 @@ class Index extends Component {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/user', {
-            with: ['role', 'spbu']
+            with: ['role', 'spbu'],
+            not_col: ['uuid'],
+            not_val: [localStorage.getItem('user_uuid')]
         })
         if (data != undefined && data.success) {
             this.setState({
@@ -47,7 +50,6 @@ class Index extends Component {
         if (roles) this.setState({ roleData: roles.data.data })
         const spbu = await get('/spbu')
         if (spbu) this.setState({ SPBUData: spbu.data.data })
-        console.log(this.state.roleData[0])
     }
 
     _setUserState = async (title, modalType, user) => {
@@ -143,6 +145,11 @@ class Index extends Component {
             }
         } else {
             if (this.state.modalType == 'edit-password') {
+                if (this.state.password != this.state.password_confirmation) {
+                    toast.fire({ icon: 'warning', title: 'Password Konfirmasi tidak sama' })
+                    this.btnModal.stop()
+                    return;
+                }
                 const response = await update('/user/update', this.state.uuid, {
                     password: this.state.password,
                 })
@@ -177,6 +184,25 @@ class Index extends Component {
                     this.btnModal.stop()
                 }
             }
+        }
+    }
+
+    _search = async () => {
+        await this.setState({
+            filterRole: '',
+            filterSPBU: ''
+        })
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const data = await get('/user', {
+            with: ['role', 'spbu'],
+            search: this.state.search
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
         }
     }
 
@@ -297,11 +323,11 @@ class Index extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Jabatan</label>
-                            <select className="form-control" name="filterRole" onChange={this.handleSelectChange}>
-                                <option key={0} value="">Semua</option>
+                            <select className="form-control" name="filterRole" defaultValue="" onChange={this.handleSelectChange}>
+                                <option key={0} value="" selected={this.state.filterRole == ''}>Semua</option>
                                 {
                                     this.state.roleData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid}>{item.name}</option>
+                                        <option key={i + 1} value={item.uuid} selected={this.state.filterRole == item.value}>{item.name}</option>
                                     ))
                                 }
                             </select>
@@ -310,11 +336,11 @@ class Index extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>SPBU</label>
-                            <select className="form-control" name="filterSPBU" onChange={this.handleSelectChange}>
-                                <option key={0} value="">Semua</option>
+                            <select className="form-control" name="filterSPBU" defaultValue="" onChange={this.handleSelectChange}>
+                                <option key={0} value="" selected={this.state.filterSPBU == ''}>Semua</option>
                                 {
                                     this.state.SPBUData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid}>{item.name}</option>
+                                        <option key={i + 1} value={item.uuid} selected={this.state.filterSPBU == item.value}>{item.name}</option>
                                     ))
                                 }
                             </select>
@@ -325,9 +351,9 @@ class Index extends Component {
                     <div className="col-md-3">
                         <label>Cari</label>
                         <div className="input-group">
-                            <input type="text" className="form-control" placeholder="Cari Pengguna" />
+                            <input type="text" className="form-control" name="search" placeholder="Cari Pengguna" onChange={this.handleInputChange}/>
                             <span className="input-group-btn">
-                                <button className="btn bg-slate" type="button"><i className="icon-search4"></i></button>
+                                <button className="btn bg-slate" type="button" onClick={() => this._search()}><i className="icon-search4"></i></button>
                             </span>
                         </div>
                     </div>

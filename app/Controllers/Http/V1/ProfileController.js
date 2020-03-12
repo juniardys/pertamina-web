@@ -59,8 +59,8 @@ class ProfileController {
         try {
             if (req.name) user.name = req.name
             if (req.email) user.email = req.email
-            if (req.phone) user.phone = req.phone
-            if (req.address) user.address = req.address
+            user.phone = req.phone
+            user.address = req.address
 
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'profile-image/')
