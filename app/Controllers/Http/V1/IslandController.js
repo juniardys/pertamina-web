@@ -1,45 +1,43 @@
 'use strict'
 
-const Shift = use('App/Models/Shift')
+const Island = use('App/Models/Island')
 const { validate } = use('Validator')
 const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
-const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
+const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 
-class ShiftController {
+class IslandController {
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Shift.query(), request.all(), ['name', 'start', 'end'])
-        const data = await transform.paginate(builder, ShiftTransformer)
+        const builder = await queryBuilder(Island.query(), request.all(), ['name', 'start', 'end'])
+        const data = await transform.paginate(builder, IslandTransformer)
 
-        return response.status(200).json(baseResp(true, data, 'Data Shift sukses diterima'))
+        return response.status(200).json(baseResp(true, data, 'Data Island sukses diterima'))
     }
 
     async store({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, {
-            name: 'required|max:254',
             spbu_uuid: 'required',
-            start: 'required',
-            end: 'required'
+            name: 'required|max:254',
+            code: 'required|unique:islands|max:254'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        let product = new Shift()
+        let island = new Island()
         try {
-            product.uuid = uuid()
-            product.spbu_uuid = req.spbu_uuid
-            product.name = req.name
-            product.start = req.start
-            product.end = req.end
-            await product.save()
+            island.uuid = uuid()
+            island.spbu_uuid = req.spbu_uuid
+            island.name = req.name
+            island.code = req.code
+            await island.save()
         } catch (error) {
             console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
-        product = await transform.item(product, ShiftTransformer)
+        island = await transform.item(island, IslandTransformer)
 
-        return response.status(200).json(baseResp(true, product, 'Membuat Shift Baru'))
+        return response.status(200).json(baseResp(true, island, 'Membuat Island Baru'))
     }
 
     async update({ request, response, transform }) {
@@ -47,14 +45,13 @@ class ShiftController {
         let rules = []
         rules['uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
-        if (req.start) rules['start'] = 'required'
-        if (req.end) rules['end'] = 'required'
+        if (req.code) rules['code'] = `required|unique:islands,code,uuid,${req.uuid}|max:254`
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        let shift
+        let island
         try {
-            shift = await Shift.query()
+            island = await Island.query()
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
@@ -62,17 +59,16 @@ class ShiftController {
         }
 
         try {
-            if (req.name) shift.name = req.name
-            if (req.start) shift.start = req.start
-            if (req.end) shift.end = req.end
-            await shift.save()
+            if (req.name) island.name = req.name
+            if (req.code) island.code = req.code
+            await island.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        shift = await transform.item(shift, ShiftTransformer)
+        island = await transform.item(island, IslandTransformer)
 
-        return response.status(200).json(baseResp(true, shift, 'Mengedit Shift ' + shift.name))
+        return response.status(200).json(baseResp(true, island, 'Mengedit Island ' + island.name))
     }
 
     async delete({ request, response, transform }) {
@@ -82,23 +78,23 @@ class ShiftController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
 
-        let product
+        let island
         try {
-            product = await Shift.query()
+            island = await Island.query()
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
-        if (!product) return response.status(400).json(baseResp(false, [], 'Shift tidak ditemukan'))
+        if (!island) return response.status(400).json(baseResp(false, [], 'Island tidak ditemukan'))
 
-        await product.delete()
+        await island.delete()
 
-        product = await transform.item(product, ShiftTransformer)
+        island = await transform.item(island, IslandTransformer)
 
-        return response.status(200).json(baseResp(true, product, 'Menghapus Shift ' + product.name))
+        return response.status(200).json(baseResp(true, island, 'Menghapus Island ' + island.name))
     }
 }
 
-module.exports = ShiftController
+module.exports = IslandController

@@ -1,7 +1,6 @@
-import React, { Component, useEffect } from 'react'
+import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
 

@@ -59,6 +59,11 @@ Route.group(() => {
 	Route.post('shift/store', 'ShiftController.store')
 	Route.post('shift/update', 'ShiftController.update')
 	Route.post('shift/delete', 'ShiftController.delete')
+	// Island
+	Route.get('island/', 'IslandController.get')
+	Route.post('island/store', 'IslandController.store')
+	Route.post('island/update', 'IslandController.update')
+	Route.post('island/delete', 'IslandController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

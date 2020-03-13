@@ -1,9 +1,9 @@
 import React, { Component, useEffect } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
-import Swal from 'sweetalert2'
 import Link from "next/link"
-import { checkAuth } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
+import { toast } from '~/helpers'
 
 class Index extends Component {
 
@@ -17,9 +17,24 @@ class Index extends Component {
             uuid: '',
             name: '',
             code: '',
+            dataItems: '',
             title: 'Buat Island',
             modalType: "create",
-            isLoading: true,
+        }
+    }
+
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const data = await get('/island', {
+            filter_col: ['spbu_uuid'],
+            filter_val: [this.props.query.spbu],
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
         }
     }
 
@@ -40,24 +55,47 @@ class Index extends Component {
     }
 
     _deleteIsland = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!', 'Island berhasil dihapus.', 'success')
-            }
-        })
+        const response = await removeWithSwal('/island/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
-    _submit = async (uuid) => {
-        console.log(uuid);
+    _submit = async () => {
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            const response = await store('/island/store', {
+                spbu_uuid: this.props.query.spbu,
+                name: this.state.name,
+                code: this.state.code,
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil membuat Island Baru' })
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update('/island/update', this.state.uuid, {
+                name: this.state.name,
+                code: this.state.code,
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
+
+                this.btnModal.stop()
+                helperModalHide()
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Island' })
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -102,7 +140,7 @@ class Index extends Component {
         ]
 
         return (
-            <Layout title={'Island ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Island'} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Island<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
@@ -121,7 +159,11 @@ class Index extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {islands.map((island, i) => (
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="5"><center>Data Belum ada</center></td>
+                                    </tr>
+                                ) : (this.state.dataItems.map((island, i) => (
                                     <tr key={i}>
                                         <td>{i + 1}</td>
                                         <td>{island.name}</td>
@@ -136,7 +178,7 @@ class Index extends Component {
                                             <button type="button" className="btn btn-danger zbtn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteIsland(island.uuid)}><i className="icon-trash"></i></button>
                                         </td>
                                     </tr>
-                                ))}
+                                )))}
                             </tbody>
                         </table>
                     </div>
