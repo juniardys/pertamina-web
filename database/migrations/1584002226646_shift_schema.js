@@ -7,7 +7,7 @@ class ShiftSchema extends Schema {
   up () {
     this.create('shifts', (table) => {
       table.increments()
-      table.uuid('uuid')
+      table.uuid('uuid').unique()
       table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade')
       table.string('name')
       // table.text('description').nullable()

@@ -7,7 +7,7 @@ class AccessListSchema extends Schema {
   up () {
     this.create('access_lists', (table) => {
       table.increments()
-      table.uuid('uuid')
+      table.uuid('uuid').unique()
       table.enu('type', ['role', 'user']).defaultTo('role')
       table.uuid('role_uuid').references('uuid').inTable('roles').onDelete('cascade')
       table.uuid('user_uuid').references('uuid').inTable('users').onDelete('cascade')

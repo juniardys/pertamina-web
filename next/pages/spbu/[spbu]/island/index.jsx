@@ -17,7 +17,7 @@ class Index extends Component {
             uuid: '',
             name: '',
             code: '',
-            dataItems: '',
+            dataItems: [],
             title: 'Buat Island',
             modalType: "create",
         }
@@ -131,17 +131,9 @@ class Index extends Component {
             }
         ]
 
-        const islands = [
-            {
-                uuid: 'qwer1234',
-                name: 'Island 1',
-                code: 'I1',
-            }
-        ]
-
         return (
             <Layout title={'Island'} breadcrumb={breadcrumb}>
-                <div className="panel panel-flat">
+                <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Island<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
@@ -161,7 +153,7 @@ class Index extends Component {
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="5"><center>Data Belum ada</center></td>
+                                        <td colSpan="4"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (this.state.dataItems.map((island, i) => (
                                     <tr key={i}>

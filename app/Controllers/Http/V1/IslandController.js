@@ -8,7 +8,7 @@ const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 
 class IslandController {
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Island.query(), request.all(), ['name', 'start', 'end'])
+        const builder = await queryBuilder(Island.query(), request.all(), ['name', 'code'])
         const data = await transform.paginate(builder, IslandTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Island sukses diterima'))

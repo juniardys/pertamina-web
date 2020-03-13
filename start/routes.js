@@ -64,6 +64,11 @@ Route.group(() => {
 	Route.post('island/store', 'IslandController.store')
 	Route.post('island/update', 'IslandController.update')
 	Route.post('island/delete', 'IslandController.delete')
+	// Nozzle (Pompa)
+	Route.get('nozzle/', 'NozzleController.get')
+	Route.post('nozzle/store', 'NozzleController.store')
+	Route.post('nozzle/update', 'NozzleController.update')
+	Route.post('nozzle/delete', 'NozzleController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes
