@@ -9,6 +9,14 @@ class PaymentMethod extends Model {
         this.addTrait('@provider:Lucid/SoftDeletes')
     }
 
+    static get hidden() {
+        return ['id']
+    }
+
+    spbu() {
+        return this.belongsToMany('App/Models/Spbu', 'payment_uuid', 'spbu_uuid', 'uuid', 'uuid').pivotTable('spbu_payments')
+    }
+
     // Setters
     setDeletedAt(deleted_at) {
         return new Date(deleted_at).toISOString()

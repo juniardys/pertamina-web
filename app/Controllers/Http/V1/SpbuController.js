@@ -9,7 +9,11 @@ const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 class SpbuController {
     async get({ request, response, transform }) {
         const builder = await queryBuilder(Spbu.query(), request.all(), ['name', 'address', 'phone', 'code'])
-        const data = await transform.paginate(builder, SpbuTransformer)
+        let data = transform
+        if (request.get().with) {
+            data = data.include(request.get().with)
+        }
+        data = await transform.paginate(builder, SpbuTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data SPBU sukses diterima'))
     }

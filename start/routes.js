@@ -69,6 +69,9 @@ Route.group(() => {
 	Route.post('nozzle/store', 'NozzleController.store')
 	Route.post('nozzle/update', 'NozzleController.update')
 	Route.post('nozzle/delete', 'NozzleController.delete')
+	// SPBU Payment
+	Route.get('spbu/payment', 'SpbuPaymentController.get')
+	Route.post('spbu/payment/update', 'SpbuPaymentController.update')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

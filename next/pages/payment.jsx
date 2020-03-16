@@ -38,6 +38,7 @@ class Payment extends Component {
     }
 
     _setModalState = async (title, modalType, item) => {
+        console.log(item.image_required === false);
         await this.setState({
             title: title,
             modalType: modalType,
@@ -113,11 +114,11 @@ class Payment extends Component {
                     <label className="control-label col-lg-2">Harus Upload Gambar</label>
                     <div className="col-lg-10">
                         <label className="radio-inline">
-                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="1" defaultChecked={this.state.image_required == "1"} onChange={this.handleInputChange} />
+                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="1" checked={this.state.image_required !== false} onChange={this.handleInputChange} />
                             Ya
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="0" defaultChecked={this.state.image_required == "0"} onChange={this.handleInputChange} />
+                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="0" checked={this.state.image_required === false} onChange={this.handleInputChange} />
                             Tidak
                         </label>
                     </div>

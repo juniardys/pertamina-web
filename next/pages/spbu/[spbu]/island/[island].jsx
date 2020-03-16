@@ -170,7 +170,7 @@ class Index extends Component {
         ]
 
         return (
-            <Layout title={'Pompa ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title='Pompa' breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
                         <h5 className="panel-title">

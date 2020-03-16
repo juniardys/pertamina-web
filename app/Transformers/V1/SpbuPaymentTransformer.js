@@ -1,43 +1,43 @@
 'use strict'
 
 const BumblebeeTransformer = use('Bumblebee/Transformer')
+const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 const PaymentMethodTransformer = use('App/Transformers/V1/PaymentMethodTransformer')
 const moment = use('moment')
 
 /**
- * SpbuTransformer class
+ * SpbuPaymentTransformer class
  *
- * @class SpbuTransformer
+ * @class SpbuPaymentTransformer
  * @constructor
  */
-class SpbuTransformer extends BumblebeeTransformer {
+class SpbuPaymentTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['payments']
+    return ['spbu', 'payment']
   }
 
   /**
    * This method is used to transform the data.
    */
-  transform(model) {
+  transform (model) {
     moment.locale('id')
-
-    const deleted_at = (model.deleted_at) ? moment(model.deleted_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY') : null
 
     return {
       uuid: model.uuid,
-      name: model.name,
-      address: model.address,
-      phone: model.phone,
-      code: model.code,
-      deleted_at: deleted_at,
+      spbu_uuid: model.spbu_uuid,
+      payment_uuid: model.payment_uuid,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
     }
   }
 
-  includePayments(model) {
-    return this.collection(model.getRelated('payments'), PaymentMethodTransformer)
+  includeSpbu(model) {
+    return this.item(model.getRelated('spbu'), SpbuTransformer)
+  }
+
+  includePayment(model) {
+    return this.item(model.getRelated('payment'), PaymentMethodTransformer)
   }
 }
 
-module.exports = SpbuTransformer
+module.exports = SpbuPaymentTransformer
