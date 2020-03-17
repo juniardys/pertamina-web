@@ -22,7 +22,7 @@ class ShiftController {
             start: 'required',
             end: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let product = new Shift()
         try {
@@ -50,7 +50,7 @@ class ShiftController {
         if (req.start) rules['start'] = 'required'
         if (req.end) rules['end'] = 'required'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let shift
         try {
@@ -80,7 +80,7 @@ class ShiftController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let product
         try {

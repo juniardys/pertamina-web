@@ -22,24 +22,45 @@ class RoleSeeder {
     const data = [
       {
         name: "Superadmin",
-        description: "jabatan ini tidak bisa diedit dan dihapus karena jabatan utama.",
+        description: "Jabatan SuperAdmin",
+        mobile_layout: 'admin',
         role: get()
       },
       {
         name: "Admin",
-        description: "",
+        description: "Jabatan Admin",
+        mobile_layout: 'operator',
         role: {
-          "spbu.manage": "Manajemen SPBU",
           "spbu.manage.report": "Mengatur Report",
           "spbu.manage.user": "Mengatur Pengguna",
+          "spbu.manage.user.read": "Melihat",
+          "spbu.manage.user.create": "Membuat",
+          "spbu.manage.user.update": "Mengubah",
+          "spbu.manage.user.delete": "Menghapus",
           "spbu.manage.shift": "Mengatur Shift",
+          "spbu.manage.shift.read": "Melihat",
+          "spbu.manage.shift.create": "Membuat",
+          "spbu.manage.shift.update": "Mengubah",
+          "spbu.manage.shift.delete": "Menghapus",
           "spbu.manage.island": "Mengatur Island",
-          "spbu.manage.setting": "Pengaturan SPBU"
+          "spbu.manage.island.read": "Melihat",
+          "spbu.manage.island.create": "Membuat",
+          "spbu.manage.island.update": "Mengubah",
+          "spbu.manage.island.delete": "Menghapus",
+          "spbu.manage.island.nozzle": "Mengatur Pompa",
+          "spbu.manage.island.nozzle.read": "Melihat",
+          "spbu.manage.island.nozzle.create": "Membuat",
+          "spbu.manage.island.nozzle.update": "Mengubah",
+          "spbu.manage.island.nozzle.delete": "Menghapus",
+          "spbu.manage.setting": "Pengaturan SPBU",
+          "spbu.manage.setting.detail": "Merubah Detail SPBU",
+          "spbu.manage.setting.payment": "Merubah Pengaturan Metode Pembayaran"
         }
       },
       {
         name: "Operator",
-        description: "",
+        description: "Jabatan Operator",
+        mobile_layout: 'operator',
         role: ""
       }
     ]

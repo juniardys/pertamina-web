@@ -26,7 +26,7 @@ class UserTransformer extends BumblebeeTransformer {
     return {
       uuid: model.uuid,
       spbu_uuid: model.spbu_uuid,
-      roles_uuid: model.roles_uuid,
+      role_uuid: model.role_uuid,
       email: model.email,
       name: model.name,
       phone: model.phone,

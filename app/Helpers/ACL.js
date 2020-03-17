@@ -47,21 +47,21 @@ const makeTree = (key) => {
                 } else {
                     childern.push({
                         value: child,
-                        label: child
+                        label: data[child]
                     })
                 }
             }
         });
         return {
             value: key,
-            label: key,
+            label: data[key],
             children: childern
         }
     } else {
         hasReaded.push(key)
         return {
             value: key,
-            label: key
+            label: data[key]
         }
     }
 }

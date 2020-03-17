@@ -73,7 +73,7 @@ class Index extends Component {
                 console.log(error.response);
                 this.btnProfile.stop()
                 helperUnblock('.container-data')
-                toast.fire({ icon: 'warning', title: error.response.data.message.message })
+                toast.fire({ icon: 'warning', title: error.response.data.message })
             });
     }
 
@@ -96,7 +96,7 @@ class Index extends Component {
                 console.log(error.response);
                 this.btnPswd.stop()
                 helperUnblock('.container-data-password')
-                toast.fire({ icon: 'warning', title: error.response.data.message.message })
+                toast.fire({ icon: 'warning', title: error.response.data.message })
             });
     }
 

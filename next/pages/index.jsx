@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Link from "next/link"
-import { checkAuth } from '~/helpers'
+import { checkAclPage } from '~/helpers'
 
 class Index extends Component {
+    componentDidMount() {
+        checkAclPage('dashboard')
+    }
     render() {
         return (
             <Layout title="Dashboard">

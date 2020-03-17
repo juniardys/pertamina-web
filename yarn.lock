@@ -7078,10 +7078,10 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-checkbox-tree@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/react-checkbox-tree/-/react-checkbox-tree-1.6.0.tgz#6c471a610f1598c5f2e2c7b50bf11036159f5285"
-  integrity sha512-Hi5FeRCtyxClxZEiLvmCT5e/7w8iz0ppkoQyIEayZ35Nscdo4fbwow57EIs+MW0f7L+qnAHGTDmpfHnhxkljXg==
+react-checkbox-tree@1.6.0-alpha.0:
+  version "1.6.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/react-checkbox-tree/-/react-checkbox-tree-1.6.0-alpha.0.tgz#b2b1ba019b2fa0772b019c4f4c07c84392bc52cf"
+  integrity sha512-hGTS/1xCJ96Tb9y6nooSQT0Lo2PShBkjHEXBPmvY3kqwDSHwKFLMyxKAq8ky5GXHRMmAFVSWLDArianeZRocFw==
   dependencies:
     classnames "^2.2.5"
     lodash "^4.17.10"

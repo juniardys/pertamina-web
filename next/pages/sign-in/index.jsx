@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Auth";
-import { checkAuth, toast, login } from '~/helpers'
+import { checkAuth, toast, login, setAcl } from '~/helpers'
 import axios from 'axios'
+import Router from 'next/router'
 
 class Index extends Component {
     constructor(props) {
@@ -34,8 +35,8 @@ class Index extends Component {
                 email: this.state.email,
                 password: this.state.password
             })
-                .then(response => {
-                    login(response.data.data.token)
+                .then(async response => {
+                    await login(response.data.data.token)
                 })
                 .catch(error => {
                     if (error.response.data) toast.fire({ icon: 'warning', title: 'Email atau password salah' })

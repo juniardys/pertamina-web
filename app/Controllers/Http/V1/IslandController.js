@@ -21,7 +21,7 @@ class IslandController {
             name: 'required|max:254',
             code: 'required|unique:islands|max:254'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let island = new Island()
         try {
@@ -47,7 +47,7 @@ class IslandController {
         if (req.name) rules['name'] = 'required|max:254'
         if (req.code) rules['code'] = `required|unique:islands,code,uuid,${req.uuid}|max:254`
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let island
         try {
@@ -76,7 +76,7 @@ class IslandController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let island
         try {

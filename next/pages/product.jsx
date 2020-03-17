@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
-import { toast } from '~/helpers'
+import { toast, checkAclPage } from '~/helpers'
 
 class Product extends Component {
     constructor(props) {
@@ -19,6 +19,7 @@ class Product extends Component {
     }
 
     async componentDidMount() {
+        checkAclPage('product.read')
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/product')

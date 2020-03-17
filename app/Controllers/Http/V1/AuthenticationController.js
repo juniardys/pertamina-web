@@ -13,7 +13,7 @@ class AuthenticationController {
 
         const validation = await validate(req, rules)
 
-        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
 
         try {
             const authenticated = await auth.attempt(req.email, req.password)
@@ -32,7 +32,7 @@ class AuthenticationController {
 
         const validation = await validate(req, rules)
 
-        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
 
         try {
             const authenticated = await auth.authenticator('client').attempt(req.email, req.password)

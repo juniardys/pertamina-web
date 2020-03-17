@@ -4,7 +4,7 @@ import Modal from '~/components/Modal'
 import CheckboxTree from 'react-checkbox-tree';
 import axios from 'axios'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
-import { toast } from '~/helpers'
+import { toast, checkAclPage } from '~/helpers'
 
 class Role extends Component {
     constructor(props) {
@@ -23,6 +23,7 @@ class Role extends Component {
     }
 
     async componentDidMount() {
+        checkAclPage('user-management.role.read')
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/role', {
@@ -129,6 +130,7 @@ class Role extends Component {
                 </div>
                 <div>
                     <CheckboxTree
+                        checkModel='all' // Available in 1.6.0-alpha.0 version
                         nodes={this.state.nodes}
                         checked={this.state.checked}
                         expanded={this.state.expanded}

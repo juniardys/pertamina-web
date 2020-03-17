@@ -21,7 +21,7 @@ class ProductController {
             code: 'required|unique:products',
             price: 'required|number'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let product = new Product()
         try {
@@ -48,7 +48,7 @@ class ProductController {
         if (req.code) rules['code'] = `required|unique:spbu,code,uuid,${req.uuid}|max:254`
         if (req.price) rules['price'] = 'required|max:254'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let product
         try {
@@ -81,7 +81,7 @@ class ProductController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let product
         try {

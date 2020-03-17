@@ -21,7 +21,7 @@ class PaymentMethodController {
             code: 'required|unique:payment_methods',
             image_required: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let role = new PaymentMethod()
         try {
@@ -48,7 +48,7 @@ class PaymentMethodController {
         if (req.code) rules['code'] = `required|unique:payment_methods,code,uuid,${req.uuid}|max:254`
         if (req.image_required) rules['image_required'] = 'required'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let payment
         try {
@@ -81,7 +81,7 @@ class PaymentMethodController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let payment
         try {

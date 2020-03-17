@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
-import { toast } from '~/helpers'
+import { toast, checkAclPage } from '~/helpers'
 import Link from 'next/link'
 
 class Index extends Component {
@@ -32,12 +32,14 @@ class Index extends Component {
     }
 
     async componentDidMount() {
+        checkAclPage('user-management.user.read')
         helperBlock('.container-data')
+        const user_uuid = await localStorage.getItem('user_uuid')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/user', {
             with: ['role', 'spbu'],
             not_col: ['uuid'],
-            not_val: [localStorage.getItem('user_uuid')]
+            not_val: [user_uuid]
         })
         if (data != undefined && data.success) {
             this.setState({

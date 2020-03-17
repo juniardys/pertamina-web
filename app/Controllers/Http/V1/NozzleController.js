@@ -27,7 +27,7 @@ class NozzleController {
             name: 'required|max:254',
             code: 'required|unique:nozzles|max:254'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let nozzle = new Nozzle()
         try {
@@ -56,7 +56,7 @@ class NozzleController {
         if (req.name) rules['name'] = 'required|max:254'
         if (req.code) rules['code'] = `required|unique:nozzles,code,uuid,${req.uuid}|max:254`
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let nozzle
         try {
@@ -86,7 +86,7 @@ class NozzleController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let nozzle
         try {

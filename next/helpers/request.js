@@ -62,7 +62,7 @@ export const store = async (url, data, ver = null) => {
             success = true
         })
         .catch(error => {
-            if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message.message })
+            if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message })
             success = false
         });
 
@@ -84,7 +84,7 @@ export const update = async (url, uuid, data, ver = null) => {
             success = true
         })
         .catch(error => {
-            if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message.message })
+            if (error.response.data) toast.fire({ icon: 'warning', title: error.response.data.message })
             success = false
         });
 

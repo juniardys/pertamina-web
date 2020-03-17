@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Link from "next/link"
 import Modal from '~/components/Modal'
-import { toast } from '~/helpers'
+import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Index extends Component {
@@ -23,6 +23,7 @@ class Index extends Component {
     }
 
     async componentDidMount() {
+        checkAclPage('spbu.read')
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/spbu')

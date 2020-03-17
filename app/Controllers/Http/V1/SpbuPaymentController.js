@@ -24,7 +24,7 @@ class SpbuPaymentController {
         const validation = await validate(req, {
             spbu_uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let payment
         const deletePayment = await SpbuPayment.query().where('spbu_uuid', req.spbu_uuid).delete()

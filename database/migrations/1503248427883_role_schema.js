@@ -10,6 +10,7 @@ class RoleSchema extends Schema {
       table.uuid('uuid').unique()
       table.string('name')
       table.string('description').nullable()
+      table.enu('mobile_layout', ['admin', 'operator']).defaultTo('operator')
       table.timestamps()
     })
   }

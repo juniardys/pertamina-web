@@ -21,7 +21,7 @@ class ProfileController {
         }
         if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${auth.user.uuid}|max:254`
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let user
         try {
@@ -85,7 +85,7 @@ class ProfileController {
         const validation = await validate(req, {
             password: 'required|min:8|max:254'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let user
         try {

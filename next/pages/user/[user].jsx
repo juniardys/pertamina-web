@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
-import Modal from '~/components/Modal'
-import { get, store, update, removeWithSwal } from '~/helpers/request'
-import { toast } from '~/helpers'
+import { get, update } from '~/helpers/request'
+import { toast, checkAclPage } from '~/helpers'
 import Link from 'next/link'
 import Router from 'next/router'
 
@@ -40,7 +39,7 @@ class User extends Component {
     }
 
     async componentDidMount() {
-        console.log(this.props.query.user);
+        checkAclPage('user-management.user.read')
         helperBlock('.container-data')
         this.btnSpin = Ladda.create(document.querySelector('.btn-spinner'))
         const data = await get('/user', {

@@ -42,7 +42,7 @@ class RoleController {
     async store({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, this.getRules())
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
         
         let role = new Role()
         try {
@@ -69,8 +69,8 @@ class RoleController {
         let rules = this.getRules()
         rules['uuid'] = 'required'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
-
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+        
         let role
         try {
             role = await Role.query()
@@ -79,6 +79,8 @@ class RoleController {
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
+
+        if (role.id == 1 || role.id == 2 || role.id == 3) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Mengubah Jabatan'))
 
         try {
             role.name = req.name
@@ -103,7 +105,7 @@ class RoleController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let role
         try {
@@ -114,7 +116,7 @@ class RoleController {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
-        if (role.id == 1) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Menghapus Jabatan'))
+        if (role.id == 1 || role.id == 2 || role.id == 3) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Menghapus Jabatan'))
 
         await role.delete()
 

@@ -33,7 +33,7 @@ class UserController {
     async store({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, this.getRules())
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let user = new User()
         try {
@@ -66,7 +66,7 @@ class UserController {
         if (req.phone) rules['phone'] = 'number'
         if (req.ktp) rules['ktp'] = 'number'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let user
         try {
@@ -102,7 +102,7 @@ class UserController {
         const validation = await validate(req, {
             uuid: 'required'
         })
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0]))
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let user
         try {
