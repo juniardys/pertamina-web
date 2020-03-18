@@ -18,54 +18,54 @@ const Sidebar = (props) => {
 			url: '/'
 		},
 		{
-			access: 'user-management',
+			access: ['user-management.user.read', 'user-management.role.read'],
 			type: 'dropdown',
 			title: 'Manajemen Pengguna',
 			icon: 'icon-users',
 			url: '#',
 			sub: [
 				{
-					access: 'user-management.user',
+					access: 'user-management.user.read',
 					title: 'Pengaturan Pengguna',
 					url: '/user'
 				},
 				{
-					access: 'user-management.role',
+					access: 'user-management.role.read',
 					title: 'Pengaturan Jabatan',
 					url: '/role'
 				}
 			]
 		},
 		{
-			access: 'spbu',
+			access: 'spbu.read',
 			type: 'menu',
 			title: 'SPBU',
 			icon: 'icon-library2',
 			url: '/spbu'
 		},
 		{
-			access: 'product',
+			access: 'product.read',
 			type: 'menu',
 			title: 'Produk',
 			icon: 'icon-box',
 			url: '/product'
 		},
 		{
-			access: 'order',
+			access: 'order.read',
 			type: 'menu',
 			title: 'Pemesanan',
 			icon: 'icon-transmission',
 			url: '/order'
 		},
 		{
-			access: 'payment-method',
+			access: 'payment-method.read',
 			type: 'menu',
 			title: 'Metode Pembayaran',
 			icon: ' icon-coin-dollar',
 			url: '/payment'
 		},
 		{
-			access: 'company',
+			access: 'company.read',
 			type: 'menu',
 			title: 'Perusahaan',
 			icon: 'icon-office',
@@ -74,7 +74,7 @@ const Sidebar = (props) => {
 	]
 
 	const renderMenu = (menu, i) => {
-		if (acl && acl.includes(menu.access)) {
+		if (acl && acl.some(r => menu.access.includes(r))) {
 			return (
 				<Link href={menu.url} key={i}>
 					<li className={(router.pathname == menu.url) ? 'active' : null}>
@@ -85,13 +85,21 @@ const Sidebar = (props) => {
 						{menu.type == 'dropdown' ? (
 							<ul>
 								{menu.sub.map((sub, subi) => (
-									<Link href={sub.url} key={subi}>
-										<li className={(router.pathname == sub.url) ? 'active' : null}><a>{sub.title}</a></li>
-									</Link>
+									renderSubMenu(sub, subi)
 								))}
 							</ul>
 						) : null}
 					</li>
+				</Link>
+			)
+		}
+	}
+
+	const renderSubMenu = (menu, i) => {
+		if (acl && acl.some(r => menu.access.includes(r))) {
+			return (
+				<Link href={menu.url} key={i}>
+					<li className={(router.pathname == menu.url) ? 'active' : null}><a>{menu.title}</a></li>
 				</Link>
 			)
 		}

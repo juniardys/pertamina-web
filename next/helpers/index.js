@@ -64,7 +64,7 @@ export const checkAuth = async () => {
             });
 
         if (pathname == '/sign-in') {
-            Router.push('/')
+            await redirectPath()
         } else {
             if (!profile) {
                 localStorage.clear()
@@ -119,7 +119,6 @@ const redirectPath = async () => {
 
 const getPathDecission = async (spbu = null) => {
     const acl = localStorage.getItem('accessList')
-    console.log(acl);
     const avaiableRoute = getAvaiableRoute(spbu)
     for (let i = 0; i < avaiableRoute.length; i++) {
         if (acl.includes(avaiableRoute[i].access)) return avaiableRoute[i].path

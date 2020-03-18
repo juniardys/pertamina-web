@@ -127,9 +127,7 @@ class User extends Component {
                         <div className="panel-heading">
                             <h6 className="panel-title">Detail Pengguna<a className="heading-elements-toggle"><i className="icon-more"></i></a></h6>
                             <div className="heading-elements">
-                                <Link href={`/user`}>
-                                    <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
-                                </Link>
+                                <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }} onClick={() => Router.back()}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
                                 <ul className="icons-list">
                                     {/* <li><a data-action="collapse" className=""></a></li>
                                     <li><a data-action="reload"></a></li>

@@ -4,6 +4,7 @@ import Modal from '~/components/Modal'
 import Link from 'next/link'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
+import Router from 'next/router'
 
 class Index extends Component {
 
@@ -44,7 +45,7 @@ class Index extends Component {
 
         const products = await get('/product')
         if (products) this.setState({ productData: products.data.data })
-        
+
         const island = await get('/island', {
             filter_col: ['spbu_uuid', 'uuid'],
             filter_val: [this.props.query.spbu, this.props.query.island],
@@ -177,10 +178,8 @@ class Index extends Component {
                             Daftar Pompa
                             <div style={{ fontSize: '12px', color: '#9d9d9d' }}>{(this.state.island) ? this.state.island.name + ' - ' + this.state.island.code : ''}</div>
                             <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
-                        <div className="heading-elements">
-                            <Link href={`/spbu/[spbu]/island`} as={`/spbu/${this.props.query.spbu}/island`}>
-                                <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
-                            </Link>
+                            <div className="heading-elements">
+                            <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }} onClick={() => Router.back()}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
                             <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Pompa', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                         </div>
                     </div>
