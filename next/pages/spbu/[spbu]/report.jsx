@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import { checkAuth } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Report extends Component {
-
     static getInitialProps({ query }) {
         return { query }
     }
@@ -12,7 +12,22 @@ class Report extends Component {
         super(props)
         this.state = {
             filterDate: '2020-02-21',
-            isLoading: true,
+            spbu_name: ''
+        }
+    }
+
+    async componentDidMount() {
+        helperBlock('.container-data')
+        this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
+        const data = await get('/spbu', {
+            search: this.props.query.spbu
+        })
+        if (data && data.success) {
+            const spbu = data.data.data[0]
+            console.log(spbu);
+            this.setState({
+                spbu_name: spbu.name
+            })
         }
     }
 
@@ -31,7 +46,7 @@ class Report extends Component {
 
         return (
             <Layout title={'Laporan  ' + this.props.query.spbu} breadcrumb={breadcrumb}>
-                <h1>Pertamina G-Walk</h1>
+                <h1>{this.state.spbu_name}</h1>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
@@ -60,7 +75,11 @@ class Report extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Laporan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary"><i className="icon-file-spreadsheet2"></i> Ekspor</button>
+
+                            <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
+                                <span className="ladda-label"> Ekspor</span>
+                                <span className="ladda-spinner"></span>
+                            </button>
                         </div>
                     </div>
 
@@ -198,7 +217,7 @@ class Report extends Component {
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
-                                                    
+
                                                     <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
