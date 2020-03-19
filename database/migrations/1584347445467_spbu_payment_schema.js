@@ -9,7 +9,7 @@ class SpbuPaymentSchema extends Schema {
       table.increments()
       table.uuid('uuid').unique()
       table.uuid('payment_uuid').references('uuid').inTable('payment_methods').onDelete('cascade')
-      table.uuid('product_uuid').references('uuid').inTable('products').onDelete('cascade')
+      table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade')
       table.timestamps()
     })
   }

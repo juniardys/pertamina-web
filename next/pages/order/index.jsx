@@ -4,6 +4,7 @@ import Modal from '~/components/Modal'
 import Link from 'next/link'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import moment from 'moment'
 
 class Order extends Component {
     constructor(props) {
@@ -19,6 +20,7 @@ class Order extends Component {
             SPBUData: [],
             productData: [],
             filterSPBU: '',
+            filterDate: '',
             filterProduct: '',
             title: 'Buat Pemesanan',
             modalType: "create",
@@ -28,10 +30,14 @@ class Order extends Component {
     async componentDidMount() {
         checkAclPage('order.read')
         helperBlock('.container-data')
+        await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/order', {
-            with: ['spbu', 'product']
+            with: ['spbu', 'product'],
+            filter_col: ['order_date'],
+            filter_val: [this.state.filterDate]
         })
+
         if (data != undefined && data.success) {
             this.setState({
                 dataItems: data.data.data
@@ -57,7 +63,6 @@ class Order extends Component {
         await this.setState({
             [e.target.name]: e.target.value
         })
-
         if (this.state.filterSPBU != '') {
             column.push('spbu_uuid')
             value.push(this.state.filterSPBU)
@@ -65,6 +70,10 @@ class Order extends Component {
         if (this.state.filterProduct != '') {
             column.push('product_uuid')
             value.push(this.state.filterProduct)
+        }
+        if (this.state.filterDate != '') {
+            column.push('order_date')
+            value.push(this.state.filterDate)
         }
 
         helperBlock('.container-data')
@@ -108,7 +117,6 @@ class Order extends Component {
             const response = await store('/order/store', {
                 spbu_uuid: this.state.spbu_uuid,
                 product_uuid: this.state.product_uuid,
-                order_uuid: this.state.order_uuid,
                 order_no: this.state.order_no,
                 order_date: this.state.order_date,
                 quantity: this.state.quantity
@@ -126,7 +134,6 @@ class Order extends Component {
             const response = await update('/order/update', this.state.uuid, {
                 spbu_uuid: this.state.spbu_uuid,
                 product_uuid: this.state.product_uuid,
-                order_uuid: this.state.order_uuid,
                 order_no: this.state.order_no,
                 order_date: this.state.order_date,
                 quantity: this.state.quantity
@@ -235,7 +242,7 @@ class Order extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Tanggal</label>
-                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleSelectChange} />
+                            <input type="date" className="form-control" name="filterDate" value={this.state.filterDate} onChange={this.handleSelectChange} />
                         </div>
                     </div>
                     <div className="col-md-3">

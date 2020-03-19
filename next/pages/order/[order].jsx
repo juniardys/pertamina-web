@@ -45,7 +45,7 @@ class OrderDetail extends Component {
         })
         if (order != undefined && order.success) {
             const dataOrder = order.data.data[0]
-            this.setState({
+            await this.setState({
                 spbu_name: dataOrder.spbu.name,
                 spbu_uuid: dataOrder.spbu.uuid,
                 product_name: dataOrder.product.name,
@@ -54,10 +54,9 @@ class OrderDetail extends Component {
                 order_quantity: dataOrder.quantity,
             })
             helperUnblock('.container-order')
-            
             const delivery = await get('/delivery', {
-                filter_col: ['order_uuid'],
-                filter_val: [this.props.query.order],
+                filter_col: ['spbu_uuid', 'order_uuid'],
+                filter_val: [this.state.spbu_uuid, this.props.query.order],
             })
             if (delivery != undefined && delivery.success) {
                 this.setState({
@@ -199,7 +198,7 @@ class OrderDetail extends Component {
                 url: '/order'
             },
             {
-                title: 'Pengiriman',
+                title: 'Detail Pengiriman',
                 url: `/spbu/${this.props.query.spbu}/report`
             }
         ]
