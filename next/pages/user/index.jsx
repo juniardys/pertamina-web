@@ -95,7 +95,6 @@ class Index extends Component {
         }
 
         helperBlock('.container-data')
-        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/user', {
             with: ['role', 'spbu'],
             filter_col: column,

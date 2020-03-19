@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Link from 'next/link'
+import { toast, checkAclPage } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Order extends Component {
     constructor(props) {
@@ -10,31 +12,73 @@ class Order extends Component {
             uuid: '',
             spbu_uuid: '',
             product_uuid: '',
-            date_order: '',
-            no_order: '',
+            order_date: '',
+            order_no: '',
             quantity: '',
             dataItems: [],
+            SPBUData: [],
+            productData: [],
+            filterSPBU: '',
+            filterProduct: '',
             title: 'Buat Pemesanan',
             modalType: "create",
         }
     }
 
     async componentDidMount() {
-        // helperBlock('.container-data')
-        // this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        // const data = await get('/product')
-        // if (data) {
-        //     this.setState({
-        //         dataItems: data.data.data
-        //     })
-        //     helperUnblock('.container-data')
-        // }
+        checkAclPage('order.read')
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const data = await get('/order', {
+            with: ['spbu', 'product']
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+
+        const spbu = await get('/spbu')
+        if (spbu && spbu.success) this.setState({ SPBUData: spbu.data.data })
+        const products = await get('/product')
+        if (products && products.success) this.setState({ productData: products.data.data })
     }
 
     handleInputChange = async (e) => {
         await this.setState({
             [e.target.name]: e.target.value
         })
+    }
+
+    handleSelectChange = async (e) => {
+        let column = []
+        let value = []
+        await this.setState({
+            [e.target.name]: e.target.value
+        })
+
+        if (this.state.filterSPBU != '') {
+            column.push('spbu_uuid')
+            value.push(this.state.filterSPBU)
+        }
+        if (this.state.filterProduct != '') {
+            column.push('product_uuid')
+            value.push(this.state.filterProduct)
+        }
+
+        helperBlock('.container-data')
+        const data = await get('/order', {
+            with: ['spbu', 'product'],
+            filter_col: column,
+            filter_val: value,
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
     }
 
     _setModalState = async (title, modalType, item) => {
@@ -44,53 +88,59 @@ class Order extends Component {
             uuid: item.uuid || '',
             spbu_uuid: item.spbu_uuid || '',
             product_uuid: item.product_uuid || '',
-            date_order: item.date_order || '',
-            no_order: item.no_order || '',
+            order_date: item.order_date || '',
+            order_no: item.order_no || '',
             quantity: item.quantity || '',
         })
     }
 
     _deleteProduct = async (uuid) => {
-        // const response = await removeWithSwal('/product/delete', uuid)
-        // if (response != null) {
-        //     const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
-        //     this.setState({ dataItems: dataItems })
-        // }
+        const response = await removeWithSwal('/order/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
     _submit = async () => {
-        // this.btnModal.start()
-        // if (this.state.uuid === '') {
-        //     const response = await store('/product/store', {
-        //         name: this.state.name,
-        //         code: this.state.code,
-        //         price: this.state.price
-        //     })
-        //     if (response.success) {
-        //         this.setState({
-        //             dataItems: [...this.state.dataItems, response.res.data]
-        //         })
-        //         this.btnModal.stop()
-        //         helperModalHide()
-        //     } else {
-        //         this.btnModal.stop()
-        //     }
-        // } else {
-        //     const response = await update('/product/update', this.state.uuid, {
-        //         name: this.state.name,
-        //         code: this.state.code,
-        //         price: this.state.price
-        //     })
-        //     if (response.success) {
-        //         const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
-        //         this.setState({ dataItems: dataItems })
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            const response = await store('/order/store', {
+                spbu_uuid: this.state.spbu_uuid,
+                product_uuid: this.state.product_uuid,
+                order_uuid: this.state.order_uuid,
+                order_no: this.state.order_no,
+                order_date: this.state.order_date,
+                quantity: this.state.quantity
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update('/order/update', this.state.uuid, {
+                spbu_uuid: this.state.spbu_uuid,
+                product_uuid: this.state.product_uuid,
+                order_uuid: this.state.order_uuid,
+                order_no: this.state.order_no,
+                order_date: this.state.order_date,
+                quantity: this.state.quantity
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
 
-        //         this.btnModal.stop()
-        //         helperModalHide()
-        //     } else {
-        //         this.btnModal.stop()
-        //     }
-        // }
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -101,26 +151,38 @@ class Order extends Component {
                     <label className="control-label col-lg-2">SPBU</label>
                     <div className="col-lg-10">
                         <select className="form-control" name="spbu_uuid" defaultValue="" onChange={this.handleInputChange}>
-                            <option value="1762v36x">G-Walk</option>
-                            <option value="1273uasb">Lidah Wetan</option>
-                            <option value="ashjdk16">Lakarsantri</option>
+                            <option key={0} value="" selected={this.state.modalType == 'create'} disabled>Pilih SPBU</option>
+                            {
+                                this.state.SPBUData.map((item, i) => (
+                                    <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.spbu_uuid}>{item.name}</option>
+                                ))
+                            }
                         </select>
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Produk</label>
                     <div className="col-lg-10">
-                        <select className="form-control" name="filterRole" defaultValue="" onChange={this.handleInputChange}>
-                            <option key={1} value='Pertamax'>Pertamax</option>
-                            <option key={2} value='Premium'>Premium</option>
-                            <option key={3} value='Pertalite'>Pertalite</option>
+                        <select className="form-control" name="product_uuid" defaultValue="" onChange={this.handleInputChange}>
+                            <option key={0} value="" selected={this.state.modalType == 'create'} disabled>Pilih Produk</option>
+                            {
+                                this.state.productData.map((item, i) => (
+                                    <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>
+                                ))
+                            }
                         </select>
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Tanggal Pemesanan</label>
+                    <div className="col-lg-10">
+                        <input type="date" className="form-control" name="order_date" value={this.state.order_date} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Nomor Pemesanan</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="no_order" value={this.state.no_order} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="order_no" value={this.state.order_no} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
@@ -141,18 +203,6 @@ class Order extends Component {
             }
         ]
 
-        const dataItems = [
-            {
-                uuid: 'asdsa',
-                spbu_uuid: 'hsak123123',
-                product_uuid: 'askdl1273',
-                date_order: '2020-03-05',
-                no_order: 'R16U12G',
-                quantity: '10000',
-                status: 'Proses',
-            }
-        ]
-
         return (
             <Layout title="Pemesanan" breadcrumb={breadcrumb}>
                 <div className="row">
@@ -161,8 +211,11 @@ class Order extends Component {
                             <label>SPBU</label>
                             <select className="form-control" name="filterSPBU" defaultValue="" onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
-                                <option key={1} value='SPBU G-Walk'>SPBU G-Walk</option>
-                                <option key={2} value='SPBU Wiyung'>SPBU Wiyung</option>
+                                {
+                                    this.state.SPBUData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterSPBU}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
@@ -171,16 +224,18 @@ class Order extends Component {
                             <label>Produk</label>
                             <select className="form-control" name="filterProduct" defaultValue="" onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
-                                <option key={1} value='Pertamax'>Pertamax</option>
-                                <option key={2} value='Premium'>Premium</option>
-                                <option key={3} value='Pertalite'>Pertalite</option>
+                                {
+                                    this.state.productData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterProduct}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Tanggal</label>
-                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleInputChange} />
+                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleSelectChange} />
                         </div>
                     </div>
                     <div className="col-md-3">
@@ -210,18 +265,18 @@ class Order extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(dataItems == '') ? (
+                                {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="6"><center>Data Belum ada</center></td>
+                                        <td colSpan="8"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
-                                        dataItems.map((item, i) => (
+                                        this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
-                                                <td>SPBU G-Walk</td>
-                                                <td>Pertamax</td>
-                                                <td>{item.date_order}</td>
-                                                <td>{item.no_order}</td>
+                                                <td>{item.spbu.name}</td>
+                                                <td>{item.product.name}</td>
+                                                <td>{item.order_date}</td>
+                                                <td>{item.order_no}</td>
                                                 <td>{item.quantity}</td>
                                                 <td>{item.status}</td>
                                                 <td>

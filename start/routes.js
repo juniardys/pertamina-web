@@ -72,6 +72,16 @@ Route.group(() => {
 	// SPBU Payment
 	Route.get('spbu/payment', 'SpbuPaymentController.get')
 	Route.post('spbu/payment/update', 'SpbuPaymentController.update')
+	// Order
+	Route.get('order/', 'OrderController.get')
+	Route.post('order/store', 'OrderController.store')
+	Route.post('order/update', 'OrderController.update')
+	Route.post('order/delete', 'OrderController.delete')
+	// Delivery
+	Route.get('delivery/', 'DeliveryController.get')
+	Route.post('delivery/store', 'DeliveryController.store')
+	Route.post('delivery/update', 'DeliveryController.update')
+	Route.post('delivery/delete', 'DeliveryController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

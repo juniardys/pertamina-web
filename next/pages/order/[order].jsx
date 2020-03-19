@@ -3,6 +3,8 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import Link from 'next/link'
 import Router from 'next/router'
+import { toast, checkAclPage } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class OrderDetail extends Component {
     constructor(props) {
@@ -10,13 +12,19 @@ class OrderDetail extends Component {
         this.state = {
             uuid: '',
             quantity: '',
-            date_receive: '',
-            no_delivery_order: '',
-            police_number: '',
-            driver_name: '',
+            receipt_date: '',
+            receipt_no: '',
+            police_no: '',
+            driver: '',
             receiver: '',
             image_delivery_order: '',
             dataItems: [],
+            spbu_name: '',
+            spbu_uuid: '',
+            product_name: '',
+            order_date: '',
+            order_no: '',
+            order_quantity: '',
             title: 'Konfirmasi Pengiriman',
             modalType: "create",
         }
@@ -27,15 +35,37 @@ class OrderDetail extends Component {
     }
 
     async componentDidMount() {
-        // helperBlock('.container-data')
-        // this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        // const data = await get('/product')
-        // if (data) {
-        //     this.setState({
-        //         dataItems: data.data.data
-        //     })
-        //     helperUnblock('.container-data')
-        // }
+        checkAclPage('order.delivery.read')
+        helperBlock('.container-order')
+        helperBlock('.container-data')
+        this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
+        const order = await get('/order', {
+            with: ['spbu', 'product'],
+            search: this.props.query.order
+        })
+        if (order != undefined && order.success) {
+            const dataOrder = order.data.data[0]
+            this.setState({
+                spbu_name: dataOrder.spbu.name,
+                spbu_uuid: dataOrder.spbu.uuid,
+                product_name: dataOrder.product.name,
+                order_date: dataOrder.order_date,
+                order_no: dataOrder.order_no,
+                order_quantity: dataOrder.quantity,
+            })
+            helperUnblock('.container-order')
+            
+            const delivery = await get('/delivery', {
+                filter_col: ['order_uuid'],
+                filter_val: [this.props.query.order],
+            })
+            if (delivery != undefined && delivery.success) {
+                this.setState({
+                    dataItems: delivery.data.data
+                })
+                helperUnblock('.container-data')
+            }
+        }
     }
 
     handleInputChange = async (e) => {
@@ -50,56 +80,66 @@ class OrderDetail extends Component {
             modalType: modalType,
             uuid: item.uuid || '',
             quantity: item.quantity || '',
-            date_receive: item.date_receive || '',
-            no_delivery_order: item.no_delivery_order || '',
-            police_number: item.police_number || '',
-            driver_name: item.driver_name || '',
+            receipt_date: item.receipt_date || '',
+            receipt_no: item.receipt_no || '',
+            police_no: item.police_no || '',
+            driver: item.driver || '',
             receiver: item.receiver || '',
             image_delivery_order: item.image_delivery_order || '',
         })
     }
 
     _deleteProduct = async (uuid) => {
-        // const response = await removeWithSwal('/product/delete', uuid)
-        // if (response != null) {
-        //     const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
-        //     this.setState({ dataItems: dataItems })
-        // }
+        const response = await removeWithSwal('/delivery/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
     _submit = async () => {
-        // this.btnModal.start()
-        // if (this.state.uuid === '') {
-        //     const response = await store('/product/store', {
-        //         name: this.state.name,
-        //         code: this.state.code,
-        //         price: this.state.price
-        //     })
-        //     if (response.success) {
-        //         this.setState({
-        //             dataItems: [...this.state.dataItems, response.res.data]
-        //         })
-        //         this.btnModal.stop()
-        //         helperModalHide()
-        //     } else {
-        //         this.btnModal.stop()
-        //     }
-        // } else {
-        //     const response = await update('/product/update', this.state.uuid, {
-        //         name: this.state.name,
-        //         code: this.state.code,
-        //         price: this.state.price
-        //     })
-        //     if (response.success) {
-        //         const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
-        //         this.setState({ dataItems: dataItems })
+        this.btnModal.start()
+        if (this.state.uuid === '') {
+            const response = await store('/delivery/store', {
+                spbu_uuid: this.state.spbu_uuid,
+                order_uuid: this.props.query.order,
+                quantity: this.state.quantity,
+                receipt_date: this.state.receipt_date,
+                receipt_no: this.state.receipt_no,
+                police_no: this.state.police_no,
+                driver: this.state.driver,
+                receiver: this.state.receiver
+            })
+            if (response.success) {
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data]
+                })
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        } else {
+            const response = await update('/delivery/update', this.state.uuid, {
+                spbu_uuid: this.state.spbu_uuid,
+                order_uuid: this.props.query.order,
+                quantity: this.state.quantity,
+                receipt_date: this.state.receipt_date,
+                receipt_no: this.state.receipt_no,
+                police_no: this.state.police_no,
+                driver: this.state.driver,
+                receiver: this.state.receiver
+            })
+            if (response.success) {
+                const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
+                this.setState({ dataItems: dataItems })
 
-        //         this.btnModal.stop()
-        //         helperModalHide()
-        //     } else {
-        //         this.btnModal.stop()
-        //     }
-        // }
+                this.btnModal.stop()
+                helperModalHide()
+            } else {
+                this.btnModal.stop()
+            }
+        }
     }
 
     renderModal = () => {
@@ -115,25 +155,25 @@ class OrderDetail extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Tanggal Penerimaan</label>
                     <div className="col-lg-10">
-                        <input type="date" className="form-control" name="date_receive" defaultValue={this.state.date_receive} onChange={this.handleInputChange} />
+                        <input type="date" className="form-control" name="receipt_date" defaultValue={this.state.receipt_date} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Nomor Pengiriman</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="no_delivery_order" value={this.state.no_delivery_order} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="receipt_no" value={this.state.receipt_no} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Nomor Polisi</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="police_number" value={this.state.police_number} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="police_no" value={this.state.police_no} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Nama Sopir</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" name="driver_name" value={this.state.driver_name} onChange={this.handleInputChange} />
+                        <input type="text" className="form-control" name="driver" value={this.state.driver} onChange={this.handleInputChange} />
                     </div>
                 </div>
                 <div className="form-group row">
@@ -164,33 +204,20 @@ class OrderDetail extends Component {
             }
         ]
 
-        const dataItems = [
-            {
-                uuid: 'asd2123',
-                quantity: 1000,
-                date_receive: '02/03/2020',
-                no_delivery_order: "1H6DDG8",
-                police_number: "L H2G81A",
-                driver_name: "Hartono",
-                image_delivery_order: "",
-                receiver: "Danang",
-            }
-        ]
-
         return (
             <Layout title="Pengiriman" breadcrumb={breadcrumb}>
-                <div className="panel">
+                <div className="panel container-order">
                     <div className="panel-body">
                         <h6 className="text-semibold no-margin-top">
-                            <a href="#">SPBU G-Walk</a> <span className="label bg-purple" style={{ marginLeft: '12px' }}>R16U12G</span>
+                            <a href="#">{this.state.spbu_name}</a> <span className="label bg-purple" style={{ marginLeft: '12px' }}>{this.state.order_no}</span>
                         </h6>
-                        <span className="label border-left-primary label-striped"><i className="icon-box position-left"></i> Pertamax, 10.000 Liter</span>
+                        <span className="label border-left-primary label-striped"><i className="icon-box position-left"></i> {this.state.product_name}, {this.state.order_quantity} Liter</span>
                     </div>
 
                     <div className="panel-footer panel-footer-condensed">
                         <div className="heading-elements not-collapsible">
                             <span className="heading-text">
-                                <i className="icon-history position-left"></i>2020-03-05
+                                <i className="icon-history position-left"></i>{this.state.order_date}
                             </span>
 
                             <span className="heading-text pull-right label label-info">
@@ -199,6 +226,7 @@ class OrderDetail extends Component {
                         </div>
                     </div>
                 </div>
+                
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pengiriman<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
@@ -224,19 +252,19 @@ class OrderDetail extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(dataItems == '') ? (
+                                {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="6"><center>Data Belum ada</center></td>
+                                        <td colSpan="9"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
-                                        dataItems.map((item, i) => (
+                                        this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
                                                 <td>{item.quantity}</td>
-                                                <td>{item.date_receive}</td>
-                                                <td>{item.no_delivery_order}</td>
-                                                <td>{item.police_number}</td>
-                                                <td>{item.driver_name}</td>
+                                                <td>{item.receipt_date}</td>
+                                                <td>{item.receipt_no}</td>
+                                                <td>{item.police_no}</td>
+                                                <td>{item.driver}</td>
                                                 <td>{item.receiver}</td>
                                                 <td>{item.image_delivery_order}</td>
                                                 <td>
