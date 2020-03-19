@@ -19,7 +19,8 @@ class Report extends Component {
             end: '',
             dataItems: [],
             title: 'Buat Shift',
-            modalType: "create"
+            modalType: "create",
+            spbu_name: ''
         }
     }
 
@@ -27,7 +28,9 @@ class Report extends Component {
         anyTimePicker("#time-start, #time-end")
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        const data = await get('/shift',{
+        const spbu = await get('/spbu', { search: this.props.query.spbu })
+        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
+        const data = await get('/shift', {
             filter_col: ['spbu_uuid'],
             filter_val: [this.props.query.spbu],
         })
@@ -66,7 +69,7 @@ class Report extends Component {
 
     _submit = async () => {
         this.btnModal.start()
-        
+
         if (this.state.uuid === '') {
             const response = await store('/shift/store', {
                 spbu_uuid: this.props.query.spbu,
@@ -142,7 +145,7 @@ class Report extends Component {
         ]
 
         return (
-            <Layout title={'Shift'} breadcrumb={breadcrumb}>
+            <Layout title={'Shift ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Shift <i className="icon-info22" data-popup="tooltip" data-original-title="Satuan waktu 24 jam"></i> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
@@ -162,25 +165,25 @@ class Report extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                            {(this.state.dataItems == '') ? (
+                                {(this.state.dataItems == '') ? (
                                     <tr>
                                         <td colSpan="5"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
-                                    this.state.dataItems.map((shift, i) => (
-                                        <tr key={i}>
-                                            <td>{i + 1}</td>
-                                            <td>{shift.name}</td>
-                                            <td>{shift.start}</td>
-                                            <td>{shift.end}</td>
-                                            <td>
-                                                <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
-    
-                                                <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
+                                        this.state.dataItems.map((shift, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{shift.name}</td>
+                                                <td>{shift.start}</td>
+                                                <td>{shift.end}</td>
+                                                <td>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
+
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                             </tbody>
                         </table>
                     </div>

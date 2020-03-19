@@ -54,7 +54,7 @@ class OrderDetail extends Component {
                 order_quantity: dataOrder.quantity,
             })
             helperUnblock('.container-order')
-            
+
             const delivery = await get('/delivery', {
                 filter_col: ['spbu_uuid', 'order_uuid'],
                 filter_val: [this.props.query.spbu, this.props.query.order],
@@ -211,7 +211,7 @@ class OrderDetail extends Component {
         ]
 
         return (
-            <Layout title="Detail Pengiriman" breadcrumb={breadcrumb}>
+            <Layout title={"Detail Pengiriman " + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="panel container-order">
                     <div className="panel-body">
                         <h6 className="text-semibold no-margin-top">
@@ -244,7 +244,7 @@ class OrderDetail extends Component {
 
                     <div className="table-responsive">
                         <table className="table table-striped">
-                        <thead>
+                            <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Kuantitas</th>

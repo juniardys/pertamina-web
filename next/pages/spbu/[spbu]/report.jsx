@@ -19,16 +19,8 @@ class Report extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
-        const data = await get('/spbu', {
-            search: this.props.query.spbu
-        })
-        if (data && data.success) {
-            const spbu = data.data.data[0]
-            console.log(spbu);
-            this.setState({
-                spbu_name: spbu.name
-            })
-        }
+        const spbu = await get('/spbu', { search: this.props.query.spbu })
+        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
     }
 
     render() {
@@ -45,7 +37,7 @@ class Report extends Component {
 
 
         return (
-            <Layout title={'Laporan  ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Laporan  ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <h1>{this.state.spbu_name}</h1>
                 <div className="row">
                     <div className="col-md-3">

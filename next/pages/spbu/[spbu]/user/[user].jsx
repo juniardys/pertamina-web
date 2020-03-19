@@ -128,7 +128,7 @@ class User extends Component {
         ]
 
         return (
-            <Layout title="Detail Pengguna" breadcrumb={breadcrumb}>
+            <Layout title={"Detail Pengguna " + this.state.name} breadcrumb={breadcrumb}>
                 <div className="col-lg-9">
                     <div className="panel panel-flat container-data">
                         <div className="panel-heading">

@@ -104,7 +104,7 @@ class Setting extends Component {
         this.btnPayment.start()
         let payments = []
         this.state.checkboxes.forEach((checkbox) => {
-            if(checkbox.checked) payments.push(checkbox.uuid)
+            if (checkbox.checked) payments.push(checkbox.uuid)
         })
         const response = await update('/spbu/payment/update', this.state.uuid, {
             spbu_uuid: this.state.uuid,
@@ -142,7 +142,7 @@ class Setting extends Component {
         }
 
         return (
-            <Layout title={'Pengaturan ' + this.props.query.spbu} breadcrumb={breadcrumb}>
+            <Layout title={'Pengaturan ' + this.state.name} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-spbu">
                     <div className="panel-heading">
                         <h5 className="panel-title">Detail SPBU <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>

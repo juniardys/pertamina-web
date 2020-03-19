@@ -28,6 +28,8 @@ class Order extends Component {
     }
 
     async componentDidMount() {
+        const spbu = await get('/spbu', { search: this.props.query.spbu })
+        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
         checkAclPage('spbu.manage.order.read')
         helperBlock('.container-data')
         await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
@@ -197,7 +199,7 @@ class Order extends Component {
         ]
 
         return (
-            <Layout title="Pemesanan" breadcrumb={breadcrumb}>
+            <Layout title={'Pemesanan ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">

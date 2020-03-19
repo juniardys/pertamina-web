@@ -20,10 +20,13 @@ class Index extends Component {
             dataItems: [],
             title: 'Buat Island',
             modalType: "create",
+            spbu_name: ''
         }
     }
 
     async componentDidMount() {
+        const spbu = await get('/spbu', { search: this.props.query.spbu })
+        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/island', {
@@ -132,7 +135,7 @@ class Index extends Component {
         ]
 
         return (
-            <Layout title={'Island'} breadcrumb={breadcrumb}>
+            <Layout title={'Island ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Island<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>

@@ -171,7 +171,7 @@ class Index extends Component {
         ]
 
         return (
-            <Layout title='Pompa' breadcrumb={breadcrumb}>
+            <Layout title={'Pompa ' + this.state.island.name} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat">
                     <div className="panel-heading">
                         <h5 className="panel-title">
