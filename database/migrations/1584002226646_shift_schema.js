@@ -8,11 +8,11 @@ class ShiftSchema extends Schema {
     this.create('shifts', (table) => {
       table.increments()
       table.uuid('uuid').unique()
-      table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade')
-      table.string('name')
+      table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade').notNullable()
+      table.string('name').notNullable()
       // table.text('description').nullable()
-      table.time('start')
-      table.time('end')
+      table.time('start').notNullable()
+      table.time('end').notNullable()
       table.timestamps()
     })
   }

@@ -7,11 +7,11 @@ class PaymentMethodSchema extends Schema {
   up () {
     this.create('payment_methods', (table) => {
       table.increments()
-      table.uuid('uuid').unique()
-      table.string('code').unique()
-      table.string('name')
+      table.uuid('uuid').unique().notNullable()
+      table.string('code').unique().notNullable()
+      table.string('name').notNullable()
       table.boolean('image_required').defaultTo(0)
-      table.text('slug').unique()
+      table.text('slug').unique().notNullable()
       table.timestamp('deleted_at').nullable()
       table.timestamps()
     })

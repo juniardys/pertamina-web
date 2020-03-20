@@ -8,9 +8,9 @@ class IslandSchema extends Schema {
     this.create('islands', (table) => {
       table.increments()
       table.uuid('uuid').unique()
-      table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade')
-      table.string('name')
-      table.string('code').unique()
+      table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade').notNullable()
+      table.string('name').notNullable()
+      table.string('code').unique().notNullable()
       table.timestamps()
     })
   }

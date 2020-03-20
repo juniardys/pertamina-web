@@ -7,12 +7,12 @@ class UserSchema extends Schema {
   up () {
     this.create('users', (table) => {
       table.increments()
-      table.uuid('uuid').unique()
+      table.uuid('uuid').unique().notNullable()
       table.uuid('spbu_uuid').references('uuid').inTable('spbu').nullable()
-      table.uuid('role_uuid').references('uuid').inTable('roles').onDelete('cascade')
+      table.uuid('role_uuid').references('uuid').inTable('roles').onDelete('cascade').notNullable()
       table.string('email', 254).notNullable().unique()
-      table.string('password', 60)
-      table.string('name', 254)
+      table.string('password', 60).notNullable()
+      table.string('name', 254).notNullable()
       table.string('phone').nullable()
       table.string('ktp').nullable()
       table.text('address').nullable()

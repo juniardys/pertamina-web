@@ -14,8 +14,8 @@ class DeliverySchema extends Schema {
       table.date('receipt_date').nullable()
       table.string('receipt_no').notNullable()
       table.string('police_no').notNullable()
-      table.string('driver')
-      table.string('receiver')
+      table.string('driver').nullable()
+      table.string('receiver').nullable()
       table.timestamps()
     })
   }

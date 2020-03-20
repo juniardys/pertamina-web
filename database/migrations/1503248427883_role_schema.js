@@ -7,8 +7,8 @@ class RoleSchema extends Schema {
   up () {
     this.create('roles', (table) => {
       table.increments()
-      table.uuid('uuid').unique()
-      table.string('name')
+      table.uuid('uuid').unique().notNullable()
+      table.string('name').notNullable()
       table.string('description').nullable()
       table.enu('mobile_layout', ['admin', 'operator']).defaultTo('operator')
       table.timestamps()

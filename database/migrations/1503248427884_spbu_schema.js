@@ -7,11 +7,11 @@ class SpbuSchema extends Schema {
   up () {
     this.create('spbu', (table) => {
       table.increments()
-      table.uuid('uuid').unique()
-      table.string('name')
-      table.text('address')
-      table.string('phone')
-      table.string('code').unique()
+      table.uuid('uuid').unique().notNullable()
+      table.string('name').notNullable()
+      table.text('address').notNullable()
+      table.string('phone').notNullable()
+      table.string('code').unique().notNullable()
       table.timestamp('deleted_at').nullable()
       table.timestamps()
     })
