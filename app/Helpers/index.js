@@ -99,23 +99,25 @@ const slugify = async (text, table = null, column = null) => {
     }
 }
 
-const uploadImage = async (request, fileParam, folder = null) => {
+const uploadImage = async (request, fileParam, folder = '/', fileName = null) => {
     const img = request.file(fileParam, {
         types: ['image'],
         size: '2mb'
     })
 
-    if (folder == null) folder = '/'
-
-    const fileName = new Date().getTime() + '-' + uuid() + "." + img.subtype
+    if (fileName == null) {
+        fileName = new Date().getTime() + '-' + uuid() + "." + img.subtype
+    } else {
+        fileName = fileName + '.' + img.subtype
+    }
     
     await img.move(Helpers.publicPath(folder), {
         name: fileName,
         overwrite: true
     })
 
-    console.log(!img.moved());
-    console.log(folder + fileName);
+    // console.log(!img.moved());
+    // console.log(folder + fileName);
 
     if (!img.moved()) {
         console.log(img.error().message);

@@ -8,9 +8,9 @@ const INITIAL_STATE = {
     error: true
 }
 
-export default function getProfileData(state = INITIAL_STATE, action) {
+export default function getUserData(state = INITIAL_STATE, action) {
     switch (action.type) {
-        case 'SET_PROFILE':
+        case 'SET_USER':
             return {
                 ...state,
                 name: action.name,

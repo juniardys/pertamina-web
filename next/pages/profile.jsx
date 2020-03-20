@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
-import { checkAuth, toast } from '~/helpers'
+import { toast } from '~/helpers'
 import axios from 'axios'
 import { connect } from 'react-redux';
 import * as actions from '~/redux/actions/profileAction';
+import Modal from '~/components/Modal'
+import ChangeUserImage from '~/components/ChangeUserImage'
 
 class Index extends Component {
     constructor(props) {
@@ -13,14 +15,13 @@ class Index extends Component {
             email: '',
             phone: '',
             address: '',
-            password: ''
+            password: '',
+            ktp: '',
+            image: ''
         }
     }
 
     async componentDidMount() {
-        $(".file-styled").uniform({
-            fileButtonClass: 'action btn btn-default'
-        });
         helperBlock('.container-data')
         this.btnProfile = Ladda.create(document.querySelector('.btn-profile-spinner'))
         this.btnPswd = Ladda.create(document.querySelector('.btn-password-spinner'))
@@ -31,7 +32,9 @@ class Index extends Component {
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '',
-                    address: data.address || ''
+                    address: data.address || '',
+                    ktp: data.ktp || '',
+                    image: data.image
                 })
                 helperUnblock('.container-data')
             })
@@ -56,6 +59,7 @@ class Index extends Component {
             email: this.state.email,
             phone: this.state.phone,
             address: this.state.address,
+            ktp: this.state.ktp,
         }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 const data = response.data.data
@@ -63,14 +67,14 @@ class Index extends Component {
                     name: data.name,
                     email: data.email,
                     phone: data.phone || '',
-                    address: data.address || ''
+                    address: data.address || '',
+                    ktp: data.address || ''
                 })
                 this.btnProfile.stop()
                 helperUnblock('.container-data')
                 toast.fire({ icon: 'success', title: response.data.message })
             })
             .catch(error => {
-                console.log(error.response);
                 this.btnProfile.stop()
                 helperUnblock('.container-data')
                 toast.fire({ icon: 'warning', title: error.response.data.message })
@@ -86,10 +90,7 @@ class Index extends Component {
             .then(response => {
                 this.btnPswd.stop()
                 helperUnblock('.container-data-password')
-                this.setState({
-                    password: ''
-                })
-                console.log(this.state.password);
+                this.setState({ password: '' })
                 toast.fire({ icon: 'success', title: response.data.message })
             })
             .catch(error => {
@@ -99,6 +100,7 @@ class Index extends Component {
                 toast.fire({ icon: 'warning', title: error.response.data.message })
             });
     }
+
 
     render() {
         const breadcrumb = [
@@ -124,9 +126,13 @@ class Index extends Component {
                         </div>
 
                         <div className="panel-body">
-                            <div className="form-group">
-                                <label>Ganti Foto:</label>
-                                <input type="file" className="file-styled"/>
+                            <div className="thumb thumb-rounded thumb-slide">
+                                <img src={(this.props.image) ? this.props.image : "/image/avatar.jpg"} alt="" />
+                                <div className="caption">
+                                    <span>
+                                        <a className="btn bg-success-400 btn-icon btn-md" data-toggle="modal" data-target="#modal">Ubah</a>
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="form-group">
@@ -187,6 +193,10 @@ class Index extends Component {
                         </div>
                     </div>
                 </div>
+
+                <Modal title="Ubah Foto Profil" buttonYes='Ubah'>
+                    <ChangeUserImage />
+                </Modal>
             </Layout>
         )
     }
@@ -194,6 +204,7 @@ class Index extends Component {
 
 const mapStateToProps = state => ({
     name: state.profile.name,
+    image: state.profile.image,
     profile: state.profile
 })
 

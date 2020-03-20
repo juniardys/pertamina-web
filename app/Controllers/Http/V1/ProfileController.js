@@ -5,6 +5,7 @@ const { validate } = use('Validator')
 const { baseResp, uploadImage } = use('App/Helpers')
 const UserTransformer = use('App/Transformers/V1/UserTransformer')
 const sharp = use('sharp')
+const Helpers = use('Helpers')
 
 class ProfileController {
     async get({ transform, response, auth }) {
@@ -16,9 +17,10 @@ class ProfileController {
     async update({ request, transform, auth, response }) {
         const req = request.all()
         let rules = {
-            name: 'required|max:254',
-            phone: 'number'
+            phone: 'number',
+            ktp: 'number'
         }
+        if (req.name) rules['name'] = `required|max:254`
         if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${auth.user.uuid}|max:254`
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
@@ -65,6 +67,10 @@ class ProfileController {
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'profile-image/')
                 if (upload) {
+                    if (user.image != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        await fs.unlink(Helpers.publicPath(user.image))
+                    }
                     user.image = upload
                 } else {
                     return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
@@ -72,6 +78,7 @@ class ProfileController {
             }
             await user.save()
         } catch (error) {
+            console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 

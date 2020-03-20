@@ -40,6 +40,7 @@
     "next": "^9.2.2",
     "pg": "^7.18.1",
     "react": "^16.12.0",
+    "react-avatar-editor": "^12.0.0-beta.0",
     "react-checkbox-tree": "1.6.0-alpha.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",

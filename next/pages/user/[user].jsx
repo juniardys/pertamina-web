@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import { get, update } from '~/helpers/request'
 import { toast, checkAclPage } from '~/helpers'
-import Link from 'next/link'
+import Modal from '~/components/Modal'
+import ChangeUserImage from '~/components/ChangeUserImage'
 import Router from 'next/router'
+import { connect } from 'react-redux';
+import * as actions from '~/redux/actions/userAction';
 
 class User extends Component {
 
@@ -19,6 +22,7 @@ class User extends Component {
             email: '',
             phone: '',
             address: '',
+            image: '',
             password: '',
             password_confirmation: '',
             role_uuid: '',
@@ -61,6 +65,15 @@ class User extends Component {
                 role_name: user.role.name,
                 spbu_name: (user.spbu != null) ? user.spbu.name : '',
             })
+
+            this.props.setUser({
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                image: user.image,
+                ktp: user.ktp
+            })
             helperUnblock('.container-data')
         } else {
             Router.push('/user')
@@ -97,6 +110,15 @@ class User extends Component {
                 image: user.image,
                 role_name: user.role.name,
                 spbu_name: (user.spbu != null) ? user.spbu.name : '',
+            })
+
+            this.props.setUser({
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                image: user.image,
+                ktp: user.ktp
             })
 
             this.btnSpin.stop()
@@ -200,11 +222,10 @@ class User extends Component {
                 <div className="col-lg-3">
                     <div className="thumbnail">
                         <div className="thumb thumb-rounded thumb-slide">
-                            <img src="../../../../global_assets/images/placeholders/placeholder.jpg" alt="" />
+                            <img src={(this.props.image) ? this.props.image : "/image/avatar.jpg"} alt="" />
                             <div className="caption">
                                 <span>
-                                    <a href="#" className="btn bg-success-400 btn-icon btn-xs" data-popup="lightbox"><i className="icon-plus2"></i></a>
-                                    <a href="user_pages_profile.html" className="btn bg-success-400 btn-icon btn-xs"><i className="icon-link"></i></a>
+                                    <a className="btn bg-success-400 btn-icon btn-md" data-toggle="modal" data-target="#modal">Ubah</a>
                                 </span>
                             </div>
                         </div>
@@ -220,9 +241,21 @@ class User extends Component {
                         </div>
                     </div>
                 </div>
+                <Modal title="Ubah Foto Profil" buttonYes='Ubah'>
+                    <ChangeUserImage uuid={this.state.uuid} />
+                </Modal>
             </Layout>
         )
     }
 }
 
-export default User;
+const mapStateToProps = state => ({
+    image: state.user.image,
+    user: state.user
+})
+
+const mapDispatchToProps = dispatch => ({
+    setUser: (value) => dispatch(actions.setUser(value))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(User);

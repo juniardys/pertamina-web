@@ -1,6 +1,6 @@
-export function setProfile(value) {
+export function setUser(value) {
     return {
-        type: "SET_PROFILE",
+        type: "SET_USER",
         name: value.name,
         email: value.email,
         phone: value.phone || '',

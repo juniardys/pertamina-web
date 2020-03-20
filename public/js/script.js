@@ -32,3 +32,7 @@ function anyTimePicker(elemName) {
         format: "%H:%i"
     });
 }
+
+function helperIonBasic(elem) {
+    $(elem).ionRangeSlider();
+}

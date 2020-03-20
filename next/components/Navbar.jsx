@@ -7,6 +7,7 @@ import * as actions from '~/redux/actions/profileAction';
 class Navbar extends Component {
 	async componentDidMount() {
 		const auth = await checkAuth()
+		
 		if (auth) this.props.setProfile(auth.profile)
 	}
 
@@ -18,7 +19,9 @@ class Navbar extends Component {
 		return (
 			<div className="navbar navbar-default header-highlight">
 				<div className="navbar-header">
-					<a className="navbar-brand" href="index.html"><img src="/logo-white.png" alt="Pertamina" style={{marginTop: '-8px', height: '32px'}}/></a>
+					<Link href="/">
+						<a className="navbar-brand" href=""><img src="/image/logo-white.png" alt="Pertamina" style={{ marginTop: '-8px', height: '32px' }} /></a>
+					</Link>
 
 					<ul className="nav navbar-nav pull-right visible-xs-block">
 						<li><a data-toggle="collapse" data-target="#navbar-mobile"><i className="icon-tree5"></i></a></li>
@@ -126,8 +129,8 @@ class Navbar extends Component {
 						</li>
 						<li className="dropdown dropdown-user">
 							<a className="dropdown-toggle" data-toggle="dropdown">
-								<img src="../../../../global_assets/images/image.png" alt="" />
-								<span>{this.props.name}</span>
+								<img src={(this.props.image) ? this.props.image : "/image/avatar.jpg"} alt="" />
+								<span>{(this.props.name) ? this.props.name : "Undefined User"}</span>
 								<i className="caret"></i>
 							</a>
 
@@ -150,11 +153,12 @@ class Navbar extends Component {
 }
 
 const mapStateToProps = state => ({
-	name: state.profile.name
+	name: state.profile.name,
+	image: state.profile.image
 })
 
 const mapDispatchToProps = dispatch => ({
-    setProfile: (value) => dispatch(actions.setProfile(value))
+	setProfile: (value) => dispatch(actions.setProfile(value))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

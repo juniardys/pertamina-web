@@ -15,7 +15,7 @@ class Auth extends Component {
 				<div className="login-container">
 					<div className="navbar navbar-inverse">
 						<div className="navbar-header">
-							<a className="navbar-brand" href="index.html"><img src="/logo-white.png" alt="Pertamina" style={{marginTop: '-8px', height: '32px'}} /></a>
+							<a className="navbar-brand" href="index.html"><img src="/image/logo-white.png" alt="Pertamina" style={{marginTop: '-8px', height: '32px'}} /></a>
 
 							<ul className="nav navbar-nav pull-right visible-xs-block">
 								<li><a data-toggle="collapse" data-target="#navbar-mobile"><i className="icon-tree5"></i></a></li>

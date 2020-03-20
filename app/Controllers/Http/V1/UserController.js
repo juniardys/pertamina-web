@@ -1,11 +1,11 @@
 'use strict'
 
 const User = use('App/Models/User')
-const Role = use('App/Models/Role')
 const { validate } = use('Validator')
-const { queryBuilder, baseResp } = use('App/Helpers')
+const { queryBuilder, baseResp, uploadImage } = use('App/Helpers')
 const uuid = use('uuid-random')
 const UserTransformer = use('App/Transformers/V1/UserTransformer')
+const Helpers = use('Helpers')
 
 class UserController {
     getRules() {
@@ -58,13 +58,14 @@ class UserController {
 
     async update({ request, response, transform }) {
         const req = request.all()
-        let rules = []
+        let rules = {
+            phone: 'number',
+            ktp: 'number'
+        }
         rules['uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
         if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid}|max:254`
         if (req.password) rules['password'] = 'required|min:8|max:254'
-        if (req.phone) rules['phone'] = 'number'
-        if (req.ktp) rules['ktp'] = 'number'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -86,6 +87,18 @@ class UserController {
             user.phone = req.phone
             user.address = req.address
             user.ktp = req.ktp
+            if (request.file('image')) {
+                const upload = await uploadImage(request, 'image', 'profile-image/')
+                if (upload) {
+                    if (user.image != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        await fs.unlink(Helpers.publicPath(user.image))
+                    }
+                    user.image = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await user.save()
         } catch (error) {
             console.log(error);
