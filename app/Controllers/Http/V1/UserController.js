@@ -46,6 +46,22 @@ class UserController {
             user.phone = req.phone
             user.address = req.address
             user.ktp = req.ktp
+            if (request.file('image')) {
+                const upload = await uploadImage(request, 'image', 'profile-image/')
+                if (upload) {
+                    if (user.image != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        try {
+                            await fs.unlink(Helpers.publicPath(user.image))
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+                    user.image = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await user.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
@@ -92,7 +108,11 @@ class UserController {
                 if (upload) {
                     if (user.image != null) {
                         const fs = Helpers.promisify(require('fs'))
-                        await fs.unlink(Helpers.publicPath(user.image))
+                        try {
+                            await fs.unlink(Helpers.publicPath(user.image))
+                        } catch (error) {
+                            console.log(error);
+                        }
                     }
                     user.image = upload
                 } else {

@@ -1,16 +1,14 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { getAcl } from '~/helpers'
 
 const SubSidebar = () => {
 	const router = useRouter()
 
 	const { spbu, company } = router.query
 	let datas = []
-	let acl = []
-	if (typeof window !== 'undefined') {
-		acl = JSON.parse(window.localStorage.getItem('accessList'))
-	}
+	const acl = getAcl()
 
 	if (router.pathname.includes('/spbu/[spbu]')) {
 		datas = [

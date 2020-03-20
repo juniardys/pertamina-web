@@ -32,7 +32,11 @@ export const generateAcl = (acl) => {
 }
 
 export const getAcl = () => {
-    return JSON.parse(localStorage.getItem('accessList'))
+    let acl = []
+    if (typeof window !== 'undefined') {
+        acl = JSON.parse(window.localStorage.getItem('accessList'))
+    }
+    return acl
 }
 
 export const setAcl = async (uuid) => {
@@ -115,7 +119,7 @@ const redirectPath = async () => {
     } else {
         localStorage.clear()
     }
-} 
+}
 
 const getPathDecission = async (spbu = null) => {
     const acl = localStorage.getItem('accessList')

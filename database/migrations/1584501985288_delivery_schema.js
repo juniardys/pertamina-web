@@ -16,6 +16,7 @@ class DeliverySchema extends Schema {
       table.string('police_no').notNullable()
       table.string('driver').nullable()
       table.string('receiver').nullable()
+      table.string('image').nullable()
       table.timestamps()
     })
   }

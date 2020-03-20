@@ -4,6 +4,7 @@ import Link from "next/link"
 import Modal from '~/components/Modal'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import AccessList from '~/components/AccessList'
 
 class Index extends Component {
     constructor(props) {
@@ -18,7 +19,8 @@ class Index extends Component {
             dataItems: [],
             page: 1,
             title: 'Buat SPBU',
-            modalType: "create"
+            modalType: "create",
+            accessList: ''
         }
     }
 
@@ -147,7 +149,9 @@ class Index extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar SPBU<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat SPBU', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <AccessList acl='spbu.create'>
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat SPBU', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            </AccessList>
                         </div>
                     </div>
 
@@ -168,26 +172,31 @@ class Index extends Component {
                                     <tr>
                                         <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ) : (
-                                    this.state.dataItems.map((item, i) => (
-                                        <tr key={i}>
-                                            <td>{i + 1}</td>
-                                            <td>{item.name}</td>
-                                            <td>{item.code}</td>
-                                            <td>{item.address}</td>
-                                            <td>{item.user}</td>
-                                            <td>
+                                ) : (this.state.dataItems.map((item, i) => (
+                                    <tr key={i}>
+                                        <td>{i + 1}</td>
+                                        <td>{item.name}</td>
+                                        <td>{item.code}</td>
+                                        <td>{item.address}</td>
+                                        <td>{item.user}</td>
+                                        <td>
+                                            <AccessList acl='spbu.manage'>
                                                 <Link href={'/spbu/[spbu]/report'} as={'/spbu/' + item.uuid + '/report'}>
                                                     <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
                                                 </Link>
-    
+                                            </AccessList>
+
+                                            <AccessList acl='spbu.update'>
                                                 <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
-    
+                                            </AccessList>
+
+                                            <AccessList acl='spbu.delete'>
                                                 <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteSPBU(item.uuid)}><i className="icon-trash"></i></button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
+                                            </AccessList>
+                                        </td>
+                                    </tr>
+                                ))
+                                    )}
                             </tbody>
                         </table>
                     </div>

@@ -172,7 +172,7 @@ class ChangeUserImage extends Component {
 
                 <div className="form-group">
                     <label>Unggah Foto Baru:</label>
-                    <input type="file" className="file-styled" onChange={this.handleNewImage} ref={ref => this.fileInput = ref} />
+                    <input type="file" className="file-styled" onChange={this.handleNewImage} accept="image/png, image/jpeg" ref={ref => this.fileInput = ref} />
                 </div>
             </div>
         )

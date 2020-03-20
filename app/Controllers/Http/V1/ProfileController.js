@@ -69,7 +69,11 @@ class ProfileController {
                 if (upload) {
                     if (user.image != null) {
                         const fs = Helpers.promisify(require('fs'))
-                        await fs.unlink(Helpers.publicPath(user.image))
+                        try {
+                            await fs.unlink(Helpers.publicPath(user.image))
+                        } catch (error) {
+                            console.log(error);
+                        }
                     }
                     user.image = upload
                 } else {

@@ -22,6 +22,8 @@ const handler = Next.getRequestHandler();
 Route.post('api/v1/sign-in', 'V1/AuthenticationController.signIn').middleware(['secureApi'])
 Route.post('api/v1/sign-in/client', 'V1/AuthenticationController.signInClient').middleware(['secureApi'])
 Route.group(() => {
+	// Dashboard
+	Route.get('dashboard', 'DashboardController.get')
 	// Access List
 	Route.get('acl', 'AclController.get')
 	Route.get('acl-jstree', 'AclController.getJsTree')

@@ -17,7 +17,8 @@ class OrderDetail extends Component {
             police_no: '',
             driver: '',
             receiver: '',
-            image_delivery_order: '',
+            image: '',
+            preview_image: '',
             dataItems: [],
             spbu_name: '',
             spbu_uuid: '',
@@ -73,6 +74,13 @@ class OrderDetail extends Component {
         })
     }
 
+    handleFileChange = e => {
+        this.setState({
+            preview_image: URL.createObjectURL(e.target.files[0]),
+            image: e.target.files[0]
+        })
+    }
+
     _setModalState = async (title, modalType, item) => {
         await this.setState({
             title: title,
@@ -84,8 +92,10 @@ class OrderDetail extends Component {
             police_no: item.police_no || '',
             driver: item.driver || '',
             receiver: item.receiver || '',
-            image_delivery_order: item.image_delivery_order || '',
+            image: '',
+            preview_image: '',
         })
+        this.fileInput.value = "";
     }
 
     _deleteProduct = async (uuid) => {
@@ -107,7 +117,8 @@ class OrderDetail extends Component {
                 receipt_no: this.state.receipt_no,
                 police_no: this.state.police_no,
                 driver: this.state.driver,
-                receiver: this.state.receiver
+                receiver: this.state.receiver,
+                image: this.state.image
             })
             if (response.success) {
                 this.setState({
@@ -127,7 +138,8 @@ class OrderDetail extends Component {
                 receipt_no: this.state.receipt_no,
                 police_no: this.state.police_no,
                 driver: this.state.driver,
-                receiver: this.state.receiver
+                receiver: this.state.receiver,
+                image: this.state.image
             })
             if (response.success) {
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
@@ -182,11 +194,18 @@ class OrderDetail extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Foto Surat Jalan</label>
+                    <label className="control-label col-lg-2">{(this.state.modalType == 'create') ? 'Foto Surat Jalan' : 'Unggah Foto Baru (untuk mengganti foto lama)'}</label>
                     <div className="col-lg-10">
-
+                        <input type="file" className="form-control" name="file" accept="image/png, image/jpeg" onChange={this.handleFileChange} ref={ref => this.fileInput = ref}/>
                     </div>
                 </div>
+                {(this.state.preview_image != '') ? (
+                    <center>
+                        <div className="thumbnail" style={{ maxWidth: '50%' }}>
+                            <img src={this.state.preview_image} />
+                        </div>
+                    </center>
+                ) : null}
             </form>
         )
     }
@@ -225,7 +244,7 @@ class OrderDetail extends Component {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pengiriman<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
@@ -265,7 +284,13 @@ class OrderDetail extends Component {
                                                 <td>{item.police_no}</td>
                                                 <td>{item.driver}</td>
                                                 <td>{item.receiver}</td>
-                                                <td>{item.image_delivery_order}</td>
+                                                <td>
+                                                    <center>
+                                                        <div className="thumbnail">
+                                                            <img src={item.image} alt={this.state.receipt_no} style={{ maxWidth: '100px' }}/>
+                                                        </div>
+                                                    </center>
+                                                </td>
                                                 <td>
                                                     <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>
 

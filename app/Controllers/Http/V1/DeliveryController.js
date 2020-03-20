@@ -2,9 +2,10 @@
 
 const Delivery = use('App/Models/Delivery')
 const { validate } = use('Validator')
-const { queryBuilder, baseResp } = use('App/Helpers')
+const { queryBuilder, baseResp, uploadImage } = use('App/Helpers')
 const uuid = use('uuid-random')
 const DeliveryTransformer = use('App/Transformers/V1/DeliveryTransformer')
+const Helpers = use('Helpers')
 
 class DeliveryController {
     async get({ request, response, transform }) {
@@ -42,9 +43,24 @@ class DeliveryController {
             delivery.police_no = req.police_no
             delivery.driver = req.driver
             delivery.receiver = req.receiver
+            if (request.file('image')) {
+                const upload = await uploadImage(request, 'image', 'delivery/')
+                if (upload) {
+                    if (delivery.image != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        try {
+                            await fs.unlink(Helpers.publicPath(delivery.image))
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }
+                    delivery.image = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await delivery.save()
         } catch (error) {
-            console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
@@ -85,8 +101,25 @@ class DeliveryController {
             if (req.police_no) delivery.police_no = req.police_no
             if (req.driver) delivery.driver = req.driver
             if (req.receiver) delivery.receiver = req.receiver
+            if (request.file('image')) {
+                const upload = await uploadImage(request, 'image', 'delivery/')
+                if (upload) {
+                    if (delivery.image != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        try {
+                            await fs.unlink(Helpers.publicPath(delivery.image))
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }
+                    delivery.image = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await delivery.save()
         } catch (error) {
+            console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
@@ -113,6 +146,14 @@ class DeliveryController {
 
         if (!delivery) return response.status(400).json(baseResp(false, [], 'Pengiriman tidak ditemukan'))
 
+        if (delivery.image != null) {
+            const fs = Helpers.promisify(require('fs'))
+            try {
+                await fs.unlink(Helpers.publicPath(delivery.image))
+            } catch (error) {
+                console.log(error)
+            }
+        }
         await delivery.delete()
 
         delivery = await transform.item(delivery, DeliveryTransformer)

@@ -53,8 +53,12 @@ export const get = async (url, queryBuilder = [], ver = null) => {
 
 export const store = async (url, data, ver = null) => {
     let success, res
-    data['api_key'] = process.env.APP_API_KEY
-    await axios.post(`/api/${(ver != null) ? ver : 'v1'}${url}`, data, {
+    const formData = new FormData()
+    Object.keys(data).forEach(function (key) {
+        formData.append(key, data[key])
+    })
+    formData.append('api_key', process.env.APP_API_KEY)
+    await axios.post(`/api/${(ver != null) ? ver : 'v1'}${url}`, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` }
     })
         .then(response => {

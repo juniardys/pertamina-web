@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { getAcl } from '~/helpers'
 
 const Sidebar = (props) => {
 	const router = useRouter()
-	let acl = []
-	if (typeof window !== 'undefined') {
-		acl = JSON.parse(window.localStorage.getItem('accessList'))
-	}
+	const acl = getAcl()
 
 	const datas = [
 		{

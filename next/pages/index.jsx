@@ -2,11 +2,31 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import Link from "next/link"
 import { checkAclPage } from '~/helpers'
+import { get, store, update, removeWithSwal } from '~/helpers/request'
 
 class Index extends Component {
-    componentDidMount() {
-        checkAclPage('dashboard')
+    constructor(props) {
+        super(props)
+        this.state = {
+            countUsers: 0,
+            countSpbu: 0,
+            countProducts: 0
+        }
     }
+
+    async componentDidMount() {
+        checkAclPage('dashboard')
+        const res = await get('/dashboard')
+        if (res && res.success) {
+            const data = res.data
+            this.setState({
+                countUsers: data.countUsers,
+                countSpbu: data.countSpbu,
+                countProducts: data.countProducts
+            })
+        }
+    }
+
     render() {
         return (
             <Layout title="Dashboard">
@@ -19,7 +39,7 @@ class Index extends Component {
                                         {/* <span className="heading-text badge bg-teal-800">+53,6%</span> */}
                                     </div>
 
-                                    <h3 className="no-margin">1</h3>
+                                    <h3 className="no-margin">{this.state.countUsers}</h3>
                                     User
                                 <div className="text-muted text-size-small">Total Jumlah User</div>
                                 </div>
@@ -39,7 +59,7 @@ class Index extends Component {
                                         {/* <span className="heading-text badge bg-teal-800">+53,6%</span> */}
                                     </div>
 
-                                    <h3 className="no-margin">1</h3>
+                                    <h3 className="no-margin">{this.state.countSpbu}</h3>
                                     SPBU
                                 <div className="text-muted text-size-small">Total Jumlah SPBU</div>
                                 </div>
@@ -60,7 +80,7 @@ class Index extends Component {
                                         {/* <span className="heading-text badge bg-teal-800">+53,6%</span> */}
                                     </div>
 
-                                    <h3 className="no-margin">6</h3>
+                                    <h3 className="no-margin">{this.state.countProducts}</h3>
                                     Produk
                                 <div className="text-muted text-size-small">Total Jumlah Produk</div>
                                 </div>

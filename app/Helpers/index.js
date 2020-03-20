@@ -111,7 +111,7 @@ const uploadImage = async (request, fileParam, folder = '/', fileName = null) =>
         fileName = fileName + '.' + img.subtype
     }
     
-    await img.move(Helpers.publicPath(folder), {
+    await img.move(Helpers.publicPath('img/' + folder), {
         name: fileName,
         overwrite: true
     })
@@ -124,7 +124,7 @@ const uploadImage = async (request, fileParam, folder = '/', fileName = null) =>
         return false
     }
 
-    return folder + fileName
+    return 'img/' + folder + fileName
 }
 
 const rndmChr = async (length, table = null, column = null) => {
