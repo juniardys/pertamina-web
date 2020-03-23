@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import AccessList from '~/components/AccessList'
 
 class Payment extends Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class Payment extends Component {
         await this.setState({
             [e.target.name]: e.target.value
         })
-        
+
     }
 
     _setModalState = async (title, modalType, item) => {
@@ -142,7 +143,9 @@ class Payment extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pembayaran<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Metode Pembayaran', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <AccessList acl="payment-method.create">
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Metode Pembayaran', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            </AccessList>
                         </div>
                     </div>
 
@@ -170,9 +173,13 @@ class Payment extends Component {
                                                 <td>{item.code}</td>
                                                 <td>{(item.image_required == "1") ? "Ya" : "Tidak"}</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Metode Pembayaran', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    <AccessList acl="payment-method.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Metode Pembayaran', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    </AccessList>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deletePayment(item.uuid)}><i className="icon-trash"></i></button>
+                                                    <AccessList acl="payment-method.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deletePayment(item.uuid)}><i className="icon-trash"></i></button>
+                                                    </AccessList>
                                                 </td>
                                             </tr>
                                         ))

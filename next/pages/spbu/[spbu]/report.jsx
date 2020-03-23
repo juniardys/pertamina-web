@@ -11,13 +11,14 @@ class Report extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            filterDate: '2020-02-21',
+            filterDate: '',
             spbu_name: ''
         }
     }
 
     async componentDidMount() {
         helperBlock('.container-data')
+        await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
         this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
         const spbu = await get('/spbu', { search: this.props.query.spbu })
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })

@@ -49,7 +49,7 @@
     "spbu.manage.order.delivery": "Mengatur Pengiriman",
     "spbu.manage.order.delivery.read": "Melihat",
     "spbu.manage.order.delivery.create": "Membuat",
-    "spbu.manage.order.delivery.udpate": "Mengubah",
+    "spbu.manage.order.delivery.update": "Mengubah",
     "spbu.manage.order.delivery.delete": "Menghapus",
     "spbu.manage.setting": "Pengaturan SPBU",
     "spbu.manage.setting.detail": "Merubah Detail SPBU",
@@ -69,7 +69,7 @@
     "order.delivery": "Pengiriman",
     "order.delivery.read": "Melihat",
     "order.delivery.create": "Membuat",
-    "order.delivery.udpate": "Mengubah",
+    "order.delivery.update": "Mengubah",
     "order.delivery.delete": "Menghapus",
 
     "payment-method": "Metode Pembayaran",

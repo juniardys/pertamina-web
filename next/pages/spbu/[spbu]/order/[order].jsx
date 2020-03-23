@@ -4,6 +4,7 @@ import Modal from '~/components/Modal'
 import Router from 'next/router'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import AccessList from '~/components/AccessList'
 
 class OrderDetail extends Component {
     constructor(props) {
@@ -197,7 +198,7 @@ class OrderDetail extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">{(this.state.modalType == 'create') ? 'Foto Surat Jalan' : 'Unggah Foto Baru (untuk mengganti foto lama)'}</label>
                     <div className="col-lg-10">
-                        <input type="file" className="form-control" name="file" accept="image/png, image/jpeg" onChange={this.handleFileChange} ref={ref => this.fileInput = ref}/>
+                        <input type="file" className="form-control" name="file" accept="image/png, image/jpeg" onChange={this.handleFileChange} ref={ref => this.fileInput = ref} />
                     </div>
                 </div>
                 {(this.state.preview_image != '') ? (
@@ -257,7 +258,9 @@ class OrderDetail extends Component {
                         <h5 className="panel-title">Daftar Pengiriman<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
                             <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }} onClick={() => Router.back()}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Konfirmasi Pengiriman', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Konfirmasi</button>
+                            <AccessList acl="spbu.manage.order.delivery.create">
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Konfirmasi Pengiriman', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Konfirmasi</button>
+                            </AccessList>
                         </div>
                     </div>
 
@@ -294,14 +297,18 @@ class OrderDetail extends Component {
                                                 <td>
                                                     <center>
                                                         <div className="thumbnail">
-                                                            <img src={item.image} alt={this.state.receipt_no} style={{ maxWidth: '100px' }}/>
+                                                            <img src={item.image} alt={this.state.receipt_no} style={{ maxWidth: '100px' }} />
                                                         </div>
                                                     </center>
                                                 </td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    <AccessList acl="spbu.manage.order.delivery.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    </AccessList>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                    <AccessList acl="spbu.manage.order.delivery.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                    </AccessList>
                                                 </td>
                                             </tr>
                                         ))

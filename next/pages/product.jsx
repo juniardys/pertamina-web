@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import Modal from '~/components/Modal'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast, checkAclPage } from '~/helpers'
+import AccessList from '~/components/AccessList'
 
 class Product extends Component {
     constructor(props) {
@@ -138,7 +139,9 @@ class Product extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Produk<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Produk', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <AccessList acl="product.create">
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Produk', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            </AccessList>
                         </div>
                     </div>
 
@@ -166,9 +169,13 @@ class Product extends Component {
                                                 <td>{item.code}</td>
                                                 <td>Rp. {item.price}</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Produk', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    <AccessList acl="product.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Produk', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    </AccessList>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                    <AccessList acl="product.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                    </AccessList>
                                                 </td>
                                             </tr>
                                         ))

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import moment from 'moment'
+import AccessList from '~/components/AccessList'
 
 class Order extends Component {
     constructor(props) {
@@ -253,7 +254,9 @@ class Order extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pemesanan<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Pemesanan', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <AccessList acl="order.create">
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Pemesanan', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            </AccessList>
                         </div>
                     </div>
 
@@ -287,13 +290,19 @@ class Order extends Component {
                                                 <td>{item.quantity}</td>
                                                 <td>{item.status}</td>
                                                 <td>
-                                                    <Link href={'/order/[order]'} as={'/order/' + item.uuid}>
-                                                        <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail Pengiriman"><i className="icon-transmission"></i></button>
-                                                    </Link>
+                                                    <AccessList acl="order.delivery.read">
+                                                        <Link href={'/order/[order]'} as={'/order/' + item.uuid}>
+                                                            <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail Pengiriman"><i className="icon-transmission"></i></button>
+                                                        </Link>
+                                                    </AccessList>
 
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    <AccessList acl="order.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Pemesanan', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    </AccessList>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                    <AccessList acl="order.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteProduct(item.uuid)}><i className="icon-trash"></i></button>
+                                                    </AccessList>
                                                 </td>
                                             </tr>
                                         ))

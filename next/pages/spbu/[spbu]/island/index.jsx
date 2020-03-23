@@ -4,6 +4,7 @@ import Modal from '~/components/Modal'
 import Link from "next/link"
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
+import AccessList from '~/components/AccessList'
 
 class Index extends Component {
 
@@ -140,7 +141,9 @@ class Index extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Island<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Island', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <AccessList acl="spbu.manage.island.create">
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Island', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            </AccessList>
                         </div>
                     </div>
                     <div className="table-responsive">
@@ -164,13 +167,18 @@ class Index extends Component {
                                         <td>{island.name}</td>
                                         <td>{island.code}</td>
                                         <td>
-                                            <Link href="/spbu/[spbu]/island/[island]" as={'/spbu/' + this.props.query.spbu + '/island/' + island.uuid}>
-                                                <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Pompa"><i className="icon-newspaper2"></i></button>
-                                            </Link>
+                                            <AccessList acl="spbu.manage.island.nozzle.read">
+                                                <Link href="/spbu/[spbu]/island/[island]" as={'/spbu/' + this.props.query.spbu + '/island/' + island.uuid}>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Pompa"><i className="icon-newspaper2"></i></button>
+                                                </Link>
+                                            </AccessList>
 
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + island.name, 'edit', island)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger zbtn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteIsland(island.uuid)}><i className="icon-trash"></i></button>
+                                            <AccessList acl="spbu.manage.island.update">
+                                                <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + island.name, 'edit', island)}><i className="icon-pencil7"></i></button>
+                                            </AccessList>
+                                            <AccessList acl="spbu.manage.island.delete">
+                                                <button type="button" className="btn btn-danger zbtn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteIsland(island.uuid)}><i className="icon-trash"></i></button>
+                                            </AccessList>
                                         </td>
                                     </tr>
                                 )))}

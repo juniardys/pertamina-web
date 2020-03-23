@@ -33,7 +33,7 @@ class UserTransformer extends BumblebeeTransformer {
       phone: model.phone,
       ktp: model.ktp,
       address: model.address,
-      image: (model.image != null) ?  `${Env.get('APP_URL')}/${model.image}` : `${Env.get('APP_URL')}/image/avatar.jpg`,
+      image: (model.image != null) ?  `${Env.get('APP_API_URL')}/${model.image}` : `${Env.get('APP_API_URL')}/image/avatar.jpg`,
       deleted_at: deleted_at,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')

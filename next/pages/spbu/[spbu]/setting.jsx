@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
+import AccessList from '~/components/AccessList'
 
 class Setting extends Component {
 
@@ -143,88 +144,93 @@ class Setting extends Component {
 
         return (
             <Layout title={'Pengaturan ' + this.state.name} breadcrumb={breadcrumb}>
-                <div className="panel panel-flat container-spbu">
-                    <div className="panel-heading">
-                        <h5 className="panel-title">Detail SPBU <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
-                        <div className="heading-elements">
-                            <ul className="icons-list">
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="panel-body">
-                        <div className="form-group row">
-                            <label className="control-label col-lg-2">Nama</label>
-                            <div className="col-lg-10">
-                                <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleInputChange} />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="control-label col-lg-2">Kode</label>
-                            <div className="col-lg-10">
-                                <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="control-label col-lg-2">Alamat</label>
-                            <div className="col-lg-10">
-                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="control-label col-lg-2">Nomor Handphone</label>
-                            <div className="col-lg-10">
-                                <input type="text" className="form-control" name="phone" value={this.state.phone} onChange={this.handleInputChange} />
+                <AccessList acl="spbu.manage.setting.detail">
+                    <div className="panel panel-flat container-spbu">
+                        <div className="panel-heading">
+                            <h5 className="panel-title">Detail SPBU <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <div className="heading-elements">
+                                <ul className="icons-list">
+                                </ul>
                             </div>
                         </div>
 
-                        <div className="text-right">
-                            <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-spbu-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._submit()}>
-                                <span className="ladda-label">Ubah</span>
-                                <span className="ladda-spinner"></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="panel panel-flat container-payment">
-                    <div className="panel-heading">
-                        <h5 className="panel-title">Metode Pembayaran <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
-                        <div className="heading-elements">
-                            <ul className="icons-list">
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="panel-body">
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <label className="text-semibold">Pilih Metode Pembayaran yang ditetapkan pada SPBU ini</label>
-                                    {(this.state.checkboxes == '') ? (
-                                        <p>Data Payment belum tersedia, Tambah Data Payment terlebih dahulu.</p>
-                                    ) : (
-                                            this.state.checkboxes.map((checkbox, i) => (
-                                                <div className="checkbox" key={i}>
-                                                    <label>
-                                                        <input type="checkbox" defaultChecked={checkbox.checked} onChange={toggleCheckbox.bind(this, i)} />
-                                                        {checkbox.label}
-                                                    </label>
-                                                </div>
-                                            ))
-                                        )}
+                        <div className="panel-body">
+                            <div className="form-group row">
+                                <label className="control-label col-lg-2">Nama</label>
+                                <div className="col-lg-10">
+                                    <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleInputChange} />
                                 </div>
                             </div>
-                        </div>
+                            <div className="form-group row">
+                                <label className="control-label col-lg-2">Kode</label>
+                                <div className="col-lg-10">
+                                    <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="control-label col-lg-2">Alamat</label>
+                                <div className="col-lg-10">
+                                    <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="control-label col-lg-2">Nomor Handphone</label>
+                                <div className="col-lg-10">
+                                    <input type="text" className="form-control" name="phone" value={this.state.phone} onChange={this.handleInputChange} />
+                                </div>
+                            </div>
 
-                        <div className="text-right">
-                            <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-payment-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._updatePayment()}>
-                                <span className="ladda-label">Tetapkan</span>
-                                <span className="ladda-spinner"></span>
-                            </button>
+                            <div className="text-right">
+                                <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-spbu-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._submit()}>
+                                    <span className="ladda-label">Ubah</span>
+                                    <span className="ladda-spinner"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </AccessList>
+
+                <AccessList acl="spbu.manage.setting.payment">
+                    <div className="panel panel-flat container-payment">
+                        <div className="panel-heading">
+                            <h5 className="panel-title">Metode Pembayaran <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <div className="heading-elements">
+                                <ul className="icons-list">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="panel-body">
+                            <div className="form-group row">
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <label className="text-semibold">Pilih Metode Pembayaran yang ditetapkan pada SPBU ini</label>
+                                        {(this.state.checkboxes == '') ? (
+                                            <p>Data Payment belum tersedia, Tambah Data Payment terlebih dahulu.</p>
+                                        ) : (
+                                                this.state.checkboxes.map((checkbox, i) => (
+                                                    <div className="checkbox" key={i}>
+                                                        <label>
+                                                            <input type="checkbox" defaultChecked={checkbox.checked} onChange={toggleCheckbox.bind(this, i)} />
+                                                            {checkbox.label}
+                                                        </label>
+                                                    </div>
+                                                ))
+                                            )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="text-right">
+                                <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-payment-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._updatePayment()}>
+                                    <span className="ladda-label">Tetapkan</span>
+                                    <span className="ladda-spinner"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </AccessList>
             </Layout>
         )
     }
