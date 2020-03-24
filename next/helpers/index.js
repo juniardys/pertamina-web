@@ -16,27 +16,25 @@ export const toast = Swal.mixin({
 })
 
 export const checkAclPage = (pageAcl) => {
-    const acl = localStorage.getItem('accessList')
-    if (acl && !acl.includes(pageAcl)) {
+    if (!checkAcl(pageAcl)) {
         Swal.fire('Akses Ditolak.', 'Kamu tidak punya akses untuk mengakses halaman ini.', 'warning')
         setTimeout(() => window.history.back(), 1000);
     }
 }
 
-export const generateAcl = (acl) => {
-    let result = []
-    acl.forEach(elem => {
-        result.push(elem.access)
-    });
-    return result
-}
-
-export const getAcl = () => {
+export const checkAcl = (userAcl) => {
     let acl = []
     if (typeof window !== 'undefined') {
         acl = JSON.parse(window.localStorage.getItem('accessList'))
+        if ((acl && userAcl) && (Array.isArray(userAcl) ? acl.some(r => userAcl.includes(r)) : acl.includes(userAcl))) return true
+        return false
     }
-    return acl
+}
+
+export const generateAcl = (acl) => {
+    let result = []
+    acl.forEach(elem => { result.push(elem.access) });
+    return result
 }
 
 export const setAcl = async (uuid) => {

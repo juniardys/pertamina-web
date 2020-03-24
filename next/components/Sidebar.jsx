@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getAcl } from '~/helpers'
+import { checkAcl } from '~/helpers'
 
 const Sidebar = (props) => {
 	const router = useRouter()
-	const acl = getAcl()
 
 	const datas = [
 		{
@@ -72,7 +71,7 @@ const Sidebar = (props) => {
 	]
 
 	const renderMenu = (menu, i) => {
-		if (acl && acl.some(r => menu.access.includes(r))) {
+		if (checkAcl(menu.access)) {
 			return (
 				<Link href={menu.url} key={i}>
 					<li className={(router.pathname == menu.url) ? 'active' : null}>
@@ -94,7 +93,7 @@ const Sidebar = (props) => {
 	}
 
 	const renderSubMenu = (menu, i) => {
-		if (acl && acl.some(r => menu.access.includes(r))) {
+		if (checkAcl(menu.access)) {
 			return (
 				<Link href={menu.url} key={i}>
 					<li className={(router.pathname == menu.url) ? 'active' : null}><a>{menu.title}</a></li>

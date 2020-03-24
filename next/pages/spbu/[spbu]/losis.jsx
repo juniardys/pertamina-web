@@ -31,7 +31,7 @@ class Losis extends Component {
     async componentDidMount() {
         const spbu = await get('/spbu', { search: this.props.query.spbu })
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
-        // checkAclPage('spbu.manage.order.read')
+        checkAclPage('spbu.manage.losis.read')
         // helperBlock('.container-data')
         await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
         // const data = await get('/order', {
@@ -135,9 +135,9 @@ class Losis extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Laporan Losis {(this.state.productData.length > 0) ? this.state.productData[0].name : null}<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            {/* <AccessList acl="spbu.manage.losis.export"> */}
+                            <AccessList acl="spbu.manage.losis.export">
                                 <button type="button" className="btn btn-primary">Ekspor</button>
-                            {/* </AccessList> */}
+                            </AccessList>
                         </div>
                     </div>
 
@@ -156,7 +156,7 @@ class Losis extends Component {
                             <tbody>
                                 {(dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="7"><center>Data Belum ada</center></td>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                         dataItems.map((item, i) => (

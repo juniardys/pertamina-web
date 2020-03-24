@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getAcl } from '~/helpers'
+import { checkAcl } from '~/helpers'
 
 const SubSidebar = () => {
 	const router = useRouter()
 
 	const { spbu, company } = router.query
 	let datas = []
-	const acl = getAcl()
 
 	if (router.pathname.includes('/spbu/[spbu]')) {
 		datas = [
@@ -106,7 +105,7 @@ const SubSidebar = () => {
 	}
 
 	const renderMenu = (menu, i) => {
-		if (acl && acl.some(r => menu.access.includes(r))) {
+		if (checkAcl(menu.access)) {
 			return (
 				<Link href={menu.path} key={i} as={menu.url}>
 					<li className={(router.pathname == menu.url) ? 'active' : null}>
@@ -128,7 +127,7 @@ const SubSidebar = () => {
 	}
 
 	const renderSubMenu = (menu, i) => {
-		if (acl && acl.some(r => menu.access.includes(r))) {
+		if (checkAcl(menu.access)) {
 			return (
 				<Link href={menu.path} as={menu.url} key={i}>
 					<li className={(router.pathname == menu.url) ? 'active' : null}><a>{menu.title}</a></li>
