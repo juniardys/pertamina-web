@@ -4,7 +4,7 @@ const User = use('App/Models/User')
 const { validate } = use('Validator')
 const { baseResp, uploadImage } = use('App/Helpers')
 const UserTransformer = use('App/Transformers/V1/UserTransformer')
-const sharp = use('sharp')
+// const sharp = use('sharp')
 const Helpers = use('Helpers')
 
 class ProfileController {
