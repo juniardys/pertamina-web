@@ -169,7 +169,7 @@ class Index extends Component {
                                         <td>
                                             <AccessList acl="spbu.manage.island.nozzle.read">
                                                 <Link href="/spbu/[spbu]/island/[island]" as={'/spbu/' + this.props.query.spbu + '/island/' + island.uuid}>
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Pompa"><i className="icon-newspaper2"></i></button>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Pompa"><i className="icon-gas"></i></button>
                                                 </Link>
                                             </AccessList>
 

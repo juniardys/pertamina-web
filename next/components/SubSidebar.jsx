@@ -45,6 +45,14 @@ const SubSidebar = () => {
 				path: '/spbu/[spbu]/island'
 			},
 			{
+				access: 'spbu.manage.losis.read',
+				type: 'menu',
+				title: 'Losis',
+				icon: 'icon-balance',
+				url: `/spbu/${spbu}/losis`,
+				path: '/spbu/[spbu]/losis'
+			},
+			{
 				access: 'spbu.manage.order.read',
 				type: 'menu',
 				title: 'Pemesanan',
