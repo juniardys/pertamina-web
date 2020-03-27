@@ -4,19 +4,19 @@ const BumblebeeTransformer = use('Bumblebee/Transformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
-const NozzleTransformer = use('App/Transformers/V1/NozzleTransformer')
+const UserTransformer = use('App/Transformers/V1/UserTransformer')
 const moment = use('moment')
 const Env = use('Env')
 
 /**
- * NozzleReportTransformer class
+ * ReportCoWorkerTransformer class
  *
- * @class NozzleReportTransformer
+ * @class ReportCoWorkerTransformer
  * @constructor
  */
-class NozzleReportTransformer extends BumblebeeTransformer {
+class ReportCoWorkerTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['spbu', 'island', 'shift', 'nozzle']
+    return ['spbu', 'island', 'shift', 'user']
   }
 
   /**
@@ -30,9 +30,8 @@ class NozzleReportTransformer extends BumblebeeTransformer {
       spbu_uuid: model.spbu_uuid,
       island_uuid: model.island_uuid,
       shift_uuid: model.shift_uuid,
-      nozzle_uuid: model.nozzle_uuid,
-      value: model.value,
-      image: `${Env.get('APP_API_URL')}/${model.image}`,
+      user_uuid: model.user_uuid,
+      date: moment(model.date, 'YYYY-MM-DD').format('YYYY-MM-DD'),
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
     }
@@ -50,9 +49,9 @@ class NozzleReportTransformer extends BumblebeeTransformer {
     return this.item(model.getRelated('shift'), ShiftTransformer)
   }
 
-  includeNozzle(model) {
-    return this.item(model.getRelated('nozzle'), NozzleTransformer)
+  includeUser(model) {
+    return this.item(model.getRelated('user'), UserTransformer)
   }
 }
 
-module.exports = NozzleReportTransformer
+module.exports = ReportCoWorkerTransformer

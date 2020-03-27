@@ -21,6 +21,9 @@ class ReportNozzle extends Model {
     }
     
     // Setters
+    setDate(date) {
+        return new Date(date).toISOString()
+    }
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()
     }

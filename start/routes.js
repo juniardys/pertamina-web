@@ -84,11 +84,20 @@ Route.group(() => {
 	Route.post('delivery/store', 'DeliveryController.store')
 	Route.post('delivery/update', 'DeliveryController.update')
 	Route.post('delivery/delete', 'DeliveryController.delete')
-	// Nozzle Report
-	Route.get('nozzle-report/', 'NozzleReportController.get')
-	Route.post('nozzle-report/store', 'NozzleReportController.store')
-	Route.post('nozzle-report/update', 'NozzleReportController.update')
-	Route.post('nozzle-report/delete', 'NozzleReportController.delete')
+	// Report Nozzle
+	Route.get('report-nozzle/', 'ReportNozzleController.get')
+	Route.post('report-nozzle/store', 'ReportNozzleController.store')
+	Route.post('report-nozzle/update', 'ReportNozzleController.update')
+	Route.post('report-nozzle/delete', 'ReportNozzleController.delete')
+	// Report Payment
+	Route.get('report-payment/', 'ReportPaymentController.get')
+	Route.post('report-payment/store', 'ReportPaymentController.store')
+	Route.post('report-payment/update', 'ReportPaymentController.update')
+	Route.post('report-payment/delete', 'ReportPaymentController.delete')
+	// Report CoWorker
+	Route.get('report-coworker/', 'ReportCoWorkerController.get')
+	Route.post('report-coworker/store', 'ReportCoWorkerController.store')
+	Route.post('report-coworker/delete', 'ReportCoWorkerController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

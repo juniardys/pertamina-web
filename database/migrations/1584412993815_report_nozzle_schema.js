@@ -14,6 +14,7 @@ class ReportNozzleSchema extends Schema {
       table.uuid('nozzle_uuid').references('uuid').inTable('nozzles').onDelete('cascade').notNullable()
       table.integer('value').notNullable()
       table.text('image').notNullable()
+      table.date('date').notNullable()
       table.timestamps()
     })
   }

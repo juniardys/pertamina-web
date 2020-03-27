@@ -1,22 +1,21 @@
 'use strict'
 
 const ReportNozzle = use('App/Models/ReportNozzle')
-const AccessList = use('App/Models/AccessList')
 const { validate } = use('Validator')
 const { queryBuilder, uploadImage, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
-const NozzleReportTransformer = use('App/Transformers/V1/NozzleReportTransformer')
+const ReportNozzleTransformer = use('App/Transformers/V1/ReportNozzleTransformer')
 const Database = use('Database')
 const Helpers = use('Helpers')
 
-class NozzleReportController {
+class ReportNozzleController {
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(ReportNozzle.query(), request.all(), ['spbu_uuid', 'island_uuid', 'shift_uuid', 'value'])
+        const builder = await queryBuilder(ReportNozzle.query(), request.all(), ['spbu_uuid', 'island_uuid', 'shift_uuid', 'nozzle_uuid', 'value', 'date'])
         let data = transform
         if (request.get().with) {
             data = data.include(request.get().with)
         }
-        data = await data.paginate(builder, NozzleReportTransformer)
+        data = await data.paginate(builder, ReportNozzleTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Laporan Pompa sukses diterima'))
     }
@@ -37,7 +36,9 @@ class NozzleReportController {
         const validation = await validate(req, {
             spbu_uuid: 'required',
             island_uuid: 'required',
-            shift_uuid: 'required'
+            shift_uuid: 'required',
+            nozzle_uuid: 'required',
+            date: 'required'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -63,6 +64,7 @@ class NozzleReportController {
                 data.shift_uuid = req.shift_uuid
                 data.nozzle_uuid = nozzle_uuid
                 data.value = value
+                data.date = date
                 if (request.file(`image[${i}]`)) {
                     const upload = await uploadImage(request, `image[${i}]`, 'report-nozzle/')
                     if (upload) {
@@ -90,7 +92,7 @@ class NozzleReportController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada input data'))
         } else {
             await trx.commit()
-            const nozzles = await transform.collection(report, NozzleReportTransformer)
+            const nozzles = await transform.collection(report, ReportNozzleTransformer)
 
             return response.status(200).json(baseResp(true, nozzles, 'Membuat Laporan Pompa'))
         }
@@ -98,7 +100,7 @@ class NozzleReportController {
 
     async update({ request, response, transform }) {
         const req = request.all()
-        const validation = await validate(req, { uuid: 'required', value: 'required|number' })
+        const validation = await validate(req, { uuid: 'required', value: 'required|number', date: 'required' })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let nozzle
@@ -112,6 +114,7 @@ class NozzleReportController {
 
         try {
             nozzle.value = req.value
+            nozzle.date = req.date
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'report-nozzle/')
                 if (upload) {
@@ -133,7 +136,7 @@ class NozzleReportController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        nozzle = await transform.item(nozzle, NozzleReportTransformer)
+        nozzle = await transform.item(nozzle, ReportNozzleTransformer)
 
         return response.status(200).json(baseResp(true, nozzle, 'Mengedit Laporan Pompa ' + nozzle.nozzle.name))
     }
@@ -146,7 +149,7 @@ class NozzleReportController {
         let nozzle
         try {
             nozzle = await ReportNozzle.query()
-                .where('uuid', req.uuid)
+                .where('uuid', req.uuid).with('nozzle')
                 .first()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
@@ -164,10 +167,10 @@ class NozzleReportController {
         }
         await nozzle.delete()
 
-        nozzle = await transform.item(nozzle, ProductTransformer)
+        nozzle = await transform.item(nozzle, ReportNozzleTransformer)
 
-        return response.status(200).json(baseResp(true, nozzle, 'Menghapus Laporan Pompa ' + nozzle.name))
+        return response.status(200).json(baseResp(true, nozzle, 'Menghapus Laporan Pompa ' + nozzle.nozzle.name))
     }
 }
 
-module.exports = NozzleReportController
+module.exports = ReportNozzleController
