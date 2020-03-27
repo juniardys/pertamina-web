@@ -1,6 +1,7 @@
 'use strict'
 
 const ReportNozzle = use('App/Models/ReportNozzle')
+const Shift = use('App/Models/Shift')
 const { validate } = use('Validator')
 const { queryBuilder, uploadImage, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
@@ -42,6 +43,12 @@ class ReportNozzleController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
+        const check = await ReportNozzle.query().where('date', req.date).where('shift_uuid', req.shift_uuid).getCount()
+        if (check > 0) {
+            const shift = await Shift.query().where('uuid', req.shift_uuid).first()
+            return response.status(400).json(baseResp(false, [], `Sudah ada Laporan Pompa pada shift ${shift.name} tanggal ${req.date}`))
+        }
+
         let report = []
         let countError = 0
         let imagePath = []
@@ -64,7 +71,7 @@ class ReportNozzleController {
                 data.shift_uuid = req.shift_uuid
                 data.nozzle_uuid = nozzle_uuid
                 data.value = value
-                data.date = date
+                data.date = req.date
                 if (request.file(`image[${i}]`)) {
                     const upload = await uploadImage(request, `image[${i}]`, 'report-nozzle/')
                     if (upload) {
@@ -81,7 +88,7 @@ class ReportNozzleController {
                     return response.status(400).json(baseResp(false, [], 'Gambar harus diisi.'))
                 }
             } catch (error) {
-                // console.log(error);
+                console.log(error);
                 countError++
             }
         }
