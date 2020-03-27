@@ -4,6 +4,13 @@
 const Model = use('Model')
 
 class ReportPayment extends Model {
+    // Setters
+    setCreatedAt(created_at) {
+        return new Date(created_at).toISOString()
+    }
+    setUpdatedAt(updated_at) {
+        return new Date(updated_at).toISOString()
+    }
 }
 
 module.exports = ReportPayment

@@ -84,6 +84,11 @@ Route.group(() => {
 	Route.post('delivery/store', 'DeliveryController.store')
 	Route.post('delivery/update', 'DeliveryController.update')
 	Route.post('delivery/delete', 'DeliveryController.delete')
+	// Nozzle Report
+	Route.get('nozzle-report/', 'NozzleReportController.get')
+	Route.post('nozzle-report/store', 'NozzleReportController.store')
+	Route.post('nozzle-report/update', 'NozzleReportController.update')
+	Route.post('nozzle-report/delete', 'NozzleReportController.delete')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

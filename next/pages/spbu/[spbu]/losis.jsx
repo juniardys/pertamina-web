@@ -96,6 +96,7 @@ class Losis extends Component {
 
         const dataItems = [
             {
+                date: 1,
                 start: 10747,
                 enter: 0,
                 sold: '512,43',
@@ -145,7 +146,9 @@ class Losis extends Component {
                         <table className="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th>
+                                        <center>Tanggal</center>
+                                    </th>
                                     <th>Awal</th>
                                     <th>Masuk</th>
                                     <th>Penjualan</th>
@@ -161,7 +164,9 @@ class Losis extends Component {
                                 ) : (
                                         dataItems.map((item, i) => (
                                             <tr key={i}>
-                                                <td>{i + 1}</td>
+                                                <td>
+                                                    <center>{item.date}</center>
+                                                </td>
                                                 <td>{item.start}</td>
                                                 <td>{item.enter}</td>
                                                 <td>{item.sold}</td>

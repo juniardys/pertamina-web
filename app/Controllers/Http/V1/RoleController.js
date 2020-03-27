@@ -10,7 +10,8 @@ const RoleTransformer = use('App/Transformers/V1/RoleTransformer')
 class RoleController {
     getRules() {
         let rules = {
-            name: 'required|max:254'
+            name: 'required|max:254',
+            mobile_layout: 'required'
         }
 
         return rules
@@ -49,6 +50,7 @@ class RoleController {
             role.uuid = uuid()
             role.name = req.name
             role.description = req.description
+            role.mobile_layout = req.mobile_layout
             await role.save()
             if (req.acl) {
                 let acl
@@ -85,6 +87,7 @@ class RoleController {
         try {
             role.name = req.name
             role.description = req.description
+            role.mobile_layout = req.mobile_layout
             await role.save()
             if (req.acl) {
                 let acl
