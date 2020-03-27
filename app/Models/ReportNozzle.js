@@ -4,7 +4,6 @@
 const Model = use('Model')
 
 class ReportNozzle extends Model {
-
     spbu() {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }
