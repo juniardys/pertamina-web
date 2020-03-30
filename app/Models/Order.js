@@ -16,6 +16,10 @@ class Order extends Model {
         return this.belongsTo('App/Models/Product', 'product_uuid', 'uuid')
     }
 
+    deliverys() {
+        return this.hasMany('App/Models/Delivery', 'uuid', 'order_uuid')
+    }
+
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

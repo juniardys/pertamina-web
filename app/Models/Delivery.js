@@ -16,6 +16,10 @@ class Delivery extends Model {
         return this.belongsTo('App/Models/Order', 'order_uuid', 'uuid')
     }
 
+    shift() {
+        return this.belongsTo('App/Models/Shift', 'shift_uuid', 'uuid')
+    }
+
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

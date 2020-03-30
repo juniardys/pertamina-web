@@ -9,6 +9,7 @@ class DeliverySchema extends Schema {
       table.increments()
       table.uuid('uuid').unique().notNullable()
       table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade')
+      table.uuid('shift_uuid').references('uuid').inTable('shifts').onDelete('cascade')
       table.uuid('order_uuid').references('uuid').inTable('orders').onDelete('cascade')
       table.integer('quantity').notNullable()
       table.date('receipt_date').nullable()

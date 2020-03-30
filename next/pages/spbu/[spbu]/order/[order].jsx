@@ -24,7 +24,9 @@ class OrderDetail extends Component {
             product_name: '',
             order_date: '',
             order_no: '',
+            shift_uuid: '',
             order_quantity: '',
+            shiftData: [],
             title: 'Konfirmasi Pengiriman',
             modalType: "create",
         }
@@ -68,6 +70,12 @@ class OrderDetail extends Component {
                 helperUnblock('.container-data')
             }
         }
+
+        const shifts = await get('/shift', {
+            filter_col: ['spbu_uuid'],
+            filter_val: [this.state.spbu_uuid]
+        })
+        if (shifts) this.setState({ shiftData: shifts.data.data })
     }
 
     handleInputChange = async (e) => {
@@ -94,6 +102,7 @@ class OrderDetail extends Component {
             police_no: item.police_no || '',
             driver: item.driver || '',
             receiver: item.receiver || '',
+            shift_uuid: item.shift_uuid || '',
             image: '',
             preview_image: '',
         })
@@ -120,6 +129,7 @@ class OrderDetail extends Component {
                 police_no: this.state.police_no,
                 driver: this.state.driver,
                 receiver: this.state.receiver,
+                shift_uuid: this.state.shift_uuid,
                 image: this.state.image
             })
             if (response.success) {
@@ -141,6 +151,7 @@ class OrderDetail extends Component {
                 police_no: this.state.police_no,
                 driver: this.state.driver,
                 receiver: this.state.receiver,
+                shift_uuid: this.state.shift_uuid,
                 image: this.state.image
             })
             if (response.success) {
@@ -163,6 +174,19 @@ class OrderDetail extends Component {
                     <label className="control-label col-lg-2">Kuantitas</label>
                     <div className="col-lg-10">
                         <input type="text" className="form-control" name="quantity" value={this.state.quantity} onChange={this.handleInputChange} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="control-label col-lg-2">Shift</label>
+                    <div className="col-lg-10">
+                        <select className="form-control" name="shift_uuid" defaultValue="" onChange={this.handleInputChange}>
+                            {(this.state.modalType == 'create') ? (<option value="">---- Pilih Shift ----</option>) : null}
+                            {
+                                this.state.shiftData.map((item, i) => (
+                                    <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.shift_uuid}>{item.name}</option>
+                                ))
+                            }
+                        </select>
                     </div>
                 </div>
                 <div className="form-group row">
@@ -296,9 +320,11 @@ class OrderDetail extends Component {
                                                 <td>{item.receiver}</td>
                                                 <td>
                                                     <center>
-                                                        <div className="thumbnail">
-                                                            <img src={item.image} alt={this.state.receipt_no} style={{ maxWidth: '100px' }} />
-                                                        </div>
+                                                        {(item.image) ? (
+                                                            <div className="thumbnail">
+                                                                <img src={item.image} alt={this.state.receipt_no} style={{ maxWidth: '100px' }} />
+                                                            </div>
+                                                        ) : null}
                                                     </center>
                                                 </td>
                                                 <td>

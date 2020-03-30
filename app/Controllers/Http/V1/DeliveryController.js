@@ -9,7 +9,7 @@ const Helpers = use('Helpers')
 
 class DeliveryController {
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Delivery.query(), request.all(), ['spbu_uuid', 'order_uuid', 'quantity', 'receipt_date', 'receipt_no', 'police_no', 'driver', 'receiver'])
+        const builder = await queryBuilder(Delivery.query(), request.all(), ['spbu_uuid', 'order_uuid', 'shift_uuid', 'quantity', 'receipt_date', 'receipt_no', 'police_no', 'driver', 'receiver'])
         let data = transform
         if (request.get().with) {
             data = data.include(request.get().with)
@@ -24,6 +24,7 @@ class DeliveryController {
         const validation = await validate(req, {
             spbu_uuid: 'required',
             order_uuid: 'required',
+            shift_uuid: 'required',
             quantity: 'required|number',
             receipt_date: 'required|date',
             receipt_no: 'required',
@@ -36,6 +37,7 @@ class DeliveryController {
         try {
             delivery.uuid = uuid()
             delivery.spbu_uuid = req.spbu_uuid
+            delivery.shift_uuid = req.shift_uuid
             delivery.order_uuid = req.order_uuid
             delivery.quantity = req.quantity
             delivery.receipt_date = req.receipt_date
@@ -75,6 +77,7 @@ class DeliveryController {
         rules['uuid'] = 'required'
         if (req.spbu_uuid) rules['spbu_uuid'] = 'required'
         if (req.order_uuid) rules['order_uuid'] = 'required'
+        if (req.shift_uuid) rules['shift_uuid'] = 'required'
         if (req.quantity) rules['quantity'] = 'required|number'
         if (req.receipt_date) rules['receipt_date'] = 'required|date'
         if (req.receipt_no) rules['receipt_no'] = 'required'
@@ -94,6 +97,7 @@ class DeliveryController {
 
         try {
             if (req.spbu_uuid) delivery.spbu_uuid = req.spbu_uuid
+            if (req.shift_uuid) delivery.shift_uuid = req.shift_uuid
             if (req.order_uuid) delivery.order_uuid = req.order_uuid
             if (req.quantity) delivery.quantity = req.quantity
             if (req.receipt_date) delivery.receipt_date = req.receipt_date

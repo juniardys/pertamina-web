@@ -3,6 +3,7 @@
 const BumblebeeTransformer = use('Bumblebee/Transformer')
 const OrderTransformer = use('App/Transformers/V1/OrderTransformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
+const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const moment = use('moment')
 const Env = use('Env')
 
@@ -14,7 +15,7 @@ const Env = use('Env')
  */
 class DeliveryTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['spbu', 'order']
+    return ['spbu', 'order', 'shift']
   }
 
   /**
@@ -27,6 +28,7 @@ class DeliveryTransformer extends BumblebeeTransformer {
       uuid: model.uuid,
       spbu_uuid: model.spbu_uuid,
       order_uuid: model.order_uuid,
+      shift_uuid: model.shift_uuid,
       quantity: model.quantity,
       receipt_date: moment(model.receipt_date, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD'),
       receipt_no: model.receipt_no,
@@ -45,6 +47,10 @@ class DeliveryTransformer extends BumblebeeTransformer {
 
   includeSpbu(model) {
     return this.item(model.getRelated('spbu'), SpbuTransformer)
+  }
+
+  includeShift(model) {
+    return this.item(model.getRelated('shift'), ShiftTransformer)
   }
 }
 
