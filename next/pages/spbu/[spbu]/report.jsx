@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import { checkAuth } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import Modal from '~/components/Modal'
 
 class Report extends Component {
     static getInitialProps({ query }) {
@@ -11,17 +12,111 @@ class Report extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            spbu_uuid: '',
+            spbu_name: '',
             filterDate: '',
-            spbu_name: ''
+            filterShift: '',
+            modalType: '',
+            productData: [],
+            shiftData: []
         }
     }
 
     async componentDidMount() {
         helperBlock('.container-data')
+
         await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
         this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
+
         const spbu = await get('/spbu', { search: this.props.query.spbu })
-        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
+        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name, spbu_uuid: spbu.data.data[0].uuid })
+
+        const shifts = await get('/shift', {
+            filter_col: ['spbu_uuid'],
+            filter_val: [this.state.spbu_uuid] 
+        })
+        if (shifts) this.setState({ shiftData: shifts.data.data })
+
+        const products = await get('/product')
+        if (products) this.setState({ productData: products.data.data })
+        console.log(this.state.shiftData);
+        
+    }
+
+    handleSelectChange = async (e) => {
+        let column = []
+        let value = []
+        await this.setState({
+            [e.target.name]: e.target.value
+        })
+        
+        if (this.state.filterDate != '') {
+            column.push('order_date')
+            value.push(this.state.filterDate)
+        }
+        if (this.state.filterShift != '') {
+            column.push('shift_uuid')
+            value.push(this.state.filterShift)
+        }
+    }
+
+    handleInputChange = async (e) => {
+        await this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
+    _setModalState = async (title, modalType, item) => {
+        await this.setState({
+            title: title,
+            modalType: modalType
+        })
+    }
+
+    renderModal = () => {
+        if (this.state.modalType.includes('nozzle')) {
+            console.log('Report Nozzle')
+        } else if (this.state.modalType.includes('payment')) {
+            console.log('Report Payment')
+        } else if (this.state.modalType.includes('feeder')) {
+            return (
+                <form className="form-horizontal" action="#">
+                    <input type="hidden" name="uuid" value={this.state.uuid} />
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Produk</label>
+                        <div className="col-lg-10">
+                            <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
+                                {
+                                    this.state.productData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Meteran Awal</label>
+                        <div className="col-lg-10">
+                            <input type="number" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Meteran Akhir</label>
+                        <div className="col-lg-10">
+                            <input type="number" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Volume</label>
+                        <div className="col-lg-10">
+                            <input type="number" className="form-control" name="volume" value={this.state.volume} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                </form>
+            )
+        }
+
+        return null
     }
 
     render() {
@@ -36,7 +131,6 @@ class Report extends Component {
             }
         ]
 
-
         return (
             <Layout title={'Laporan  ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <h1>{this.state.spbu_name}</h1>
@@ -44,17 +138,19 @@ class Report extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Tanggal</label>
-                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleInputChange} />
+                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleSelectChange} />
                         </div>
                     </div>
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Shift</label>
-                            <select className="form-control" name="filterShift" defaultValue="" onChange={this.handleInputChange}>
-                                <option defaultValue="all">Semua</option>
-                                <option defaultValue="1">Shift 1</option>
-                                <option defaultValue="2">Shift 2</option>
-                                <option defaultValue="3">Shift 3</option>
+                            <select className="form-control" name="filterShift" defaultValue="" onChange={this.handleSelectChange}>
+                                <option value="">Semua</option>
+                                {
+                                    this.state.shiftData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterShift}>{item.name}</option>
+                                    ))
+                                }
                             </select>
                         </div>
                     </div>
@@ -66,7 +162,7 @@ class Report extends Component {
 
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Laporan <span class="badge badge-warning" style={{ borderRadius: '2px' }}>Shift 1</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Laporan <span className={(this.state.filterShift == '') ? 'badge badge-primary' : 'badge badge-warning'} style={{ borderRadius: '2px' }}>{(this.state.filterShift == '') ? 'Semua' : this.state.filterShift}</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
 
                             <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
@@ -86,7 +182,7 @@ class Report extends Component {
                             <div id="collapsible-control-right-group1" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                 <div className="panel-body">
                                     <h5>
-                                        Laporan Pompa <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
+                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -113,7 +209,7 @@ class Report extends Component {
                                                 <td>600</td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
@@ -124,7 +220,7 @@ class Report extends Component {
                                     </table>
 
                                     <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
+                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -143,7 +239,7 @@ class Report extends Component {
                                                 <td> - </td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                                 </td>
@@ -154,7 +250,7 @@ class Report extends Component {
                                                 <td> - </td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
@@ -185,7 +281,7 @@ class Report extends Component {
                             <div id="collapsible-control-right-group2" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                 <div className="panel-body">
                                     <h5>
-                                        Laporan Pompa <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
+                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -212,7 +308,7 @@ class Report extends Component {
                                                 <td>600</td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
@@ -223,7 +319,7 @@ class Report extends Component {
                                     </table>
 
                                     <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
+                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -242,7 +338,7 @@ class Report extends Component {
                                                 <td> - </td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                                 </td>
@@ -253,7 +349,7 @@ class Report extends Component {
                                                 <td> - </td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                                     <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
@@ -320,7 +416,8 @@ class Report extends Component {
                     {/* Feeder Tank */}
                     <div className="panel panel-flat" style={{ margin: '4px' }}>
                         <div className="panel-heading">
-                            <h5 className="panel-title">Feeder Tank <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <h5 className="panel-title">Feeder Tank <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Feeder Tank', 'create-report-feeder', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
+                                <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                             <div className="heading-elements">
 
                             </div>
@@ -344,7 +441,7 @@ class Report extends Component {
                                     <td>400</td>
                                     <td>600</td>
                                     <td style={{ padding: '0px' }}>
-                                        <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                        <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
                                         <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                     </td>
@@ -391,6 +488,10 @@ class Report extends Component {
                         </table>
                     </div>
                 </div>
+
+                <Modal title={this.state.title} buttonYes='Submit' onClick={() => this._submit()}>
+                    {this.renderModal()}
+                </Modal>
             </Layout>
         )
     }
