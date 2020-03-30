@@ -66,7 +66,7 @@ class Report extends Component {
 
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Laporan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Laporan <span class="badge badge-warning" style={{ borderRadius: '2px' }}>Shift 1</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
 
                             <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
@@ -86,19 +86,20 @@ class Report extends Component {
                             <div id="collapsible-control-right-group1" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                 <div className="panel-body">
                                     <h5>
-                                        Laporan Pompa
+                                        Laporan Pompa <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th style={{ width: '10px' }}>#</th>
                                                 <th>Pompa</th>
                                                 <th>Produk</th>
                                                 <th>Meteran Awal</th>
+                                                <th>Pembelian (Liter)</th>
                                                 <th>Meteran Akhir</th>
                                                 <th>Volume</th>
                                                 <th>Omset</th>
-                                                <th>Aksi</th>
+                                                <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -107,62 +108,64 @@ class Report extends Component {
                                                 <td>A1</td>
                                                 <td>Premium</td>
                                                 <td>1000</td>
+                                                <td>300</td>
                                                 <td>400</td>
                                                 <td>600</td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
 
                                     <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan
+                                        Laporan Keuangan <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th style={{ width: '10px' }}>#</th>
                                                 <th>Metode Pembayaran</th>
-                                                <th>Nominal</th>
                                                 <th>Keterangan</th>
-                                                <th>Aksi</th>
+                                                <th>Nominal</th>
+                                                <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>1</td>
                                                 <td>Tunai</td>
-                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
+                                                <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>2</td>
                                                 <td>CC</td>
-                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
+                                                <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
 
                                         <tfoot style={{ borderTop: '2px solid #bbb' }}>
                                             <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td>Rp. 1.200.000</td>
@@ -182,19 +185,20 @@ class Report extends Component {
                             <div id="collapsible-control-right-group2" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                 <div className="panel-body">
                                     <h5>
-                                        Laporan Pompa
+                                        Laporan Pompa <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th style={{ width: '10px' }}>#</th>
                                                 <th>Pompa</th>
                                                 <th>Produk</th>
                                                 <th>Meteran Awal</th>
+                                                <th>Pembelian (Liter)</th>
                                                 <th>Meteran Akhir</th>
                                                 <th>Volume</th>
                                                 <th>Omset</th>
-                                                <th>Aksi</th>
+                                                <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -203,62 +207,64 @@ class Report extends Component {
                                                 <td>A1</td>
                                                 <td>Premium</td>
                                                 <td>1000</td>
+                                                <td>300</td>
                                                 <td>400</td>
                                                 <td>600</td>
                                                 <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
 
                                     <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan
+                                        Laporan Keuangan <button type="button" class="btn btn-sm bg-primary-400 btn-icon" style={{ borderRadius: '999px', marginLeft: '4px' }}><i class="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th style={{ width: '10px' }}>#</th>
                                                 <th>Metode Pembayaran</th>
-                                                <th>Nominal</th>
                                                 <th>Keterangan</th>
-                                                <th>Aksi</th>
+                                                <th>Nominal</th>
+                                                <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>1</td>
                                                 <td>Tunai</td>
-                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
+                                                <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>2</td>
                                                 <td>CC</td>
-                                                <td>Rp. 600.000</td>
                                                 <td> - </td>
+                                                <td>Rp. 600.000</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                    <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ marginLeft: '12px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
+                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                 </td>
                                             </tr>
                                         </tbody>
 
                                         <tfoot style={{ borderTop: '2px solid #bbb' }}>
                                             <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td>Rp. 1.200.000</td>
@@ -268,6 +274,47 @@ class Report extends Component {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="panel panel-flat" style={{ margin: '4px' }}>
+                        <div className="panel-heading">
+                            <h5 className="panel-title">Total Penjualan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <div className="heading-elements">
+
+                            </div>
+                        </div>
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '10px' }}>#</th>
+                                    <th>Produk</th>
+                                    <th>Volume (Liter)</th>
+                                    <th>Omset</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Pertamax Racing</td>
+                                    <td>2000</td>
+                                    <td>Rp. 2.400.000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Pertamax Turbo</td>
+                                    <td>2000</td>
+                                    <td>Rp. 2.400.000</td>
+                                </tr>
+                            </tbody>
+                            <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Rp. 4.800.000</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
 
                     {/* Feeder Tank */}
@@ -281,36 +328,32 @@ class Report extends Component {
                         <table className="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Pompa</th>
+                                    <th style={{ width: '10px' }}>#</th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
-                                    <th>Omset</th>
-                                    <th>Aksi</th>
+                                    <th style={{ width: '172px', padding: '0px' }}>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>1</td>
-                                    <td>A1</td>
                                     <td>Premium</td>
                                     <td>1000</td>
                                     <td>400</td>
                                     <td>600</td>
-                                    <td>Rp. 600.000</td>
-                                    <td>
-                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                    <td style={{ padding: '0px' }}>
+                                        <button type="button" className="btn btn-primary btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete"><i className="icon-trash"></i></button>
+                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    {/* Feeder Tank */}
+                    {/* Total Keuangan */}
                     <div className="panel panel-flat" style={{ margin: '4px' }}>
                         <div className="panel-heading">
                             <h5 className="panel-title">Total Keuangan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
@@ -321,7 +364,7 @@ class Report extends Component {
                         <table className="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th style={{ width: '10px' }}>#</th>
                                     <th>Metode Pembayaran</th>
                                     <th>Nominal</th>
                                 </tr>

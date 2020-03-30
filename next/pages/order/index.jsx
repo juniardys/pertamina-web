@@ -194,7 +194,7 @@ class Order extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Kuantitas</label>
+                    <label className="control-label col-lg-2">Kuantitas (Liter)</label>
                     <div className="col-lg-10">
                         <input type="text" className="form-control" name="quantity" value={this.state.quantity} onChange={this.handleInputChange} />
                     </div>
