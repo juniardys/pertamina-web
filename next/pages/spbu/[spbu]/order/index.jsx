@@ -5,6 +5,7 @@ import Modal from '~/components/Modal'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
+import Datepicker from 'react-datepicker'
 
 class Order extends Component {
     static getInitialProps({ query }) {
@@ -33,12 +34,12 @@ class Order extends Component {
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
         checkAclPage('spbu.manage.order.read')
         helperBlock('.container-data')
-        await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
+        await this.setState({ filterDate: moment().toDate() })
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/order', {
             with: ['spbu', 'product'],
             filter_col: ['spbu_uuid', 'order_date'],
-            filter_val: [this.props.query.spbu, this.state.filterDate],
+            filter_val: [this.props.query.spbu, moment(this.state.filterDate).format('YYYY-MM-DD')],
         })
         if (data != undefined && data.success) {
             this.setState({
@@ -69,10 +70,11 @@ class Order extends Component {
             column.push('product_uuid')
             value.push(this.state.filterProduct)
         }
-        if (this.state.filterDate != '') {
-            column.push('order_date')
-            value.push(this.state.filterDate)
-        }
+
+        column.push('order_date')
+        value.push(moment(this.state.filterDate).format("YYYY-MM-DD"))
+        column.push('spbu_uuid')
+        value.push(this.props.query.spbu)
 
         helperBlock('.container-data')
         const data = await get('/order', {
@@ -88,13 +90,46 @@ class Order extends Component {
         }
     }
 
+    handleCalendarChange = async (date) => {
+        let column = []
+        let value = []
+        await this.setState({ filterDate: date });
+
+        column.push('order_date')
+        value.push(moment(date).format("YYYY-MM-DD"))
+        column.push('spbu_uuid')
+        value.push(this.props.query.spbu)
+
+        if (this.state.filterProduct != '') {
+            column.push('product_uuid')
+            value.push(this.state.filterProduct)
+        }
+
+        helperBlock('.container-data')
+        const data = await get('/order', {
+            with: ['spbu', 'product'],
+            filter_col: column,
+            filter_val: value,
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+    };
+
+    handleInputDateChange = async (name, date) => {
+        await this.setState({ [name]: date });
+    };
+
     _setModalState = async (title, modalType, item) => {
         await this.setState({
             title: title,
             modalType: modalType,
             uuid: item.uuid || '',
             product_uuid: item.product_uuid || '',
-            order_date: item.order_date || '',
+            order_date: moment(item.order_date).toDate() || moment().toDate(),
             order_no: item.order_no || '',
             quantity: item.quantity || '',
         })
@@ -115,7 +150,7 @@ class Order extends Component {
                 spbu_uuid: this.props.query.spbu,
                 product_uuid: this.state.product_uuid,
                 order_no: this.state.order_no,
-                order_date: this.state.order_date,
+                order_date: moment(this.state.order_date).format('YYYY-MM-DD'),
                 quantity: this.state.quantity
             })
             if (response.success) {
@@ -132,7 +167,7 @@ class Order extends Component {
                 spbu_uuid: this.props.query.spbu,
                 product_uuid: this.state.product_uuid,
                 order_no: this.state.order_no,
-                order_date: this.state.order_date,
+                order_date: moment(this.state.order_date).format('YYYY-MM-DD'),
                 quantity: this.state.quantity
             })
             if (response.success) {
@@ -167,7 +202,7 @@ class Order extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Tanggal Pemesanan</label>
                     <div className="col-lg-10">
-                        <input type="date" className="form-control" name="order_date" value={this.state.order_date} onChange={this.handleInputChange} />
+                        <Datepicker className="form-control" selected={this.state.order_date} onChange={this.handleInputDateChange.bind(this, 'order_date')} dateFormat="dd/MM/yyyy"></Datepicker>
                     </div>
                 </div>
                 <div className="form-group row">
@@ -177,7 +212,7 @@ class Order extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Kuantitas (Pompa)</label>
+                    <label className="control-label col-lg-2">Kuantitas (Liter)</label>
                     <div className="col-lg-10">
                         <input type="text" className="form-control" name="quantity" value={this.state.quantity} onChange={this.handleInputChange} />
                     </div>
@@ -218,7 +253,9 @@ class Order extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Tanggal</label>
-                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleSelectChange} />
+                            <div>
+                                <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
+                            </div>
                         </div>
                     </div>
                     <div className="col-md-3">

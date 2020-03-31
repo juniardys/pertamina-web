@@ -16,6 +16,7 @@ class Report extends Component {
             spbu_name: '',
             filterDate: '',
             filterShift: '',
+            filterShiftName: '',
             modalType: '',
             productData: [],
             shiftData: []
@@ -33,23 +34,23 @@ class Report extends Component {
 
         const shifts = await get('/shift', {
             filter_col: ['spbu_uuid'],
-            filter_val: [this.state.spbu_uuid] 
+            filter_val: [this.state.spbu_uuid]
         })
         if (shifts) this.setState({ shiftData: shifts.data.data })
 
         const products = await get('/product')
         if (products) this.setState({ productData: products.data.data })
         console.log(this.state.shiftData);
-        
     }
 
     handleSelectChange = async (e) => {
         let column = []
         let value = []
+        const elem = e;
         await this.setState({
             [e.target.name]: e.target.value
         })
-        
+
         if (this.state.filterDate != '') {
             column.push('order_date')
             value.push(this.state.filterDate)
@@ -57,6 +58,8 @@ class Report extends Component {
         if (this.state.filterShift != '') {
             column.push('shift_uuid')
             value.push(this.state.filterShift)
+            const filterShift = document.getElementById("filterShift");
+            await this.setState({ filterShiftName: filterShift.options[filterShift.selectedIndex].text })
         }
     }
 
@@ -144,7 +147,7 @@ class Report extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Shift</label>
-                            <select className="form-control" name="filterShift" defaultValue="" onChange={this.handleSelectChange}>
+                            <select id="filterShift" className="form-control" name="filterShift" defaultValue="" onChange={this.handleSelectChange}>
                                 <option value="">Semua</option>
                                 {
                                     this.state.shiftData.map((item, i) => (
@@ -162,7 +165,7 @@ class Report extends Component {
 
                 <div className="panel panel-flat">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Laporan <span className={(this.state.filterShift == '') ? 'badge badge-primary' : 'badge badge-warning'} style={{ borderRadius: '2px' }}>{(this.state.filterShift == '') ? 'Semua' : this.state.filterShift}</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Laporan <span className={(this.state.filterShift == '') ? 'badge badge-primary' : 'badge badge-warning'} style={{ borderRadius: '2px' }}>{(this.state.filterShift == '') ? 'Semua' : this.state.filterShiftName}</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
 
                             <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
@@ -182,7 +185,7 @@ class Report extends Component {
                             <div id="collapsible-control-right-group1" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                 <div className="panel-body">
                                     <h5>
-                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
+                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -194,7 +197,7 @@ class Report extends Component {
                                                 <th>Pembelian (Liter)</th>
                                                 <th>Meteran Akhir</th>
                                                 <th>Volume</th>
-                                                <th>Omset</th>
+                                                <th style={{ width: '140px' }}>Omset</th>
                                                 <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
@@ -220,7 +223,7 @@ class Report extends Component {
                                     </table>
 
                                     <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
+                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -228,7 +231,7 @@ class Report extends Component {
                                                 <th style={{ width: '10px' }}>#</th>
                                                 <th>Metode Pembayaran</th>
                                                 <th>Keterangan</th>
-                                                <th>Nominal</th>
+                                                <th style={{ width: '140px' }}>Nominal</th>
                                                 <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
@@ -281,7 +284,7 @@ class Report extends Component {
                             <div id="collapsible-control-right-group2" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                 <div className="panel-body">
                                     <h5>
-                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
+                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -293,7 +296,7 @@ class Report extends Component {
                                                 <th>Pembelian (Liter)</th>
                                                 <th>Meteran Akhir</th>
                                                 <th>Volume</th>
-                                                <th>Omset</th>
+                                                <th style={{ width: '140px' }}>Omset</th>
                                                 <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
@@ -319,7 +322,7 @@ class Report extends Component {
                                     </table>
 
                                     <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
+                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])}><i className="icon-plus3"></i></button>
                                     </h5>
                                     <table className="table table-striped">
                                         <thead>
@@ -327,7 +330,7 @@ class Report extends Component {
                                                 <th style={{ width: '10px' }}>#</th>
                                                 <th>Metode Pembayaran</th>
                                                 <th>Keterangan</th>
-                                                <th>Nominal</th>
+                                                <th style={{ width: '140px' }}>Nominal</th>
                                                 <th style={{ width: '172px' }}>Aksi</th>
                                             </tr>
                                         </thead>
@@ -385,7 +388,7 @@ class Report extends Component {
                                     <th style={{ width: '10px' }}>#</th>
                                     <th>Produk</th>
                                     <th>Volume (Liter)</th>
-                                    <th>Omset</th>
+                                    <th style={{ width: '332px' }}>Omset</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -416,7 +419,7 @@ class Report extends Component {
                     {/* Feeder Tank */}
                     <div className="panel panel-flat" style={{ margin: '4px' }}>
                         <div className="panel-heading">
-                            <h5 className="panel-title">Feeder Tank <button type="button" className="btn btn-sm bg-primary-400 btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Feeder Tank', 'create-report-feeder', [])} style={{ borderRadius: '999px', marginLeft: '4px' }}><i className="icon-plus3"></i></button>
+                            <h5 className="panel-title">Feeder Tank <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Feeder Tank', 'create-report-feeder', [])}><i className="icon-plus3"></i></button>
                                 <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                             <div className="heading-elements">
 
@@ -428,6 +431,7 @@ class Report extends Component {
                                     <th style={{ width: '10px' }}>#</th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
+                                    <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
                                     <th style={{ width: '172px', padding: '0px' }}>Aksi</th>
@@ -438,6 +442,7 @@ class Report extends Component {
                                     <td>1</td>
                                     <td>Premium</td>
                                     <td>1000</td>
+                                    <td>300</td>
                                     <td>400</td>
                                     <td>600</td>
                                     <td style={{ padding: '0px' }}>
@@ -463,7 +468,7 @@ class Report extends Component {
                                 <tr>
                                     <th style={{ width: '10px' }}>#</th>
                                     <th>Metode Pembayaran</th>
-                                    <th>Nominal</th>
+                                    <th style={{ width: '332px' }}>Nominal</th>
                                 </tr>
                             </thead>
                             <tbody>

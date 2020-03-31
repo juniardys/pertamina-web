@@ -6,6 +6,7 @@ import Router from 'next/router'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
+import Datepicker from 'react-datepicker'
 
 class OrderDetail extends Component {
     constructor(props) {
@@ -90,13 +91,17 @@ class OrderDetail extends Component {
         })
     }
 
+    handleInputDateChange = async (name, date) => {
+        await this.setState({ [name]: date });
+    };
+
     _setModalState = async (title, modalType, item) => {
         await this.setState({
             title: title,
             modalType: modalType,
             uuid: item.uuid || '',
             quantity: item.quantity || '',
-            receipt_date: item.receipt_date || '',
+            receipt_date: moment(item.receipt_date).toDate() || moment().toDate(),
             receipt_no: item.receipt_no || '',
             police_no: item.police_no || '',
             driver: item.driver || '',
@@ -123,7 +128,7 @@ class OrderDetail extends Component {
                 spbu_uuid: this.state.spbu_uuid,
                 order_uuid: this.props.query.order,
                 quantity: this.state.quantity,
-                receipt_date: this.state.receipt_date,
+                receipt_date: moment(this.state.receipt_date).format('YYYY-MM-DD'),
                 receipt_no: this.state.receipt_no,
                 police_no: this.state.police_no,
                 driver: this.state.driver,
@@ -145,7 +150,7 @@ class OrderDetail extends Component {
                 spbu_uuid: this.state.spbu_uuid,
                 order_uuid: this.props.query.order,
                 quantity: this.state.quantity,
-                receipt_date: this.state.receipt_date,
+                receipt_date: moment(this.state.receipt_date).format('YYYY-MM-DD'),
                 receipt_no: this.state.receipt_no,
                 police_no: this.state.police_no,
                 driver: this.state.driver,
@@ -191,7 +196,7 @@ class OrderDetail extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Tanggal Penerimaan</label>
                     <div className="col-lg-10">
-                        <input type="date" className="form-control" name="receipt_date" defaultValue={this.state.receipt_date} onChange={this.handleInputChange} />
+                        <Datepicker className="form-control" selected={this.state.receipt_date} onChange={this.handleInputDateChange.bind(this, 'receipt_date')} dateFormat="dd/MM/yyyy"></Datepicker>
                     </div>
                 </div>
                 <div className="form-group row">

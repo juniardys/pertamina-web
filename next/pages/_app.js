@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { initStore } from "~/redux/store";
 import Script from "~/components/Script"
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import "react-datepicker/dist/react-datepicker.css";
 
 class MyApp extends App {
     static async getInitialProps({ Component, ctx }) {

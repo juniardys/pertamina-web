@@ -6,6 +6,7 @@ import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import moment from 'moment'
 import AccessList from '~/components/AccessList'
+import Datepicker from 'react-datepicker'
 
 class Order extends Component {
     constructor(props) {
@@ -31,12 +32,12 @@ class Order extends Component {
     async componentDidMount() {
         checkAclPage('order.read')
         helperBlock('.container-data')
-        await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
+        await this.setState({ filterDate: moment().toDate() })
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/order', {
             with: ['spbu', 'product'],
             filter_col: ['order_date'],
-            filter_val: [this.state.filterDate]
+            filter_val: [moment(this.state.filterDate).format('YYYY-MM-DD')]
         })
 
         if (data != undefined && data.success) {
@@ -64,18 +65,16 @@ class Order extends Component {
         await this.setState({
             [e.target.name]: e.target.value
         })
-        if (this.state.filterSPBU != '') {
-            column.push('spbu_uuid')
-            value.push(this.state.filterSPBU)
-        }
+
         if (this.state.filterProduct != '') {
             column.push('product_uuid')
             value.push(this.state.filterProduct)
         }
-        if (this.state.filterDate != '') {
-            column.push('order_date')
-            value.push(this.state.filterDate)
-        }
+
+        column.push('order_date')
+        value.push(moment(this.state.filterDate).format("YYYY-MM-DD"))
+        column.push('spbu_uuid')
+        value.push(this.state.filterSPBU)
 
         helperBlock('.container-data')
         const data = await get('/order', {
@@ -91,6 +90,39 @@ class Order extends Component {
         }
     }
 
+    handleCalendarChange = async (date) => {
+        let column = []
+        let value = []
+        await this.setState({ filterDate: date });
+
+        column.push('order_date')
+        value.push(moment(date).format("YYYY-MM-DD"))
+        column.push('spbu_uuid')
+        value.push(this.state.filterSPBU)
+
+        if (this.state.filterProduct != '') {
+            column.push('product_uuid')
+            value.push(this.state.filterProduct)
+        }
+
+        helperBlock('.container-data')
+        const data = await get('/order', {
+            with: ['spbu', 'product'],
+            filter_col: column,
+            filter_val: value,
+        })
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+    };
+
+    handleInputDateChange = async (name, date) => {
+        await this.setState({ [name]: date });
+    };
+
     _setModalState = async (title, modalType, item) => {
         await this.setState({
             title: title,
@@ -98,7 +130,7 @@ class Order extends Component {
             uuid: item.uuid || '',
             spbu_uuid: item.spbu_uuid || '',
             product_uuid: item.product_uuid || '',
-            order_date: item.order_date || '',
+            order_date: moment(item.order_date).toDate() || moment().toDate(),
             order_no: item.order_no || '',
             quantity: item.quantity || '',
         })
@@ -119,7 +151,7 @@ class Order extends Component {
                 spbu_uuid: this.state.spbu_uuid,
                 product_uuid: this.state.product_uuid,
                 order_no: this.state.order_no,
-                order_date: this.state.order_date,
+                order_date: moment(this.state.order_date).format('YYYY-MM-DD'),
                 quantity: this.state.quantity
             })
             if (response.success) {
@@ -136,7 +168,7 @@ class Order extends Component {
                 spbu_uuid: this.state.spbu_uuid,
                 product_uuid: this.state.product_uuid,
                 order_no: this.state.order_no,
-                order_date: this.state.order_date,
+                order_date: moment(this.state.order_date).format('YYYY-MM-DD'),
                 quantity: this.state.quantity
             })
             if (response.success) {
@@ -184,7 +216,7 @@ class Order extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Tanggal Pemesanan</label>
                     <div className="col-lg-10">
-                        <input type="date" className="form-control" name="order_date" value={this.state.order_date} onChange={this.handleInputChange} />
+                        <Datepicker className="form-control" selected={this.state.order_date} onChange={this.handleInputDateChange.bind(this, 'order_date')} dateFormat="dd/MM/yyyy"></Datepicker>
                     </div>
                 </div>
                 <div className="form-group row">
@@ -243,7 +275,9 @@ class Order extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Tanggal</label>
-                            <input type="date" className="form-control" name="filterDate" value={this.state.filterDate} onChange={this.handleSelectChange} />
+                            <div>
+                                <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
+                            </div>
                         </div>
                     </div>
                     <div className="col-md-3">

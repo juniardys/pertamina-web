@@ -5,6 +5,7 @@ import Modal from '~/components/Modal'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
+import Datepicker from 'react-datepicker'
 
 class Losis extends Component {
     static getInitialProps({ query }) {
@@ -33,7 +34,7 @@ class Losis extends Component {
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
         checkAclPage('spbu.manage.losis.read')
         // helperBlock('.container-data')
-        await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
+        await this.setState({ filterDate: moment().toDate() })
         // const data = await get('/order', {
         //     with: ['spbu', 'product'],
         //     filter_col: ['spbu_uuid', 'order_date'],
@@ -48,7 +49,6 @@ class Losis extends Component {
 
         const products = await get('/product')
         if (products && products.success) this.setState({ productData: products.data.data })
-
     }
 
     handleSelectChange = async (e) => {
@@ -80,6 +80,10 @@ class Losis extends Component {
         //     helperUnblock('.container-data')
         // }
     }
+
+    handleCalendarChange = date => {
+        this.setState({ filterDate: moment(date).format("YYYY-MM-DD") });
+    };
 
     render() {
         const breadcrumb = [
@@ -123,7 +127,9 @@ class Losis extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Bulan</label>
-                            <input type="date" className="form-control" name="filterDate" defaultValue={this.state.filterDate} onChange={this.handleSelectChange} />
+                            <div>
+                                <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
+                            </div>
                         </div>
                     </div>
                     <div className="col-md-3">
