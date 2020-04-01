@@ -78,9 +78,67 @@ class Report extends Component {
 
     renderModal = () => {
         if (this.state.modalType.includes('nozzle')) {
-            console.log('Report Nozzle')
+            return (
+                <form className="form-horizontal" action="#">
+                    <input type="hidden" name="uuid" value={this.state.uuid} />
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Pompa</label>
+                        <div className="col-lg-10">
+                            <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
+                                <option value="">--- Pilih Pompa ---</option>
+                                <option value="A1">A1</option>
+                                <option value="A2">A2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Meteran Awal</label>
+                        <div className="col-lg-10">
+                            <input type="number" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Meteran Akhir</label>
+                        <div className="col-lg-10">
+                            <input type="number" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Upload Foto</label>
+                        <div className="col-lg-10">
+                            <input type="file" className="form-control" name="file" accept="image/png, image/jpeg" onChange={this.handleFileChange} ref={ref => this.fileInput = ref} />
+                        </div>
+                    </div>
+                </form>
+            )
         } else if (this.state.modalType.includes('payment')) {
-            console.log('Report Payment')
+            return (
+                <form className="form-horizontal" action="#">
+                    <input type="hidden" name="uuid" value={this.state.uuid} />
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Metode Pembayaran</label>
+                        <div className="col-lg-10">
+                            <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
+                                <option value="">--- Pilih Metode Pembayaran ---</option>
+                                <option value="Tunai">Tunai</option>
+                                <option value="CC">CC</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Keterangan</label>
+                        <div className="col-lg-10">
+                            <input type="text" className="form-control" name="description" value={this.state.description} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="form-group row">
+                        <label className="control-label col-lg-2">Nominal</label>
+                        <div className="col-lg-10">
+                            <input type="number" className="form-control" name="nominal" value={this.state.nominal} onChange={this.handleInputChange} />
+                        </div>
+                    </div>
+                </form>
+            )
         } else if (this.state.modalType.includes('feeder')) {
             return (
                 <form className="form-horizontal" action="#">
@@ -107,12 +165,6 @@ class Report extends Component {
                         <label className="control-label col-lg-2">Meteran Akhir</label>
                         <div className="col-lg-10">
                             <input type="number" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
-                        </div>
-                    </div>
-                    <div className="form-group row">
-                        <label className="control-label col-lg-2">Volume</label>
-                        <div className="col-lg-10">
-                            <input type="number" className="form-control" name="volume" value={this.state.volume} onChange={this.handleInputChange} />
                         </div>
                     </div>
                 </form>
