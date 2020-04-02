@@ -16,8 +16,12 @@ const Env = use('Env')
  * @constructor
  */
 class ReportPaymentTransformer extends BumblebeeTransformer {
+  static get defaultInclude() {
+    return ['paymentMethod']
+  }
+
   static get availableInclude() {
-    return ['spbu', 'island', 'shift', 'payment_method']
+    return ['spbu', 'island', 'shift']
   }
 
   /**
@@ -52,7 +56,7 @@ class ReportPaymentTransformer extends BumblebeeTransformer {
   }
 
   includePaymentMethod(model) {
-    return this.item(model.getRelated('payment_method'), PaymentMethodTransformer)
+    return this.item(model.getRelated('paymentMethod'), PaymentMethodTransformer)
   }
 }
 

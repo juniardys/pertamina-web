@@ -98,6 +98,10 @@ Route.group(() => {
 	Route.get('report-coworker/', 'ReportCoWorkerController.get')
 	Route.post('report-coworker/store', 'ReportCoWorkerController.store')
 	Route.post('report-coworker/delete', 'ReportCoWorkerController.delete')
+	// Get Report
+	Route.get('report/island', 'ReportController.island')
+	Route.get('report/payment', 'ReportController.payment')
+	Route.get('report/feeder', 'ReportController.feeder')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

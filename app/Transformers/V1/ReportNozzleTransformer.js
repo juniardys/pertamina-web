@@ -5,6 +5,7 @@ const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const NozzleTransformer = use('App/Transformers/V1/NozzleTransformer')
+const ReportNozzle = use('App/Models/ReportNozzle')
 const moment = use('moment')
 const Env = use('Env')
 
@@ -15,16 +16,21 @@ const Env = use('Env')
  * @constructor
  */
 class ReportNozzleTransformer extends BumblebeeTransformer {
+  static get defaultInclude() {
+    return ['nozzle']
+  }
+  
   static get availableInclude() {
-    return ['spbu', 'island', 'shift', 'nozzle']
+    return ['spbu', 'island', 'shift']
   }
 
   /**
    * This method is used to transform the data.
    */
-  transform(model) {
+  async transform(model) {
     moment.locale('id')
-
+    // const test = await ReportNozzle.query().where('uuid', model.uuid).first()
+    
     return {
       uuid: model.uuid,
       spbu_uuid: model.spbu_uuid,

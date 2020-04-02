@@ -17,7 +17,7 @@ class ReportPayment extends Model {
     }
 
     paymentMethod() {
-        return this.belongsTo('App/Models/paymentMethod', 'payment_method_uuid', 'uuid')
+        return this.belongsTo('App/Models/PaymentMethod', 'payment_method_uuid', 'uuid')
     }
     // Setters
     setDate(date) {

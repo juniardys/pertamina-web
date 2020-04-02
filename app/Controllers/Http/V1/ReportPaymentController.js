@@ -1,6 +1,7 @@
 'use strict'
 
 const ReportPayment = use('App/Models/ReportPayment')
+const Shift = use('App/Models/Shift')
 const { validate } = use('Validator')
 const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
@@ -29,6 +30,12 @@ class ReportPaymentController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
+        const check = await ReportPayment.query().where('date', req.date).where('shift_uuid', req.shift_uuid).getCount()
+        if (check > 0) {
+            const shift = await Shift.query().where('uuid', req.shift_uuid).first()
+            return response.status(400).json(baseResp(false, [], `Sudah ada Laporan Pompa pada shift ${shift.name} tanggal ${req.date}`))
+        }
+
         let report = []
         let countError = 0
         const trx = await Database.beginTransaction()
@@ -50,6 +57,8 @@ class ReportPaymentController {
                 data.payment_method_uuid = payment_method_uuid
                 data.value = value
                 data.date = req.date
+                await data.save()
+                report.push(data)
             } catch (error) {
                 // console.log(error);
                 countError++

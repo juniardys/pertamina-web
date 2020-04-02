@@ -12,6 +12,10 @@ class Island extends Model {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }
 
+    reportNozzle() {
+        return this.hasMany('App/Models/ReportNozzle', 'uuid', 'island_uuid')
+    }
+
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

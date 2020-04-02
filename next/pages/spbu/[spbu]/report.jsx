@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Base";
 import { checkAuth } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import Modal from '~/components/Modal'
+import axios from 'axios'
 
 class Report extends Component {
     static getInitialProps({ query }) {
@@ -19,13 +20,14 @@ class Report extends Component {
             filterShiftName: '',
             modalType: '',
             productData: [],
-            shiftData: []
+            shiftData: [],
+            dataReportIsland: [],
+            selectedIsland: ''
         }
     }
 
     async componentDidMount() {
         helperBlock('.container-data')
-
         await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
         this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
 
@@ -40,7 +42,16 @@ class Report extends Component {
 
         const products = await get('/product')
         if (products) this.setState({ productData: products.data.data })
-        console.log(this.state.shiftData);
+
+        await axios.get(`/api/v1/report/island?api_key=${process.env.APP_API_KEY}&spbu_uuid=${this.props.query.spbu}&shift_uuid=${this.state.filterShift}&date=${this.state.filterDate}`,
+            { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+            .then(response => {
+                console.log(response.data);
+                this.setState({ dataReportIsland: response.data.data })
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 
     handleSelectChange = async (e) => {
@@ -228,205 +239,107 @@ class Report extends Component {
                     </div>
 
                     <div className="panel-group panel-group-control panel-group-control-right content-group-lg" style={{ margin: '0px 4px' }}>
-                        <div className="panel panel-white">
-                            <div className="panel-heading">
-                                <h6 className="panel-title">
-                                    <a data-toggle="collapse" href="#collapsible-control-right-group1" aria-expanded="false" className="collapsed">Island 1</a>
-                                </h6>
-                            </div>
-                            <div id="collapsible-control-right-group1" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
-                                <div className="panel-body">
-                                    <h5>
-                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])}><i className="icon-plus3"></i></button>
-                                    </h5>
-                                    <table className="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '10px' }}>#</th>
-                                                <th>Pompa</th>
-                                                <th>Produk</th>
-                                                <th>Meteran Awal</th>
-                                                <th>Pembelian (Liter)</th>
-                                                <th>Meteran Akhir</th>
-                                                <th>Volume</th>
-                                                <th style={{ width: '140px' }}>Omset</th>
-                                                <th style={{ width: '172px' }}>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>A1</td>
-                                                <td>Premium</td>
-                                                <td>1000</td>
-                                                <td>300</td>
-                                                <td>400</td>
-                                                <td>600</td>
-                                                <td>Rp. 600.000</td>
-                                                <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
+                        {(this.state.dataReportIsland == '') ? null : (
+                            this.state.dataReportIsland.map((data, i) => (
+                                <div className="panel panel-white">
+                                    <div className="panel-heading">
+                                        <h6 className="panel-title">
+                                            <a data-toggle="collapse" href={'#' + data.uuid} aria-expanded="false" className="collapsed">{data.name}</a>
+                                        </h6>
+                                    </div>
+                                    <div id={data.uuid} className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
+                                        <div className="panel-body">
+                                            <h5>
+                                                Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])}><i className="icon-plus3"></i></button>
+                                            </h5>
+                                            <table className="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{ width: '10px' }}>#</th>
+                                                        <th>Pompa</th>
+                                                        <th>Produk</th>
+                                                        <th>Meteran Awal</th>
+                                                        <th>Pembelian (Liter)</th>
+                                                        <th>Meteran Akhir</th>
+                                                        <th>Volume</th>
+                                                        <th style={{ width: '140px' }}>Omset</th>
+                                                        <th style={{ width: '172px' }}>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {(data.reportNozzle == '') ? null : (
+                                                        data.reportNozzle.map((report, i) => (
+                                                            <tr>
+                                                                <td>{i + 1}</td>
+                                                                <td>{report.nozzle.name}</td>
+                                                                <td>{report.nozzle.product.name}</td>
+                                                                <td>-</td>
+                                                                <td>-</td>
+                                                                <td>{report.value}</td>
+                                                                <td>-</td>
+                                                                <td>Rp. -</td>
+                                                                <td>
+                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
 
-                                    <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])}><i className="icon-plus3"></i></button>
-                                    </h5>
-                                    <table className="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '10px' }}>#</th>
-                                                <th>Metode Pembayaran</th>
-                                                <th>Keterangan</th>
-                                                <th style={{ width: '140px' }}>Nominal</th>
-                                                <th style={{ width: '172px' }}>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Tunai</td>
-                                                <td> - </td>
-                                                <td>Rp. 600.000</td>
-                                                <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    )}
+                                                </tbody>
+                                            </table>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>CC</td>
-                                                <td> - </td>
-                                                <td>Rp. 600.000</td>
-                                                <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                            <h5 style={{ marginTop: '20px' }}>
+                                                Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])}><i className="icon-plus3"></i></button>
+                                            </h5>
+                                            <table className="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{ width: '10px' }}>#</th>
+                                                        <th>Metode Pembayaran</th>
+                                                        <th>Keterangan</th>
+                                                        <th style={{ width: '140px' }}>Nominal</th>
+                                                        <th style={{ width: '172px' }}>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {(data.reportPayment == '') ? null : (
+                                                        data.reportPayment.map((report, i) => (
+                                                            <tr>
+                                                                <td>{i + 1}</td>
+                                                                <td>{report.paymentMethod.name}</td>
+                                                                <td> - </td>
+                                                                <td>Rp. {report.value}</td>
+                                                                <td>
+                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
 
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
+                                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    )}
+                                                </tbody>
 
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-
-                                        <tfoot style={{ borderTop: '2px solid #bbb' }}>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>Rp. 1.200.000</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                                <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>Rp. 1.200.000</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="panel panel-white">
-                            <div className="panel-heading">
-                                <h6 className="panel-title">
-                                    <a data-toggle="collapse" href="#collapsible-control-right-group2" aria-expanded="false" className="collapsed">Island 2</a>
-                                </h6>
-                            </div>
-                            <div id="collapsible-control-right-group2" className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
-                                <div className="panel-body">
-                                    <h5>
-                                        Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])}><i className="icon-plus3"></i></button>
-                                    </h5>
-                                    <table className="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '10px' }}>#</th>
-                                                <th>Pompa</th>
-                                                <th>Produk</th>
-                                                <th>Meteran Awal</th>
-                                                <th>Pembelian (Liter)</th>
-                                                <th>Meteran Akhir</th>
-                                                <th>Volume</th>
-                                                <th style={{ width: '140px' }}>Omset</th>
-                                                <th style={{ width: '172px' }}>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>A1</td>
-                                                <td>Premium</td>
-                                                <td>1000</td>
-                                                <td>300</td>
-                                                <td>400</td>
-                                                <td>600</td>
-                                                <td>Rp. 600.000</td>
-                                                <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
-
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
-
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <h5 style={{ marginTop: '20px' }}>
-                                        Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])}><i className="icon-plus3"></i></button>
-                                    </h5>
-                                    <table className="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '10px' }}>#</th>
-                                                <th>Metode Pembayaran</th>
-                                                <th>Keterangan</th>
-                                                <th style={{ width: '140px' }}>Nominal</th>
-                                                <th style={{ width: '172px' }}>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Tunai</td>
-                                                <td> - </td>
-                                                <td>Rp. 600.000</td>
-                                                <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
-
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>CC</td>
-                                                <td> - </td>
-                                                <td>Rp. 600.000</td>
-                                                <td>
-                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
-
-                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
-
-                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-
-                                        <tfoot style={{ borderTop: '2px solid #bbb' }}>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>Rp. 1.200.000</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                            ))
+                        )}
                     </div>
 
+                    {/* Total Sales */}
                     <div className="panel panel-flat" style={{ margin: '4px' }}>
                         <div className="panel-heading">
                             <h5 className="panel-title">Total Penjualan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
