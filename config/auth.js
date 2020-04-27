@@ -16,7 +16,7 @@ module.exports = {
   | Available Serializers - lucid, database
   |
   */
-  authenticator: 'session',
+  authenticator: 'api',
 
   /*
   |--------------------------------------------------------------------------
@@ -90,5 +90,14 @@ module.exports = {
     scheme: 'api',
     uid: 'email',
     password: 'password'
-  }
+  },
+
+  // Custom Auth with clients table
+  client: {
+    serializer: 'lucid',
+    model: 'App/Models/Client',
+    scheme: 'api',
+    uid: 'email',
+    password: 'password'
+  },
 }

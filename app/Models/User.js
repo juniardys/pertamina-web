@@ -7,7 +7,7 @@ const Hash = use('Hash')
 const Model = use('Model')
 
 class User extends Model {
-  static boot () {
+  static boot() {
     super.boot()
 
     /**
@@ -19,6 +19,8 @@ class User extends Model {
         userInstance.password = await Hash.make(userInstance.password)
       }
     })
+
+    this.addTrait('@provider:Lucid/SoftDeletes')
   }
 
   /**
@@ -31,8 +33,31 @@ class User extends Model {
    *
    * @return {Object}
    */
-  tokens () {
+  tokens() {
     return this.hasMany('App/Models/Token')
+  }
+
+  static get hidden() {
+    return ['password']
+  }
+
+  role() {
+    return this.belongsTo('App/Models/Role', 'role_uuid', 'uuid')
+  }
+
+  spbu() {
+    return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
+  }
+
+  // Setters
+  setDeletedAt(deleted_at) {
+    return new Date(deleted_at).toISOString()
+  }
+  setCreatedAt(created_at) {
+    return new Date(created_at).toISOString()
+  }
+  setUpdatedAt(updated_at) {
+    return new Date(updated_at).toISOString()
   }
 }
 
