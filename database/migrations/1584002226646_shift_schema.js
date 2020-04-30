@@ -13,6 +13,8 @@ class ShiftSchema extends Schema {
       // table.text('description').nullable()
       table.time('start').notNullable()
       table.time('end').notNullable()
+      // table.boolean('is_first').default(false) // Custom first shift
+      table.integer('no_order').unsigned().nullable()
       table.timestamps()
     })
   }

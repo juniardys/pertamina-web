@@ -34,6 +34,8 @@ class Report extends Component {
         const data = await get('/shift', {
             filter_col: ['spbu_uuid'],
             filter_val: [this.props.query.spbu],
+            order_col: ['no_order'],
+            order_val: ['asc'],
         })
         if (data != undefined && data.success) {
             this.setState({
