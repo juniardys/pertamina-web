@@ -24,7 +24,7 @@ class RoleTransformer extends BumblebeeTransformer {
       uuid: model.uuid,
       name: model.name,
       description: model.description,
-      slug: model.slug,
+      mobile_layout: model.mobile_layout,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
     }
