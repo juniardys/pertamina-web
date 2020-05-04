@@ -29,7 +29,7 @@ class RoleSeeder {
       {
         name: "Admin",
         description: "Jabatan Admin",
-        mobile_layout: 'operator',
+        mobile_layout: 'admin',
         role: {
           "spbu.manage.report": "Mengatur Report",
           "spbu.manage.user": "Mengatur Pengguna",

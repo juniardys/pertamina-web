@@ -14,6 +14,7 @@ class Role extends Component {
             uuid: '',
             name: '',
             description: '',
+            mobile_layout: 'operator',
             title: 'Buat Jabatan',
             modalType: "create",
             dataItems: [],
@@ -63,9 +64,12 @@ class Role extends Component {
             uuid: item.uuid || '',
             name: item.name || '',
             description: item.description || '',
+            mobile_layout: item.mobile_layout || 'operator',
             checked: acl,
             expanded: []
         })
+
+        console.log(this.state);
     }
 
     _deleteRole = async (uuid) => {
@@ -82,6 +86,7 @@ class Role extends Component {
             const response = await store('/role/store', {
                 name: this.state.name,
                 description: this.state.description,
+                mobile_layout: this.state.mobile_layout,
                 acl: this.state.checked
             })
             if (response.success) {
@@ -98,6 +103,7 @@ class Role extends Component {
             const response = await update('/role/update', this.state.uuid, {
                 name: this.state.name,
                 description: this.state.description,
+                mobile_layout: this.state.mobile_layout,
                 acl: this.state.checked
             })
             if (response.success) {
@@ -127,6 +133,17 @@ class Role extends Component {
                     <label className="control-label col-lg-2">Deskripsi</label>
                     <div className="col-lg-10">
                         <input type="text" className="form-control" name="description" value={this.state.description} onChange={this.handleInputChange} />
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Tata letak Seluler</label>
+                    <div className="col-lg-10" onChange={this.handleInputChange} defaultChecked={this.state.mobile_layout}>
+                        <label className="radio-inline">
+                            <input type="radio" name="mobile_layout" value="admin" checked={this.state.mobile_layout === 'admin'}/>Admin
+                        </label>
+                        <label className="radio-inline">
+                            <input type="radio" name="mobile_layout" value="operator" checked={this.state.mobile_layout === 'operator'}/>Operator
+                        </label>
                     </div>
                 </div>
                 <div>
@@ -173,48 +190,48 @@ class Role extends Component {
                                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Jabatan', 'create', [])}><i className="icon-user-plus position-left"></i> Tambah</button>
                             </AccessList>
                         </div>
-                        </div>
-                        <div className="table-responsive">
-                            <table className="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Deskripsi</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(this.state.dataItems == '') ? (
-                                        <tr>
-                                            <td colSpan="6"><center>Data Belum ada</center></td>
-                                        </tr>
-                                    ) : (
-                                            this.state.dataItems.map((item, i) => (
-                                                <tr key={i}>
-                                                    <td>{i + 1}</td>
-                                                    <td>{item.name}</td>
-                                                    <td>{item.description}</td>
-                                                    <td>
-                                                        <AccessList acl="user-management.role.update">
-                                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Role', 'edit', item)}><i className="icon-pencil7"></i></button>
-                                                        </AccessList>
-
-                                                        <AccessList acl="user-management.role.delete">
-                                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(item.uuid)}><i className="icon-trash"></i></button>
-                                                        </AccessList>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
+                    <div className="table-responsive">
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Deskripsi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
+                                    </tr>
+                                ) : (
+                                        this.state.dataItems.map((item, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{item.name}</td>
+                                                <td>{item.description}</td>
+                                                <td>
+                                                    <AccessList acl="user-management.role.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Role', 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    </AccessList>
 
-                    <Modal title={this.state.title} buttonYes='Submit' onClick={() => this._submit()}>
-                        {this.renderModal()}
-                    </Modal>
+                                                    <AccessList acl="user-management.role.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(item.uuid)}><i className="icon-trash"></i></button>
+                                                    </AccessList>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <Modal title={this.state.title} buttonYes='Submit' onClick={() => this._submit()}>
+                    {this.renderModal()}
+                </Modal>
             </Layout>
         )
     }
