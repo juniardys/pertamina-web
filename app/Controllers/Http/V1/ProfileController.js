@@ -8,8 +8,17 @@ const UserTransformer = use('App/Transformers/V1/UserTransformer')
 const Helpers = use('Helpers')
 
 class ProfileController {
-    async get({ transform, response, auth }) {
+    async get({ transform, response, auth, request }) {
+        const req = request.all()
         const data = await transform.item(auth.user, UserTransformer)
+
+        if (req.imei) {
+            const user = await User.query().where('id', auth.user.id).with('role').first()
+            let data = await transform.item(user, UserTransformer)
+            data['auth'] = null
+            data['role'] = user.toJSON().role
+            return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima'))
+        }
 
         return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima'))
     }
