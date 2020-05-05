@@ -29,7 +29,20 @@ class SpbuPaymentController {
         let payment
         const deletePayment = await SpbuPayment.query().where('spbu_uuid', req.spbu_uuid).delete()
 
-        const dataPayment = req.payment_uuid.split(',')
+        let dataPayment
+        if (Array.isArray(req.payment_uuid)) dataPayment = req.payment_uuid
+        try {
+            let convertArrayOne = req.payment_uuid.split(',')
+            if (Array.isArray(convertArrayOne)) dataPayment = convertArrayOne
+        } catch (error) {
+            try {
+                let convertArrayTwo = JSON.parse(req.payment_uuid)
+                if (Array.isArray(convertArrayTwo)) dataPayment = convertArrayTwo
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         if (dataPayment.length > 0) {
             for (let i = 0; i < dataPayment.length; i++) {
                 const payment = new SpbuPayment()
