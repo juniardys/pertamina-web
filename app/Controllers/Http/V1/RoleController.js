@@ -18,7 +18,7 @@ class RoleController {
     }
 
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'], ['accessList'])
+        const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'])
         let data = transform
         if (request.get().with) {
             data = data.include(request.get().with)

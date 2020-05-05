@@ -10,7 +10,7 @@ const moment = use('moment')
  * @constructor
  */
 class RoleTransformer extends BumblebeeTransformer {
-  static get defaultInclude() {
+  static get availableInclude() {
     return ['accessList']
   }
 
@@ -30,11 +30,16 @@ class RoleTransformer extends BumblebeeTransformer {
     }
   }
 
-  transformWithLevel (model) {
-    
+  transformWithLevel(model) {
+    let getLevel = null
+    try {
+      getLevel = model.getRelated('accessList').toJSON().length
+    } catch (error) {
+
+    }
     return {
       ...this.transform(model),
-      level: model.getRelated('accessList').toJSON().length
+      level: getLevel
     }
   }
 
