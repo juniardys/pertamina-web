@@ -137,12 +137,12 @@ class Role extends Component {
                 </div>
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Tata letak Seluler</label>
-                    <div className="col-lg-10" onChange={this.handleInputChange} defaultChecked={this.state.mobile_layout}>
+                    <div className="col-lg-10">
                         <label className="radio-inline">
-                            <input type="radio" name="mobile_layout" value="admin" checked={this.state.mobile_layout === 'admin'}/>Admin
+                            <input type="radio" name="mobile_layout" value="admin" onChange={this.handleInputChange} checked={this.state.mobile_layout === 'admin'}/>Admin
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" name="mobile_layout" value="operator" checked={this.state.mobile_layout === 'operator'}/>Operator
+                            <input type="radio" name="mobile_layout" value="operator" onChange={this.handleInputChange} checked={this.state.mobile_layout === 'operator'}/>Operator
                         </label>
                     </div>
                 </div>

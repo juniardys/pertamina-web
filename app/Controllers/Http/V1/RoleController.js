@@ -92,7 +92,6 @@ class RoleController {
             if (req.acl) {
                 let acl
                 (Array.isArray(req.acl)) ?  acl = req.acl : acl = req.acl.split(',')
-                console.log(acl);
                 await this.storeAcl(role, acl)
             }
         } catch (error) {
