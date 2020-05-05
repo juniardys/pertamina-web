@@ -29,12 +29,15 @@ class SpbuPaymentController {
         let payment
         const deletePayment = await SpbuPayment.query().where('spbu_uuid', req.spbu_uuid).delete()
 
-        for (let i = 0; i < req.payment_uuid.length; i++) {
-            const payment = new SpbuPayment()
-            payment.uuid = uuid()
-            payment.spbu_uuid = req.spbu_uuid
-            payment.payment_uuid = req.payment_uuid[i]
-            await payment.save()
+        const dataPayment = req.payment_uuid.split(',')
+        if (dataPayment.length > 0) {
+            for (let i = 0; i < dataPayment.length; i++) {
+                const payment = new SpbuPayment()
+                payment.uuid = uuid()
+                payment.spbu_uuid = req.spbu_uuid
+                payment.payment_uuid = dataPayment[i]
+                await payment.save()
+            }
         }
 
         // shift = await transform.item(shift, ShiftTransformer)
