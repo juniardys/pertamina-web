@@ -22,18 +22,14 @@ class AuthenticationController {
             if (req.imei) {
                 const user = await User.query().where('email', req.email).with('role').first()
 
-                if (user.spbu_uuid === null) return response.status(400).json(baseResp(false, null, 'SPBU belum di isi.'))
+                // if (user.spbu_uuid === null) return response.status(400).json(baseResp(false, null, 'SPBU belum di isi.'))
 
-                let data = await transform.item(user, UserTransformer)
+                let data = await transform.include('role').item(user, UserTransformer)
 
-                data['auth'] = {
+                return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima', null, {
                     type: authenticated.type,
                     token: authenticated.token
-                }
-
-                data['role'] = user.toJSON().role
-
-                return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima'))
+                }))
             }
 
             return response.status(200).json(baseResp(true, authenticated, `Data Bearer ${req.email} diterima`))
