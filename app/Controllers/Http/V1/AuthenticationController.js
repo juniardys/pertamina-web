@@ -22,7 +22,7 @@ class AuthenticationController {
             if (req.imei) {
                 const user = await User.query().where('email', req.email).with('role').first()
 
-                if (user.spbu_uuid) return response.status(400).json(baseResp(false, null, 'SPBU belum di isi.'))
+                if (user.spbu_uuid === null) return response.status(400).json(baseResp(false, null, 'SPBU belum di isi.'))
 
                 let data = await transform.item(user, UserTransformer)
 
