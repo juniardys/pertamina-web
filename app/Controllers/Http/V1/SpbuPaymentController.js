@@ -32,11 +32,11 @@ class SpbuPaymentController {
         let dataPayment
         if (Array.isArray(req.payment_uuid)) dataPayment = req.payment_uuid
         try {
-            let convertArrayOne = req.payment_uuid.split(',')
+            let convertArrayOne = JSON.parse(req.payment_uuid)
             if (Array.isArray(convertArrayOne)) dataPayment = convertArrayOne
         } catch (error) {
             try {
-                let convertArrayTwo = JSON.parse(req.payment_uuid)
+                let convertArrayTwo = req.payment_uuid.split(',')
                 if (Array.isArray(convertArrayTwo)) dataPayment = convertArrayTwo
             } catch (error) {
                 console.log(error);
