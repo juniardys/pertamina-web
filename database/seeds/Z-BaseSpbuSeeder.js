@@ -39,7 +39,9 @@ class BaseSpbuSeeder {
     shift.spbu_uuid = uuid1
     shift.name = "Dini Hari"
     shift.start = "00:00"
-    shift.end = "00:06"
+    shift.end = "05:59"
+    // shift.is_first = true
+    shift.no_order = 1
     await shift.save()
 
     // Make Island

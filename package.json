@@ -38,7 +38,7 @@
     "babel-preset-env": "^1.7.0",
     "moment": "^2.24.0",
     "next": "^9.2.2",
-    "pg": "^7.18.1",
+    "pg": "^8.0.3",
     "react": "^16.12.0",
     "react-avatar-editor": "^12.0.0-beta.0",
     "react-checkbox-tree": "1.6.0-alpha.0",

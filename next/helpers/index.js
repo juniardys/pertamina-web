@@ -18,7 +18,7 @@ export const toast = Swal.mixin({
 export const checkAclPage = (pageAcl) => {
     if (!checkAcl(pageAcl)) {
         Swal.fire('Akses Ditolak.', 'Kamu tidak punya akses untuk mengakses halaman ini.', 'warning')
-        setTimeout(() => window.history.back(), 1000);
+        setTimeout(() => Router.push('/sign-in'), 1000);
     }
 }
 
@@ -51,8 +51,7 @@ export const setAcl = async (uuid) => {
 export const checkAuth = async () => {
     const auth = localStorage.getItem('auth')
     const { pathname } = Router
-
-    if (auth) {
+    if (auth != null) {
         let profile
         await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}&with[0]=role`,
             { headers: { Authorization: `Bearer ${auth}` } })
@@ -82,7 +81,6 @@ export const checkAuth = async () => {
         }
     } else {
         localStorage.clear()
-        if (pathname != '/sign-in') Router.push('/sign-in')
     }
 }
 
@@ -110,7 +108,7 @@ export const logout = () => {
     toast.fire({ icon: 'success', title: 'Anda berhasil keluar' })
 }
 
-const redirectPath = async () => {
+export const redirectPath = async () => {
     const path = await getPathDecission()
     if (path != null) {
         Router.push(path)

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Auth";
-import { checkAuth, toast, login, setAcl } from '~/helpers'
+import { toast, login, redirectPath } from '~/helpers'
 import axios from 'axios'
 import Router from 'next/router'
 
@@ -14,7 +14,7 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        checkAuth()
+        if (localStorage.getItem('auth') != null) redirectPath()
         this.btnLogin = Ladda.create(document.querySelector('.btn-spinner'))
     }
 

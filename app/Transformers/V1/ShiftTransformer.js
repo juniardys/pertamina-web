@@ -23,6 +23,8 @@ class ShiftTransformer extends BumblebeeTransformer {
       name: model.name,
       start: moment(model.start, 'HH:mm:ss').format('HH:mm'),
       end: moment(model.end, 'HH:mm:ss').format('HH:mm'),
+      // is_first: model.is_first,
+      no_order: model.no_order,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
     }
