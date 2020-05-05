@@ -43,7 +43,7 @@ class SpbuPaymentController {
             }
         }
 
-        if (dataPayment.length > 0) {
+        if ((req.payment_uuid != null || req.payment_uuid != undefined) && dataPayment.length > 0) {
             for (let i = 0; i < dataPayment.length; i++) {
                 const payment = new SpbuPayment()
                 payment.uuid = uuid()
