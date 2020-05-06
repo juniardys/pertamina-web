@@ -36,8 +36,8 @@ class DeliveryTransformer extends BumblebeeTransformer {
       driver: model.driver,
       receiver: model.receiver,
       image: (model.image != null) ? `${Env.get('APP_URL')}/${model.image}` : null,
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
 

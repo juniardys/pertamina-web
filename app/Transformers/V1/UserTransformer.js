@@ -35,8 +35,8 @@ class UserTransformer extends BumblebeeTransformer {
       address: model.address,
       image: (model.image != null) ?  `${Env.get('APP_API_URL')}/${model.image}` : `${Env.get('APP_API_URL')}/image/avatar.jpg`,
       deleted_at: deleted_at,
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
   
