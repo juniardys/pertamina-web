@@ -142,9 +142,9 @@ class UserController {
         return response.status(200).json(baseResp(true, user, 'Mengedit Pengguna ' + user.name))
     }
 
-    async updatePassword() {
+    async updatePassword({ request, response, transform }) {
         const req = request.all()
-        const validation = await validate(req, { password: 'required|min:8|max:254' })
+        const validation = await validate(req, { uuid: 'required', password: 'required|min:8|max:254' })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         let user
