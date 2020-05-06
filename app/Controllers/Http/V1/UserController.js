@@ -43,9 +43,9 @@ class UserController {
             user.name = req.name
             user.email = req.email
             user.password = req.password
-            user.phone = req.phone
-            user.address = req.address
-            user.ktp = req.ktp
+            user.phone = req.phone || ''
+            user.address = req.address || ''
+            user.ktp = req.ktp || ''
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'profile-image/')
                 if (upload) {
@@ -72,8 +72,6 @@ class UserController {
             let relation = req.custom_response.split(',')
             transformer = transformer.include(relation)
         }
-
-        user = await User.query().where('uuid', user.uuid).first()
 
         user = await transformer.item(user, UserTransformer)
 
@@ -108,9 +106,9 @@ class UserController {
             if (req.name) user.name = req.name
             if (req.email && user.email != req.email) user.email = req.email
             if (req.password) user.password = req.password
-            user.phone = req.phone
-            user.address = req.address
-            user.ktp = req.ktp
+            user.phone = req.phone || ''
+            user.address = req.address || ''
+            user.ktp = req.ktp || ''
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'profile-image/')
                 if (upload) {
