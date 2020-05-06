@@ -73,6 +73,8 @@ class UserController {
             transformer = transformer.include(relation)
         }
 
+        user = await User.query().where('uuid', user.uuid).first()
+
         user = await transformer.item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Membuat Pengguna Baru'))
