@@ -43,9 +43,9 @@ class UserController {
             user.name = req.name
             user.email = req.email
             user.password = req.password
-            user.phone = req.phone || ''
-            user.address = req.address || ''
-            user.ktp = req.ktp || ''
+            user.phone = req.phone
+            user.address = req.address
+            user.ktp = req.ktp
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'profile-image/')
                 if (upload) {
@@ -106,9 +106,9 @@ class UserController {
             if (req.name) user.name = req.name
             if (req.email && user.email != req.email) user.email = req.email
             if (req.password) user.password = req.password
-            user.phone = req.phone || ''
-            user.address = req.address || ''
-            user.ktp = req.ktp || ''
+            user.phone = req.phone
+            user.address = req.address
+            user.ktp = req.ktp
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'profile-image/')
                 if (upload) {
@@ -140,6 +140,36 @@ class UserController {
         user = await transformer.item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Mengedit Pengguna ' + user.name))
+    }
+
+    async updatePassword() {
+        const req = request.all()
+        const validation = await validate(req, { password: 'required|min:8|max:254' })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        let user
+        try {
+            user = await User.query().where('uuid', req.uuid).first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
+        }
+
+        try {
+            user.password = req.password
+            await user.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+        }
+
+        let transformer = transform
+        if (req.custom_response) {
+            let relation = req.custom_response.split(',')
+            transformer = transformer.include(relation)
+        }
+
+        user = await transformer.item(user, UserTransformer)
+
+        return response.status(200).json(baseResp(true, user, 'Mengedit Password Pengguna ' + user.name))
     }
 
     async delete({ request, response, transform }) {
