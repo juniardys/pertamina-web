@@ -101,7 +101,7 @@ const slugify = async (text, table = null, column = null) => {
     }
 }
 
-const uploadImage = async (request, fileParam, folder = '/', fileName = null, size = '2mb') => {
+const uploadImage = async (request, fileParam, folder = '/', fileName = null, size = '10mb') => {
     const img = request.file(fileParam, {
         types: ['image'],
         size: size
