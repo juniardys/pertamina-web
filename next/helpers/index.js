@@ -43,7 +43,7 @@ export const setAcl = async (uuid) => {
         with: ['accessList']
     })
     if (role && role.success) {
-        console.log(role);
+        console.log(role.data.data[0].accessList);
         
         const acl = generateAcl(role.data.data[0].accessList)
         await localStorage.setItem('accessList', JSON.stringify(acl))
@@ -89,6 +89,7 @@ export const checkAuth = async () => {
 
 export const login = async (data) => {
     await localStorage.setItem('auth', data)
+    console.log(process.env.APP_API_KEY);
     let profile
     await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}&with[0]=role`,
         { headers: { Authorization: `Bearer ${data}` } })
