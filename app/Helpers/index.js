@@ -103,14 +103,15 @@ const slugify = async (text, table = null, column = null) => {
 
 const uploadImage = async (request, fileParam, folder = '/', fileName = null, size = '10mb') => {
     const img = request.file(fileParam, {
-        types: ['image'],
-        size: size
+        // types: ['image'],
+        size: size,
+        extnames: ['png', 'jpg']
     })
 
     if (fileName == null) {
-        fileName = new Date().getTime() + '-' + uuid() + "." + img.subtype
+        fileName = new Date().getTime() + '-' + uuid() + "." + img.extname
     } else {
-        fileName = fileName + '.' + img.subtype
+        fileName = fileName + '.' + img.extname
     }
 
     await img.move(Helpers.publicPath('img/' + folder), {
