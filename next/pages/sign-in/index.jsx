@@ -36,6 +36,7 @@ class Index extends Component {
                 password: this.state.password
             })
                 .then(async response => {
+                    console.log(response.data.data.token);
                     await login(response.data.data.token)
                 })
                 .catch(error => {
