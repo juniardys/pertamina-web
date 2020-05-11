@@ -39,9 +39,12 @@ export const generateAcl = (acl) => {
 
 export const setAcl = async (uuid) => {
     const role = await get('/role', {
-        search: uuid
+        search: uuid,
+        with: ['accessList']
     })
     if (role && role.success) {
+        console.log(role);
+        
         const acl = generateAcl(role.data.data[0].accessList)
         await localStorage.setItem('accessList', JSON.stringify(acl))
         // console.log(JSON.parse(localStorage.getItem('accessList')));

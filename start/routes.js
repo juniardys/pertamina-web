@@ -40,6 +40,7 @@ Route.group(() => {
 	Route.get('user', 'UserController.get')
 	Route.post('user/store', 'UserController.store')
 	Route.post('user/update', 'UserController.update')
+	Route.post('user/update/password', 'UserController.updatePassword')
 	Route.post('user/delete', 'UserController.delete')
 	// SPBU
 	Route.get('spbu', 'SpbuController.get')

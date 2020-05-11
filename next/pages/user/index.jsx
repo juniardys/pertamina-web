@@ -55,9 +55,9 @@ class Index extends Component {
     }
 
     _setUserState = async (title, modalType, user) => {
+        await this.setState({ title: title, modalType: modalType })
+        await this.setState({ uuid: '', name: '', email: '', phone: '', address: '', role_uuid: '', spbu_uuid: '', ktp: '', image: '', password: '', password_confirmation: '' })
         await this.setState({
-            title: title,
-            modalType: modalType,
             uuid: user.uuid || '',
             name: user.name || '',
             email: user.email || '',
@@ -135,6 +135,7 @@ class Index extends Component {
                 role_uuid: this.state.role_uuid,
                 spbu_uuid: this.state.spbu_uuid,
                 ktp: this.state.ktp,
+                custom_response: 'role,spbu'
             })
             if (response.success) {
                 this.setState({
@@ -155,6 +156,7 @@ class Index extends Component {
                 }
                 const response = await update('/user/update', this.state.uuid, {
                     password: this.state.password,
+                    custom_response: 'role,spbu'
                 })
                 if (response.success) {
                     const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
@@ -175,6 +177,7 @@ class Index extends Component {
                     role_uuid: this.state.role_uuid,
                     spbu_uuid: this.state.spbu_uuid,
                     ktp: this.state.ktp,
+                    custom_response: 'role,spbu'
                 })
                 if (response.success) {
                     const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
@@ -290,7 +293,7 @@ class Index extends Component {
                             <select className="form-control col-lg-10" defaultValue="" name="role_uuid" onChange={this.handleInputChange}>
                                 {
                                     this.state.roleData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType != 'create' && item.uuid == this.state.role_uuid}>{item.name}</option>
+                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType === 'edit' && item.uuid == this.state.role_uuid}>{item.name}</option>
                                     ))
                                 }
                             </select>
@@ -303,7 +306,7 @@ class Index extends Component {
                                 <option key={0} value="" selected={this.state.spbu_uuid == ''}>-</option>
                                 {
                                     this.state.SPBUData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType != 'create' && item.uuid == this.state.spbu_uuid}>{item.name}</option>
+                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType === 'edit' && item.uuid == this.state.spbu_uuid}>{item.name}</option>
                                     ))
                                 }
                             </select>

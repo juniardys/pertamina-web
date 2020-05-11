@@ -40,8 +40,8 @@ class ReportNozzleTransformer extends BumblebeeTransformer {
       value: model.value,
       image: `${Env.get('APP_API_URL')}/${model.image}`,
       date: moment(model.date, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
 
