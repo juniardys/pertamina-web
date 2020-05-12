@@ -29,7 +29,7 @@ class DeliveryTransformer extends BumblebeeTransformer {
       spbu_uuid: model.spbu_uuid,
       order_uuid: model.order_uuid,
       shift_uuid: model.shift_uuid,
-      quantity: model.quantity,
+      quantity: parseInt(model.quantity),
       receipt_date: moment(model.receipt_date, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD'),
       receipt_no: model.receipt_no,
       police_no: model.police_no,
