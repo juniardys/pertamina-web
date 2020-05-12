@@ -103,6 +103,17 @@ Route.group(() => {
 	Route.get('report/island', 'ReportController.island')
 	Route.get('report/payment', 'ReportController.payment')
 	Route.get('report/feeder', 'ReportController.feeder')
+
+	// Report for mobile API
+	// Report CoWorker
+	Route.get('mobile/report-coworker/', 'mobile/ReportCoWorkerController.get')
+	Route.post('mobile/report-coworker/store', 'mobile/ReportCoWorkerController.store')
+	// Report Nozzle
+	Route.get('mobile/report-nozzle/', 'mobile/ReportNozzleController.get')
+	Route.post('mobile/report-nozzle/store', 'mobile/ReportNozzleController.store')
+	// Report Payment
+	Route.get('mobile/report-payment/', 'mobile/ReportPaymentController.get')
+	Route.post('mobile/report-payment/store', 'mobile/ReportPaymentController.store')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes

@@ -37,7 +37,7 @@ class Navbar extends Component {
 					</ul>
 
 					<ul className="nav navbar-nav navbar-right">
-						<li className="dropdown">
+						{/* <li className="dropdown">
 							<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 								<i className="icon-bell2"></i>
 								<span className="visible-xs-inline-block position-right">Notification</span>
@@ -47,9 +47,9 @@ class Navbar extends Component {
 							<div className="dropdown-menu dropdown-content width-350">
 								<div className="dropdown-content-heading">
 									Notifikasi
-							{/* <ul className="icons-list">
+							<ul className="icons-list">
 								<li><a href="#"><i className="icon-compose"></i></a></li>
-							</ul> */}
+							</ul>
 								</div>
 
 								<ul className="media-list dropdown-content-body">
@@ -126,7 +126,7 @@ class Navbar extends Component {
 									<a href="#" data-popup="tooltip" title="" data-original-title="Semua Notifikasi"><i className="icon-menu display-block"></i></a>
 								</div>
 							</div>
-						</li>
+						</li> */}
 						<li className="dropdown dropdown-user">
 							<a className="dropdown-toggle" data-toggle="dropdown">
 								<img src={(this.props.image) ? this.props.image : "/image/avatar.jpg"} alt="" />
