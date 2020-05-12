@@ -39,9 +39,12 @@ export const generateAcl = (acl) => {
 
 export const setAcl = async (uuid) => {
     const role = await get('/role', {
-        search: uuid
+        search: uuid,
+        with: ['accessList']
     })
     if (role && role.success) {
+        console.log(role);
+
         const acl = generateAcl(role.data.data[0].accessList)
         await localStorage.setItem('accessList', JSON.stringify(acl))
         // console.log(JSON.parse(localStorage.getItem('accessList')));
@@ -56,7 +59,6 @@ export const checkAuth = async () => {
         await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}&with[0]=role`,
             { headers: { Authorization: `Bearer ${auth}` } })
             .then(response => {
-                console.log(response.data);
                 profile = response.data.data
             })
             .catch(error => {
@@ -98,7 +100,7 @@ export const login = async (data) => {
         });
     await setAcl(profile.role_uuid)
     localStorage.setItem('user_uuid', profile.uuid)
-    await redirectPath()
+    await redirectPath(profile.spbu_uuid)
     toast.fire({ icon: 'success', title: 'Anda berhasil masuk' })
 }
 
@@ -108,8 +110,8 @@ export const logout = () => {
     toast.fire({ icon: 'success', title: 'Anda berhasil keluar' })
 }
 
-export const redirectPath = async () => {
-    const path = await getPathDecission()
+export const redirectPath = async (spbu = null) => {
+    const path = await getPathDecission(spbu)
     if (path != null) {
         Router.push(path)
     } else {
@@ -119,6 +121,7 @@ export const redirectPath = async () => {
 
 const getPathDecission = async (spbu = null) => {
     const acl = localStorage.getItem('accessList')
+    console.log(spbu);
     const avaiableRoute = getAvaiableRoute(spbu)
     for (let i = 0; i < avaiableRoute.length; i++) {
         if (acl.includes(avaiableRoute[i].access)) return avaiableRoute[i].path
@@ -160,7 +163,7 @@ const getAvaiableRoute = (spbu = null) => {
     ]
 
     if (spbu != null) {
-        data.concat([
+        const spbuRoute = [
             {
                 access: 'spbu.manage.report',
                 path: `/spbu/${spbu}/report`
@@ -185,7 +188,10 @@ const getAvaiableRoute = (spbu = null) => {
                 access: 'spbu.manage.setting',
                 path: `/spbu/${spbu}/setting`
             }
-        ])
+        ]
+        spbuRoute.forEach(route => {
+            data.push({ access: route.access, path: route.path })
+        });
     }
 
     return data;

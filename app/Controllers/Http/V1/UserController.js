@@ -67,7 +67,13 @@ class UserController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
-        user = await transform.include(['role', 'spbu']).item(user, UserTransformer)
+        let transformer = transform
+        if (req.custom_response) {
+            let relation = req.custom_response.split(',')
+            transformer = transformer.include(relation)
+        }
+
+        user = await transformer.item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Membuat Pengguna Baru'))
     }
@@ -125,9 +131,45 @@ class UserController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        user = await transform.include(['role', 'spbu']).item(user, UserTransformer)
+        let transformer = transform
+        if (req.custom_response) {
+            let relation = req.custom_response.split(',')
+            transformer = transformer.include(relation)
+        }
+
+        user = await transformer.item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Mengedit Pengguna ' + user.name))
+    }
+
+    async updatePassword({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, { uuid: 'required', password: 'required|min:8|max:254' })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        let user
+        try {
+            user = await User.query().where('uuid', req.uuid).first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
+        }
+
+        try {
+            user.password = req.password
+            await user.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+        }
+
+        let transformer = transform
+        if (req.custom_response) {
+            let relation = req.custom_response.split(',')
+            transformer = transformer.include(relation)
+        }
+
+        user = await transformer.item(user, UserTransformer)
+
+        return response.status(200).json(baseResp(true, user, 'Mengedit Password Pengguna ' + user.name))
     }
 
     async delete({ request, response, transform }) {

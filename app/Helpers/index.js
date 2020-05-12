@@ -4,23 +4,25 @@ const Database = use('Database')
 const Helpers = use('Helpers')
 const uuid = use('uuid-random')
 
-const baseResp = (success, data, message = null, errors = null) => {
-    return {
+const baseResp = (success, data, message = null, errors = null, meta = null) => {
+    let response = {
         success: success,
         data: data,
         message: message,
         errors: errors,
     }
+    if (meta != null) response['meta'] = meta
+    return response
 }
 
 const queryBuilder = async (model, request, search = [], defaultWith = []) => {
     let data = []
-    let query = model   
+    let query = model
     if (request.search) {
         if (request.search.split('-').length == 5) {
             query = query.where('uuid', request.search)
         } else {
-            query = query.where(function() {
+            query = query.where(function () {
                 for (let i = 0; i < search.length; i++) {
                     this.orWhere(search[i], 'LIKE', `%${request.search}%`)
                 }
@@ -99,18 +101,19 @@ const slugify = async (text, table = null, column = null) => {
     }
 }
 
-const uploadImage = async (request, fileParam, folder = '/', fileName = null, size = '2mb') => {
+const uploadImage = async (request, fileParam, folder = '/', fileName = null, size = '10mb') => {
     const img = request.file(fileParam, {
-        types: ['image'],
-        size: size
+        // types: ['image'],
+        size: size,
+        extnames: ['png', 'jpg']
     })
 
     if (fileName == null) {
-        fileName = new Date().getTime() + '-' + uuid() + "." + img.subtype
+        fileName = new Date().getTime() + '-' + uuid() + "." + img.extname
     } else {
-        fileName = fileName + '.' + img.subtype
+        fileName = fileName + '.' + img.extname
     }
-    
+
     await img.move(Helpers.publicPath('img/' + folder), {
         name: fileName,
         overwrite: true

@@ -60,7 +60,6 @@ class Setting extends Component {
                         uuid: payment.uuid
                     })
                 }
-                console.log(checkboxes);
                 this.setState({
                     checkboxes: checkboxes
                 })
@@ -107,6 +106,7 @@ class Setting extends Component {
         this.state.checkboxes.forEach((checkbox) => {
             if (checkbox.checked) payments.push(checkbox.uuid)
         })
+        
         const response = await update('/spbu/payment/update', this.state.uuid, {
             spbu_uuid: this.state.uuid,
             payment_uuid: payments,

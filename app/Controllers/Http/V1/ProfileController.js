@@ -8,9 +8,9 @@ const UserTransformer = use('App/Transformers/V1/UserTransformer')
 const Helpers = use('Helpers')
 
 class ProfileController {
-    async get({ transform, response, auth }) {
-        const data = await transform.item(auth.user, UserTransformer)
-
+    async get({ transform, response, auth, request }) {
+        const user = await User.query().where('id', auth.user.id).with('role').first()
+        let data = await transform.include('role').item(user, UserTransformer)
         return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima'))
     }
 
@@ -29,6 +29,7 @@ class ProfileController {
         try {
             user = await User.query()
                 .where('uuid', auth.user.uuid)
+                .with('role')
                 .first()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
@@ -86,7 +87,7 @@ class ProfileController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        user = await transform.item(user, UserTransformer)
+        user = await transform.include('role').item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Data Profil sukses diperbarui'))
     }
@@ -102,6 +103,7 @@ class ProfileController {
         try {
             user = await User.query()
                 .where('uuid', auth.user.uuid)
+                .with('role')
                 .first()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
@@ -115,7 +117,7 @@ class ProfileController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        user = await transform.item(user, UserTransformer)
+        user = await transform.include('role').item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Data Password Profil sukses siperbarui'))
     }

@@ -10,7 +10,7 @@ const moment = use('moment')
 class ShiftController {
     async get({ request, response, transform }) {
         const req = request.all()
-        if (req.filter_col.length >= 1) {
+        if (req.filter_col && req.filter_col.length >= 1) {
             let spbu_uuid = null
             for (let i = 0; i < req.filter_col.length; i++) {
                 if (req.filter_col[i] == 'spbu_uuid') spbu_uuid = req.filter_val[i]
