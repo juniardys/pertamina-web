@@ -12,8 +12,8 @@ class ReportShiftSchema extends Schema {
       table.time('start_time').notNullable()
       table.time('end_time').notNullable()  
       table.uuid('operator_uuid').references('uuid').inTable('users').onDelete('cascade').nullable()
-      table.boolean('status_operator').default(true)
-      table.boolean('status_admin').default(false)
+      table.boolean('status_operator').defaultTo(false)
+      table.boolean('status_admin').defaultTo(false)
       table.timestamps()
     })
   }

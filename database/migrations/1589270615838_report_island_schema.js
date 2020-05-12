@@ -9,8 +9,8 @@ class ReportIslandSchema extends Schema {
       table.increments()
       table.uuid('uuid')
       table.date('date')
-      table.boolean('status_operator').default(true)
-      table.boolean('status_admin').default(false)
+      table.boolean('status_operator').defaultTo(false)
+      table.boolean('status_admin').defaultTo(false)
       table.timestamps()
     })
   }
