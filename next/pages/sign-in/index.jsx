@@ -39,6 +39,7 @@ class Index extends Component {
                     await login(response.data.data.token)
                 })
                 .catch(error => {
+                    console.log(error);
                     if (error.response.data) toast.fire({ icon: 'warning', title: 'Email atau password salah' })
                     this.btnLogin.stop()
                 });

@@ -8,6 +8,7 @@ const SubSidebar = () => {
 
 	const { spbu, company } = router.query
 	let datas = []
+	
 
 	if (router.pathname.includes('/spbu/[spbu]')) {
 		datas = [

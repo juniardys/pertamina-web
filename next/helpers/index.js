@@ -18,7 +18,7 @@ export const toast = Swal.mixin({
 export const checkAclPage = (pageAcl) => {
     if (!checkAcl(pageAcl)) {
         Swal.fire('Akses Ditolak.', 'Kamu tidak punya akses untuk mengakses halaman ini.', 'warning')
-        setTimeout(() => Router.push('/sign-in'), 1000);
+        setTimeout(async () => await redirectPath(), 1000);
     }
 }
 
@@ -100,7 +100,8 @@ export const login = async (data) => {
         });
     await setAcl(profile.role_uuid)
     localStorage.setItem('user_uuid', profile.uuid)
-    await redirectPath(profile.spbu_uuid)
+    localStorage.setItem('spbu_uuid', profile.spbu_uuid)
+    await redirectPath()
     toast.fire({ icon: 'success', title: 'Anda berhasil masuk' })
 }
 
@@ -110,8 +111,8 @@ export const logout = () => {
     toast.fire({ icon: 'success', title: 'Anda berhasil keluar' })
 }
 
-export const redirectPath = async (spbu = null) => {
-    const path = await getPathDecission(spbu)
+export const redirectPath = async () => {
+    const path = await getPathDecission()
     if (path != null) {
         Router.push(path)
     } else {
@@ -121,7 +122,14 @@ export const redirectPath = async (spbu = null) => {
 
 const getPathDecission = async (spbu = null) => {
     const acl = localStorage.getItem('accessList')
-    console.log(spbu);
+
+    let accessList = JSON.parse(acl)
+    console.log(accessList);
+    
+    let notOnlyManageSPBU = 0
+    accessList.forEach(dataACL => { if (!dataACL.includes('spbu.manage')) notOnlyManageSPBU++ });
+    (notOnlyManageSPBU >= 1) ? window.localStorage.setItem('notOnlyManageSPBU', true) : window.localStorage.setItem('notOnlyManageSPBU', false)
+    
     const avaiableRoute = getAvaiableRoute(spbu)
     for (let i = 0; i < avaiableRoute.length; i++) {
         if (acl.includes(avaiableRoute[i].access)) return avaiableRoute[i].path
@@ -130,7 +138,9 @@ const getPathDecission = async (spbu = null) => {
     return null
 }
 
-const getAvaiableRoute = (spbu = null) => {
+const getAvaiableRoute = () => {
+    let spbu = null
+    if (typeof window !== 'undefined') { spbu = window.localStorage.getItem('spbu_uuid') }
     const data = [
         {
             access: 'dashboard',
