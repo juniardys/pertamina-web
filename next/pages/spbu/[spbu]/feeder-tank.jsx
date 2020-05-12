@@ -16,32 +16,31 @@ class Report extends Component {
         this.state = {
             uuid: '',
             name: '',
-            start: '',
-            end: '',
+            product_uuid: '',
             dataItems: [],
-            title: 'Buat Shift',
+            productData: [],
+            title: 'Buat Feeder Tank',
             modalType: "create",
             spbu_name: ''
         }
     }
 
     async componentDidMount() {
-        try {
-            anyTimePicker("#time-start, #time-end")
-        } catch (error) {
-
-        }
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const spbu = await get('/spbu', { search: this.props.query.spbu })
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
-        const data = await get('/shift', {
+        const products = await get('/product')
+        if (products) this.setState({ productData: products.data.data })
+        const data = await get('/feeder-tank', {
             filter_col: ['spbu_uuid'],
             filter_val: [this.props.query.spbu],
-            order_col: ['no_order'],
-            order_val: ['asc'],
+            order_col: ['created_at'],
+            order_val: ['desc'],
+            with: ['product']
         })
         if (data != undefined && data.success) {
+            console.log(data);
             this.setState({
                 dataItems: data.data.data
             })
@@ -61,13 +60,12 @@ class Report extends Component {
             modalType: modalType,
             uuid: item.uuid || '',
             name: item.name || '',
-            start: item.start || '',
-            end: item.end || '',
+            product_uuid: (modalType == 'create') ? this.state.productData[0].uuid : ((item.product) ? item.product.uuid : ''),
         })
     }
 
     _deleteRole = async (uuid) => {
-        const response = await removeWithSwal('/shift/delete', uuid)
+        const response = await removeWithSwal('/feeder-tank/delete', uuid)
         if (response != null) {
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
             this.setState({ dataItems: dataItems })
@@ -78,11 +76,11 @@ class Report extends Component {
         this.btnModal.start()
 
         if (this.state.uuid === '') {
-            const response = await store('/shift/store', {
+            const response = await store('/feeder-tank/store', {
                 spbu_uuid: this.props.query.spbu,
                 name: this.state.name,
-                start: document.querySelector('input[name=start]').value,
-                end: document.querySelector('input[name=end]').value
+                product_uuid: this.state.product_uuid,
+                custom_response: 'product'
             })
             if (response.success) {
                 this.setState({
@@ -90,15 +88,15 @@ class Report extends Component {
                 })
                 this.btnModal.stop()
                 helperModalHide()
-                toast.fire({ icon: 'success', title: 'Berhasil membuat Shift Baru' })
+                toast.fire({ icon: 'success', title: 'Berhasil membuat Feeder Tank Baru' })
             } else {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update('/shift/update', this.state.uuid, {
+            const response = await update('/feeder-tank/update', this.state.uuid, {
                 name: this.state.name,
-                start: document.querySelector('input[name=start]').value,
-                end: document.querySelector('input[name=end]').value
+                product_uuid: this.state.product_uuid,
+                custom_response: 'product'
             })
             if (response.success) {
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
@@ -106,7 +104,7 @@ class Report extends Component {
 
                 this.btnModal.stop()
                 helperModalHide()
-                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Shift' })
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Feeder Tank' })
             } else {
                 this.btnModal.stop()
             }
@@ -124,15 +122,15 @@ class Report extends Component {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="control-label col-lg-2">Waktu Mulai</label>
+                    <label className="control-label col-lg-2">Produk</label>
                     <div className="col-lg-10">
-                        <input type="text" className="form-control" id="time-start" name="start" value={this.state.start} onChange={this.handleInputChange} readOnly />
-                    </div>
-                </div>
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Waktu Berakhir</label>
-                    <div className="col-lg-10">
-                        <input type="text" className="form-control" id="time-end" name="end" value={this.state.end} onChange={this.handleInputChange} readOnly />
+                        <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
+                            {
+                                this.state.productData.map((item, i) => (
+                                    <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>
+                                ))
+                            }
+                        </select>
                     </div>
                 </div>
             </form>
@@ -146,19 +144,19 @@ class Report extends Component {
                 url: '/spbu'
             },
             {
-                title: 'Shift',
-                url: `/spbu/${this.props.query.spbu}/shift`
+                title: 'Feeder Tank',
+                url: `/spbu/${this.props.query.spbu}/feeder-tank`
             }
         ]
 
         return (
-            <Layout title={'Shift ' + this.state.spbu_name} breadcrumb={breadcrumb}>
+            <Layout title={'Feeder Tank ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Daftar Shift <i className="icon-info22" data-popup="tooltip" data-original-title="Satuan waktu 24 jam"></i> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Daftar Feeder Tank <i className="icon-info22" data-popup="tooltip" data-original-title="Satuan waktu 24 jam"></i> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <AccessList acl="spbu.manage.shift.create">
-                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Shift', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
+                            <AccessList acl="spbu.manage.feeder-tank.create">
+                                <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Feeder Tank', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Tambah</button>
                             </AccessList>
                         </div>
                     </div>
@@ -168,8 +166,7 @@ class Report extends Component {
                                 <tr>
                                     <th>#</th>
                                     <th>Nama</th>
-                                    <th>Waktu Mulai</th>
-                                    <th>Waktu Berakhir</th>
+                                    <th>Produk</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -179,19 +176,18 @@ class Report extends Component {
                                         <td colSpan="5"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
-                                        this.state.dataItems.map((shift, i) => (
+                                        this.state.dataItems.map((tank, i) => (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
-                                                <td>{shift.name}</td>
-                                                <td>{shift.start}</td>
-                                                <td>{shift.end}</td>
+                                                <td>{tank.name}</td>
+                                                <td>{tank.product.name}</td>
                                                 <td>
-                                                    <AccessList acl="spbu.manage.shift.update">
-                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + shift.name, 'edit', shift)}><i className="icon-pencil7"></i></button>
+                                                    <AccessList acl="spbu.manage.feeder-tank.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + tank.name, 'edit', tank)}><i className="icon-pencil7"></i></button>
                                                     </AccessList>
 
-                                                    <AccessList acl="spbu.manage.shift.delete">
-                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(shift.uuid)}><i className="icon-trash"></i></button>
+                                                    <AccessList acl="spbu.manage.feeder-tank.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteRole(tank.uuid)}><i className="icon-trash"></i></button>
                                                     </AccessList>
                                                 </td>
                                             </tr>

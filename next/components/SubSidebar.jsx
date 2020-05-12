@@ -44,6 +44,14 @@ const SubSidebar = () => {
 				path: '/spbu/[spbu]/island'
 			},
 			{
+				access: 'spbu.manage.feeder-tank.read',
+				type: 'menu',
+				title: 'Feeder Tank',
+				icon: 'icon-inbox',
+				url: `/spbu/${spbu}/feeder-tank`,
+				path: '/spbu/[spbu]/feeder-tank'
+			},
+			{
 				access: 'spbu.manage.losis.read',
 				type: 'menu',
 				title: 'Losis',

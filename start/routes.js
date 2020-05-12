@@ -62,6 +62,11 @@ Route.group(() => {
 	Route.post('shift/store', 'ShiftController.store')
 	Route.post('shift/update', 'ShiftController.update')
 	Route.post('shift/delete', 'ShiftController.delete')
+	// Feeder Tank
+	Route.get('feeder-tank/', 'FeederTankController.get')
+	Route.post('feeder-tank/store', 'FeederTankController.store')
+	Route.post('feeder-tank/update', 'FeederTankController.update')
+	Route.post('feeder-tank/delete', 'FeederTankController.delete')
 	// Island
 	Route.get('island/', 'IslandController.get')
 	Route.post('island/store', 'IslandController.store')
