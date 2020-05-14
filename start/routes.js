@@ -109,6 +109,10 @@ Route.group(() => {
 	Route.get('report/payment', 'ReportController.payment')
 	Route.get('report/feeder', 'ReportController.feeder')
 
+	// Notification
+	Route.get('notification', 'NotificationController.get')
+
+
 	// Report for mobile API
 	// Report CoWorker
 	Route.get('mobile/report-coworker/', 'mobile/ReportCoWorkerController.get')

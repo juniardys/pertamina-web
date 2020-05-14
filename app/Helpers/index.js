@@ -3,6 +3,8 @@
 const Database = use('Database')
 const Helpers = use('Helpers')
 const uuid = use('uuid-random')
+const Notification = use('App/Models/Notification')
+const NotificationTransformer = use('App/Transformers/V1/NotificationTransformer')
 
 const baseResp = (success, data, message = null, errors = null, meta = null) => {
     let response = {
@@ -151,11 +153,24 @@ const rndmChr = async (length, table = null, column = null) => {
     return result
 }
 
+const pushNotification = async (user_uuid, title, body, type = 'info') => {
+    const notification = new Notification()
+    notification.uuid = uuid()
+    notification.user_uuid = user_uuid
+    notification.title = title
+    notification.body = body
+    notification.type = type
+    await notification.save()
+
+    return notification
+}
+
 module.exports = {
     baseResp,
     queryBuilder,
     splitString,
     slugify,
     uploadImage,
-    rndmChr
+    rndmChr,
+    pushNotification
 }
