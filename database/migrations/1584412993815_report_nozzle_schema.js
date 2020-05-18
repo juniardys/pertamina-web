@@ -13,6 +13,8 @@ class ReportNozzleSchema extends Schema {
       table.uuid('shift_uuid').references('uuid').inTable('shifts').onDelete('cascade').notNullable()
       table.uuid('nozzle_uuid').references('uuid').inTable('nozzles').onDelete('cascade').notNullable()
       table.integer('value').notNullable()
+      table.integer('price').unsigned().notNullable()
+      table.integer('total_price').unsigned().notNullable()
       table.text('image').notNullable()
       table.date('date').notNullable()
       table.timestamps()

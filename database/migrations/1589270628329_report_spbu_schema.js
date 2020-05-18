@@ -9,7 +9,7 @@ class ReportSpbuSchema extends Schema {
       table.increments()
       table.uuid('uuid')
       table.date('date')
-      table.uuid('operator_uuid').references('uuid').inTable('users').onDelete('cascade').nullable()
+      table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade').notNullable()
       table.boolean('status_operator').defaultTo(false)
       table.boolean('status_admin').defaultTo(false)
       table.timestamps()
