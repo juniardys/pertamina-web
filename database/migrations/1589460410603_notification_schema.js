@@ -12,6 +12,7 @@ class NotificationSchema extends Schema {
       table.string('title').notNullable()
       table.text('body').nullable()
       table.enu('type', ['info', 'success', 'warning', 'danger']).default('info')
+      table.boolean('is_read').default(false)
       table.timestamps()
     })
   }

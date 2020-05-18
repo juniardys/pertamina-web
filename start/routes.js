@@ -111,6 +111,8 @@ Route.group(() => {
 
 	// Notification
 	Route.get('notification', 'NotificationController.get')
+	Route.get('notification/count-unread', 'NotificationController.countUnread')
+	Route.get('notification/create', 'NotificationController.create')
 
 
 	// Report for mobile API

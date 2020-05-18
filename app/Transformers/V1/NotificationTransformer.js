@@ -20,6 +20,7 @@ class NotificationTransformer extends BumblebeeTransformer {
       title: model.title,
       body: model.body,
       type: model.type,
+      is_read: model.is_read,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
