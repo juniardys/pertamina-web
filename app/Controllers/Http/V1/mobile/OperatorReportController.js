@@ -9,6 +9,7 @@ const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const moment = use('moment')
 const Database = use('Database')
+const _ = use("lodash")
 
 class OperatorReportController {
     async getShift({ request, response, transform }) {
@@ -86,6 +87,31 @@ class OperatorReportController {
             }
         }
         return response.status(200).json(baseResp(true, data, 'Data Island Report sukses diterima'))
+    }
+
+    async store({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+            island_uuid: 'required',
+            report_nozzle: 'required',
+            report_payment: 'required',
+            report_co_worker: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        try {
+            // Insert Data Nozzle
+            await Promise.all(_.forEach(report_nozzle, function(item, key){
+                throw new Error('Gak isok cok')
+            }))
+            
+        } catch (e) {
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+
     }
 }
 

@@ -119,10 +119,7 @@ Route.group(() => {
 	// Report Operator
 	Route.get('mobile/shift', 'mobile/OperatorReportController.getShift')
 	Route.get('mobile/island', 'mobile/OperatorReportController.getIsland')
-	Route.post('mobile/report-coworker/store', 'mobile/ReportCoWorkerController.store')
-	// Report Payment
-	Route.get('mobile/report-payment/', 'mobile/ReportPaymentController.get')
-	Route.post('mobile/report-payment/store', 'mobile/ReportPaymentController.store')
+	Route.post('mobile/report/operator', 'mobile/OperatorReportController.store')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
 // * Next Routes
