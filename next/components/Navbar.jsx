@@ -22,8 +22,11 @@ class Navbar extends Component {
 	async componentDidMount() {
 		const auth = await checkAuth()
 
-		if (auth) this.props.setProfile(auth.profile)
-		this._getUnreadNotif()
+		if (auth) {
+			this.props.setProfile(auth.profile)
+			this._getUnreadNotif()
+		}
+		
 	}
 
 	async _getUnreadNotif() {

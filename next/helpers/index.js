@@ -112,11 +112,15 @@ export const logout = () => {
 }
 
 export const redirectPath = async () => {
-    const path = await getPathDecission()
-    if (path != null) {
-        Router.push(path)
+    if (localStorage.getItem('auth')) {
+        const path = await getPathDecission()
+        if (path != null) {
+            Router.push(path)
+        } else {
+            localStorage.clear()
+        }
     } else {
-        localStorage.clear()
+        Router.push('/sign-in')
     }
 }
 
@@ -125,11 +129,11 @@ const getPathDecission = async (spbu = null) => {
 
     let accessList = JSON.parse(acl)
     console.log(accessList);
-    
+
     let notOnlyManageSPBU = 0
     accessList.forEach(dataACL => { if (!dataACL.includes('spbu.manage')) notOnlyManageSPBU++ });
     (notOnlyManageSPBU >= 1) ? window.localStorage.setItem('notOnlyManageSPBU', true) : window.localStorage.setItem('notOnlyManageSPBU', false)
-    
+
     const avaiableRoute = getAvaiableRoute(spbu)
     for (let i = 0; i < avaiableRoute.length; i++) {
         if (acl.includes(avaiableRoute[i].access)) return avaiableRoute[i].path
