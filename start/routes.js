@@ -116,12 +116,10 @@ Route.group(() => {
 
 
 	// Report for mobile API
-	// Report CoWorker
-	Route.get('mobile/report-coworker/', 'mobile/ReportCoWorkerController.get')
+	// Report Operator
+	Route.get('mobile/shift', 'mobile/OperatorReportController.getShift')
+	Route.get('mobile/island', 'mobile/OperatorReportController.getIsland')
 	Route.post('mobile/report-coworker/store', 'mobile/ReportCoWorkerController.store')
-	// Report Nozzle
-	Route.get('mobile/report-nozzle/', 'mobile/ReportNozzleController.get')
-	Route.post('mobile/report-nozzle/store', 'mobile/ReportNozzleController.store')
 	// Report Payment
 	Route.get('mobile/report-payment/', 'mobile/ReportPaymentController.get')
 	Route.post('mobile/report-payment/store', 'mobile/ReportPaymentController.store')
