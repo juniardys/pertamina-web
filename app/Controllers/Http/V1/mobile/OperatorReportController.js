@@ -11,7 +11,7 @@ const ReportPayment = use('App/Models/ReportPayment')
 const ReportCoWorker = use('App/Models/ReportCoWorker')
 const ReportIsland = use('App/Models/ReportIsland')
 const { validate } = use('Validator')
-const { baseResp, uploadImage } = use('App/Helpers')
+const { baseResp, uploadImage, setReportShift, setReportSpbu } = use('App/Helpers')
 const uuid = use('uuid-random')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
@@ -19,6 +19,7 @@ const moment = use('moment')
 const Database = use('Database')
 const _ = use("lodash")
 const uuid_validate = use('uuid-validate')
+const Helpers = use('Helpers')
 
 class OperatorReportController {
 
@@ -120,8 +121,6 @@ class OperatorReportController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
-        console.log(await ReportIsland.query().where('shift_uuid', req.shift_uuid).where('spbu_uuid', req.spbu_uuid).where('date', req.date).fetch())
-        return
         var imagePath = []
         try {
             // Insert Data Nozzle
@@ -211,12 +210,21 @@ class OperatorReportController {
                 'shift_uuid': req.shift_uuid,
                 'operator_uuid': auth.user.uuid,
                 'date': req.date,
+                'status_operator': true
             })
 
+            await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
+
+            await setReportSpbu(req.spbu_uuid, req.date)
+
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
             this.deleteImages(imagePath)
-            await Database.table('report_nozzles').where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
+            await Database.table('report_nozzles').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
+            await Database.table('report_payments').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
+            await Database.table('report_co_workers').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
+            await Database.table('report_islands').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
             return response.status(400).json(baseResp(false, [], e.message))
         }
 

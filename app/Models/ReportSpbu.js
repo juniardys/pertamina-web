@@ -4,6 +4,12 @@
 const Model = use('Model')
 
 class ReportSpbu extends Model {
+    static boot() {
+        super.boot()
+     
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
+    }
+    
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

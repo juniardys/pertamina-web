@@ -5,7 +5,16 @@ const Helpers = use('Helpers')
 const uuid = use('uuid-random')
 const Notification = use('App/Models/Notification')
 const NotificationTransformer = use('App/Transformers/V1/NotificationTransformer')
+const Shift = use('App/Models/Shift')
+const ReportShift = use('App/Models/ReportShift')
+const Spbu = use('App/Models/Spbu')
+const ReportSpbu = use('App/Models/ReportSpbu')
+const Island = use('App/Models/Island')
+const FeederTank = use('App/Models/FeederTank')
 const ReportIsland = use('App/Models/ReportIsland')
+const ReportFeederTank = use('App/Models/ReportFeederTank')
+const _ = use('lodash')
+const moment = use('moment')
 
 const baseResp = (success, data, message = null, errors = null, meta = null) => {
     let response = {
@@ -166,9 +175,116 @@ const pushNotification = async (user_uuid, title, body, type = 'info') => {
     return notification
 }
 
-const setStatusShift = async (shift_uuid, spbu_uuid, date, is_admin = false) => {
+const setReportShift = async (shift_uuid, spbu_uuid, date, is_admin = false) => {
     var status = false
-    var getReportIsland = ReportIsland.query().where('shift_uuid', shift_uuid).where('spbu_uuid', spbu_uuid).where('date', date).fetch()
+    var shift = await Shift.query().where('uuid', shift_uuid).first()
+    if (!shift) throw new Error('Shift tidak ditemukan')
+    
+    // Get Report or Create
+    var MyReportShift = await ReportShift.query().where('shift_uuid', shift_uuid).where('spbu_uuid', spbu_uuid).where('date', moment(date).format('YYYY-MM-DD')).first()
+    if (!MyReportShift) {
+        MyReportShift = await ReportShift.create({
+            uuid: uuid(),
+            date: date,
+            start_time: shift.start,
+            end_time: shift.end,
+            shift_uuid: shift_uuid,
+            spbu_uuid: spbu_uuid,
+        })
+    }
+
+    var getIsland = await Island.query().where('spbu_uuid', spbu_uuid).fetch().then((data) => data.toJSON())
+    var dataIsland = []
+    for (let i = 0; i < getIsland.length; i++) {
+        const row = getIsland[i];
+        dataIsland.push(row.uuid)
+        
+    }
+    var getReportIsland = await ReportIsland.query().where('shift_uuid', shift_uuid).where('spbu_uuid', spbu_uuid).where('date', moment(date).format('YYYY-MM-DD')).fetch().then((data) => data.toJSON())
+    for (let i = 0; i < getReportIsland.length; i++) {
+        const row = getReportIsland[i];
+        _.pull(dataIsland, row.island_uuid)
+    }
+    if (dataIsland.length == 0) {
+        status = true
+    }
+
+    if (is_admin) {
+        status = false
+        var getFeederTank = await FeederTank.query().where('spbu_uuid', spbu_uuid).fetch().then((data) => data.toJSON())
+        var dataFeederTank = []
+        for (let i = 0; i < getFeederTank.length; i++) {
+            const row = getFeederTank[i];
+            dataFeederTank.push(row.uuid)
+        }
+        var getReportFeederTank = await ReportFeederTank.query().where('shift_uuid', shift_uuid).where('spbu_uuid', spbu_uuid).where('date', moment(date).format('YYYY-MM-DD')).fetch().then((data) => data.toJSON())
+        for (let i = 0; i < getReportFeederTank.length; i++) {
+            const row = getReportFeederTank[i];
+            _.pull(dataFeederTank, row.island_uuid)
+        }
+        if (dataFeederTank.length == 0) {
+            status = true
+        }
+
+        // Save Status
+        MyReportShift.status_admin = status
+        await MyReportShift.save()
+    } else {
+        // Save Status
+        MyReportShift.status_operator = status
+        await MyReportShift.save()
+    }
+}
+
+const setReportSpbu = async (spbu_uuid, date, is_admin = false) => {
+    var status = false
+    var spbu = await Spbu.query().where('uuid', spbu_uuid).first()
+    if (!spbu) throw new Error('SPBU tidak ditemukan')
+    
+    // Get Report or Create
+    var MyReportSpbu = await ReportSpbu.query().where('spbu_uuid', spbu_uuid).where('date', moment(date).format('YYYY-MM-DD')).first()
+    if (!MyReportSpbu) {
+        MyReportSpbu = await ReportSpbu.create({
+            uuid: uuid(),
+            date: date,
+            spbu_uuid: spbu_uuid,
+        })
+    }
+
+    var getShift = await Shift.query().where('spbu_uuid', spbu_uuid).orderBy('no_order', 'asc').fetch().then((data) => data.toJSON())
+    var dataShift = []
+    for (let i = 0; i < getShift.length; i++) {
+        const row = getShift[i];
+        dataShift.push(row.uuid)
+        
+    }
+    var getReportShift = await ReportShift.query().where('spbu_uuid', spbu_uuid).where('date', moment(date).format('YYYY-MM-DD')).fetch().then((data) => data.toJSON())
+    for (let i = 0; i < getReportShift.length; i++) {
+        const row = getReportShift[i];
+        if (is_admin) {
+            if (row.status_admin) {
+                _.pull(dataShift, row.shift_uuid)
+            }
+        } else {
+            if (row.status_operator) {
+                _.pull(dataShift, row.shift_uuid)
+            }
+        }
+    }
+    if (dataShift.length == 0) {
+        status = true
+    }
+
+    if (is_admin) {
+        // Save Status
+        MyReportSpbu.status_admin = status
+        await MyReportSpbu.save()
+    } else {
+        // Save Status
+        MyReportSpbu.status_operator = status
+        await MyReportSpbu.save()
+    }
+
 }
 
 module.exports = {
@@ -178,5 +294,7 @@ module.exports = {
     slugify,
     uploadImage,
     rndmChr,
-    pushNotification
+    pushNotification,
+    setReportShift,
+    setReportSpbu
 }

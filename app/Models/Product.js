@@ -8,6 +8,7 @@ class Product extends Model {
         super.boot()
 
         this.addTrait('@provider:Lucid/SoftDeletes')
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
 
     // Setters

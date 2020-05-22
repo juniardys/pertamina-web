@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class Notification extends Model {
+    static boot() {
+        super.boot()
+     
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
+    }
 
     // Setters
     setCreatedAt(created_at) {

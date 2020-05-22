@@ -4,6 +4,12 @@
 const Model = use('Model')
 
 class ReportShift extends Model {
+    static boot() {
+        super.boot()
+     
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
+    }
+    
     spbu() {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }
