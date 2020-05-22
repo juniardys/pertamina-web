@@ -5,6 +5,7 @@ const Helpers = use('Helpers')
 const uuid = use('uuid-random')
 const Notification = use('App/Models/Notification')
 const NotificationTransformer = use('App/Transformers/V1/NotificationTransformer')
+const ReportIsland = use('App/Models/ReportIsland')
 
 const baseResp = (success, data, message = null, errors = null, meta = null) => {
     let response = {
@@ -163,6 +164,11 @@ const pushNotification = async (user_uuid, title, body, type = 'info') => {
     await notification.save()
 
     return notification
+}
+
+const setStatusShift = async (shift_uuid, spbu_uuid, date, is_admin = false) => {
+    var status = false
+    var getReportIsland = ReportIsland.query().where('shift_uuid', shift_uuid).where('spbu_uuid', spbu_uuid).where('date', date).fetch()
 }
 
 module.exports = {
