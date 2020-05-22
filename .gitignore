@@ -15,5 +15,7 @@ database/*.sqlite
 .history
 .idea
 
+public/img/*
+
 # Next Build
 next/.next
