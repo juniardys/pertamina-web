@@ -133,8 +133,6 @@ class OperatorReportController {
                 if (!nozzle) throw new Error('Ada data pompa yang tidak ditemukan')
                 // Check Image
                 if(!request.file(`report_nozzle[${key}][image]`)) throw new Error('Gambar Pada Pompa ' + nozzle.name + ' Harap di cantumkan')
-                // Get Product
-                let product = await Product.query().where('uuid', nozzle.product_uuid).first()
                 // Upload Image
                 let image = await uploadImage(request, `report_nozzle[${key}][image]`, 'report-nozzle/')
                 imagePath.push(image)

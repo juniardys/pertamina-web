@@ -175,7 +175,7 @@ const pushNotification = async (user_uuid, title, body, type = 'info') => {
     return notification
 }
 
-const setReportShift = async (shift_uuid, spbu_uuid, date, is_admin = false) => {
+const setReportShift = async (shift_uuid, spbu_uuid, date) => {
     var status = false
     var shift = await Shift.query().where('uuid', shift_uuid).first()
     if (!shift) throw new Error('Shift tidak ditemukan')
@@ -209,31 +209,9 @@ const setReportShift = async (shift_uuid, spbu_uuid, date, is_admin = false) => 
         status = true
     }
 
-    if (is_admin) {
-        status = false
-        var getFeederTank = await FeederTank.query().where('spbu_uuid', spbu_uuid).fetch().then((data) => data.toJSON())
-        var dataFeederTank = []
-        for (let i = 0; i < getFeederTank.length; i++) {
-            const row = getFeederTank[i];
-            dataFeederTank.push(row.uuid)
-        }
-        var getReportFeederTank = await ReportFeederTank.query().where('shift_uuid', shift_uuid).where('spbu_uuid', spbu_uuid).where('date', moment(date).format('YYYY-MM-DD')).fetch().then((data) => data.toJSON())
-        for (let i = 0; i < getReportFeederTank.length; i++) {
-            const row = getReportFeederTank[i];
-            _.pull(dataFeederTank, row.island_uuid)
-        }
-        if (dataFeederTank.length == 0) {
-            status = true
-        }
-
-        // Save Status
-        MyReportShift.status_admin = status
-        await MyReportShift.save()
-    } else {
-        // Save Status
-        MyReportShift.status_operator = status
-        await MyReportShift.save()
-    }
+    // Save Status
+    MyReportShift.status_operator = status
+    await MyReportShift.save()
 }
 
 const setReportSpbu = async (spbu_uuid, date, is_admin = false) => {
