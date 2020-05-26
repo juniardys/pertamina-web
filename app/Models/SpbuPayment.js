@@ -6,10 +6,10 @@ const Model = use('Model')
 class SpbuPayment extends Model {
     static boot() {
         super.boot()
-     
+
         this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
-    
+
     static get table() {
         return 'spbu_payments'
     }

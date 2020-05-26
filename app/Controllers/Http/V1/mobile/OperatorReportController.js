@@ -1,6 +1,7 @@
 'use strict'
 
 const Shift = use('App/Models/Shift')
+const SpbuPayment = use('App/Models/SpbuPayment')
 const Island = use('App/Models/Island')
 const Nozzle = use('App/Models/Nozzle')
 const User = use('App/Models/User')
@@ -109,6 +110,72 @@ class OperatorReportController {
             }
         }
         return response.status(200).json(baseResp(true, data, 'Data Island Report sukses diterima'))
+    }
+
+    async getNozzle({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            spbu_uuid: 'required',
+            date: 'required',
+            shift_uuid: 'required',
+            island_uuid: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        const nozzle = await Nozzle.query().where('spbu_uuid', req.spbu_uuid).where('island_uuid', req.island_uuid).fetch()
+        let data = []
+        for (let i = 0; i < nozzle.toJSON().length; i++) {
+            const nzl = nozzle.toJSON()[i];
+            const reportNozzle = await ReportNozzle.query()
+            .where('spbu_uuid', req.spbu_uuid)
+            .where('island_uuid', req.island_uuid)
+            .where('shift_uuid', req.shift_uuid)
+            .where('nozzle_uuid', nzl.uuid)
+            .where('date', moment(req.date).format('YYYY-MM-DD'))
+            .fetch()
+
+            if (reportNozzle.toJSON().length == 0) {
+                nzl['data'] = null
+            } else {
+                nzl['data'] = reportNozzle.toJSON()
+            }
+            data.push(nzl)
+        }
+
+        return response.status(200).json(baseResp(true, data, 'Data Nozzle Report sukses diterima'))
+    }
+
+    async getPayment({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            spbu_uuid: 'required',
+            date: 'required',
+            shift_uuid: 'required',
+            island_uuid: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        const payment = await SpbuPayment.query().where('spbu_uuid', req.spbu_uuid).with('payment').fetch()
+        let data = []
+        for (let i = 0; i < payment.toJSON().length; i++) {
+            const pymnt = payment.toJSON()[i];
+            let dataPayment = pymnt.payment
+            const reportPayment = await ReportPayment.query()
+            .where('spbu_uuid', req.spbu_uuid)
+            .where('island_uuid', req.island_uuid)
+            .where('shift_uuid', req.shift_uuid)
+            .where('payment_method_uuid', dataPayment.uuid)
+            .fetch()
+
+            if (reportPayment.toJSON().length == 0) {
+                dataPayment['data'] = null
+            } else {
+                dataPayment['data'] = reportPayment.toJSON()
+            }
+            data.push(dataPayment)
+        }
+
+        return response.status(200).json(baseResp(true, data, 'Data Payment Report sukses diterima'))
     }
 
     async store({ request, response, transform, auth }) {
