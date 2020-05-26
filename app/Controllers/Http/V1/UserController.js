@@ -33,7 +33,7 @@ class UserController {
     async store({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, this.getRules())
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
 
         let user = new User()
         try {
@@ -59,12 +59,12 @@ class UserController {
                     }
                     user.image = upload
                 } else {
-                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                    return response.status(400).json(baseResp(false, null, 'Terjadi kesalahan pada saat mengunggah gambar.'))
                 }
             }
             await user.save()
         } catch (error) {
-            return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
+            return response.status(400).json(baseResp(false, null, 'Kesalahan pada insert data'))
         }
 
         let transformer = transform
@@ -89,7 +89,7 @@ class UserController {
         if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid}|max:254`
         if (req.password) rules['password'] = 'required|min:8|max:254'
         const validation = await validate(req, rules)
-        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
 
         let user
         try {
@@ -97,7 +97,7 @@ class UserController {
                 .where('uuid', req.uuid)
                 .first()
         } catch (error) {
-            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
+            return response.status(400).json(baseResp(false, null, 'Data tidak ditemukan'))
         }
 
         try {
@@ -122,13 +122,13 @@ class UserController {
                     }
                     user.image = upload
                 } else {
-                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                    return response.status(400).json(baseResp(false, null, 'Terjadi kesalahan pada saat mengunggah gambar.'))
                 }
             }
             await user.save()
         } catch (error) {
             console.log(error);
-            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+            return response.status(400).json(baseResp(false, null, 'Kesalahan pada update data'))
         }
 
         let transformer = transform
