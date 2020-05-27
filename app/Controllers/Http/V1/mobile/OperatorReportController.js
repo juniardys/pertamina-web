@@ -132,9 +132,9 @@ class OperatorReportController {
             .where('shift_uuid', req.shift_uuid)
             .where('nozzle_uuid', nzl.uuid)
             .where('date', moment(req.date).format('YYYY-MM-DD'))
-            .fetch()
+            .first()
 
-            if (reportNozzle.toJSON().length == 0) {
+            if (!reportNozzle) {
                 nzl['data'] = null
             } else {
                 nzl['data'] = reportNozzle.toJSON()
@@ -165,7 +165,7 @@ class OperatorReportController {
             .where('island_uuid', req.island_uuid)
             .where('shift_uuid', req.shift_uuid)
             .where('payment_method_uuid', dataPayment.uuid)
-            .fetch()
+            .first()
 
             if (reportPayment.toJSON().length == 0) {
                 dataPayment['data'] = null

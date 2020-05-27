@@ -2,14 +2,15 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
+const moment = use('moment')
 
 class ReportNozzle extends Model {
     static boot() {
         super.boot()
-     
+
         this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
-    
+
     spbu() {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }
@@ -25,7 +26,12 @@ class ReportNozzle extends Model {
     nozzle() {
         return this.belongsTo('App/Models/Nozzle', 'nozzle_uuid', 'uuid')
     }
-    
+
+    // Getters
+    getDate(date) {
+        return moment(date).format('YYYY-MM-DD')
+    }
+
     // Setters
     setDate(date) {
         return new Date(date).toISOString()
