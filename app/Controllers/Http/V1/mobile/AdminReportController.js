@@ -37,6 +37,13 @@ class AdminReportController {
 
         var imagePath = []
         try {
+            // Get Report Shift
+            var reportShift = await ReportShift.query().where({
+                date: req.date,
+                shift_uuid: req.shift_uuid,
+                spbu_uuid: req.spbu_uuid,
+            }).first()
+            if (reportShift.status_admin == true) throw new Error('Laporan Shift ini sudah di isi')
             // Insert Data Feeder Tank
             if (!req.report_feeder) throw new Error('Tolong Laporan Tangki Utama di isi terlebih dahulu')
             await Promise.all(_.map(req.report_feeder, async (item, key) => {
@@ -51,7 +58,7 @@ class AdminReportController {
                 let image = await uploadImage(request, `report_feeder[${key}][image]`, 'report-feeder-tank/')
                 imagePath.push(image)
                 // Insert Data
-                let data_feeder_tank = await ReportNozzle.create({
+                let data_feeder_tank = await ReportFeederTank.create({
                     'uuid': uuid(),
                     'spbu_uuid': req.spbu_uuid,
                     'shift_uuid': req.shift_uuid,
@@ -142,14 +149,10 @@ class AdminReportController {
                 }).whereNotIn('user_uuid', co_work.user_uuid).delete()
             }))
 
-            await ReportShift.query().where({
-                date: req.date,
-                shift_uuid: req.shift_uuid,
-                spbu_uuid: req.spbu_uuid,
-            }).update({
-                admin_acc: auth.user.uuid,
-                status_admin: true
-            })
+            reportShift.admin_acc =  auth.user.uuid
+            reportShift.status_admin =  true
+
+            await reportShift.save()
 
             await setReportSpbu(req.spbu_uuid, req.date, true)
 

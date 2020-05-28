@@ -190,6 +190,14 @@ class OperatorReportController {
 
         var imagePath = []
         try {
+            // Check if report island is exist
+            var reportIsland = ReportIsland.where({
+                'spbu_uuid': req.spbu_uuid,
+                'island_uuid': req.island_uuid,
+                'shift_uuid': req.shift_uuid,
+                'date': req.date,
+            }).first()
+            if (reportIsland) throw new Error('Laporan Island ini sudah di isi')
             // Insert Data Nozzle
             if (!req.report_nozzle) throw new Error('Tolong Laporan Pompa di isi terlebih dahulu')
             await Promise.all(_.map(req.report_nozzle, async (item, key) => {
@@ -268,7 +276,7 @@ class OperatorReportController {
                 if (!data_co_worker) throw new Error('Gagal dalam mengisi data rekan kerja')
             }))
 
-            var report_island = await ReportIsland.create({
+            await ReportIsland.create({
                 'uuid': uuid(),
                 'spbu_uuid': req.spbu_uuid,
                 'island_uuid': req.island_uuid,
