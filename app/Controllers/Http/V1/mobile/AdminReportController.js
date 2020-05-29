@@ -26,6 +26,17 @@ const Helpers = use('Helpers')
 
 class AdminReportController {
 
+    async deleteImages(path = []) {
+        for (let i = 0; i < path.length; i++) {
+            const fs = Helpers.promisify(require('fs'))
+            try {
+                await fs.unlink(Helpers.publicPath(path[i]))
+            } catch (error) {
+                // console.log(error)
+            }
+        }
+    }
+
     async store({ request, response, transform, auth }) {
         const req = request.all()
         const validation = await validate(req, {
@@ -43,9 +54,22 @@ class AdminReportController {
                 shift_uuid: req.shift_uuid,
                 spbu_uuid: req.spbu_uuid,
             }).first()
-            if (reportShift.status_admin == true) throw new Error('Laporan Shift ini sudah di isi')
+            if (reportShift) {
+                if (reportShift.status_admin == true) throw new Error('Laporan Shift ini sudah di isi')
+            } else {
+                throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
+            }
             // Insert Data Feeder Tank
             if (!req.report_feeder) throw new Error('Tolong Laporan Tangki Utama di isi terlebih dahulu')
+            let qFeederTank = await FeederTank.query().where({
+                spbu_uuid: req.spbu_uuid, 
+            }).fetch()
+            let getFeederTank = qFeederTank.toJSON()
+            var listFeederTank = []
+            for (let i = 0; i < getFeederTank.length; i++) {
+                const row = getFeederTank[i];
+                listFeederTank.push(row.uuid)
+            }
             await Promise.all(_.map(req.report_feeder, async (item, key) => {
                 // Check Value
                 if(!item.feeder_tank_uuid || !item.last_meter) throw new Error('Data Tangki Utama Ada Yang Belum Lengkap')
@@ -68,7 +92,12 @@ class AdminReportController {
                     'date': req.date,
                 })
                 if (!data_feeder_tank) throw new Error('Gagal dalam mengisi data Tangki Utama')
+                _.pull(listFeederTank, item.feeder_tank_uuid)
             }))
+            if (!_.isEmpty(listFeederTank)) {
+                let feeder_tank = await FeederTank.query().where('uuid', listFeederTank[0]).first()
+                throw new Error('Data Tangki Utama (' + feeder_tank.name + ') Belom di isi')
+            }
 
             // Edit Data Nozzle
             if (!req.report_nozzle) throw new Error('Tolong Laporan Pompa di isi terlebih dahulu')
@@ -129,7 +158,7 @@ class AdminReportController {
                         }).first()
                         if (!checkReport) {
                             // Insert Data
-                            let data_co_worker = await ReportCoWorker.create({
+                            await ReportCoWorker.create({
                                 'uuid': uuid(),
                                 'spbu_uuid': req.spbu_uuid,
                                 'island_uuid': co_work.island_uuid,
@@ -160,7 +189,7 @@ class AdminReportController {
         } catch (e) {
             // Rollback
             this.deleteImages(imagePath)
-            await Database.table('report_feeder_tanks').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
+            await Database.table('report_feeder_tanks').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).delete()
             return response.status(400).json(baseResp(false, [], e.message))
         }
 

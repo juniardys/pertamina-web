@@ -6,7 +6,6 @@ const Island = use('App/Models/Island')
 const Nozzle = use('App/Models/Nozzle')
 const User = use('App/Models/User')
 const PaymentMethod = use('App/Models/PaymentMethod')
-const Product = use('App/Models/Product')
 const ReportNozzle = use('App/Models/ReportNozzle')
 const ReportPayment = use('App/Models/ReportPayment')
 const ReportCoWorker = use('App/Models/ReportCoWorker')
@@ -191,7 +190,7 @@ class OperatorReportController {
         var imagePath = []
         try {
             // Check if report island is exist
-            var reportIsland = ReportIsland.where({
+            var reportIsland = await ReportIsland.query().where({
                 'spbu_uuid': req.spbu_uuid,
                 'island_uuid': req.island_uuid,
                 'shift_uuid': req.shift_uuid,
@@ -200,6 +199,16 @@ class OperatorReportController {
             if (reportIsland) throw new Error('Laporan Island ini sudah di isi')
             // Insert Data Nozzle
             if (!req.report_nozzle) throw new Error('Tolong Laporan Pompa di isi terlebih dahulu')
+            let qNozzle = await Nozzle.query().where({
+                spbu_uuid: req.spbu_uuid, 
+                island_uuid: req.island_uuid, 
+            }).fetch()
+            let getNozzle = qNozzle.toJSON()
+            var listNozzle = []
+            for (let i = 0; i < getNozzle.length; i++) {
+                const row = getNozzle[i];
+                listNozzle.push(row.uuid)
+            }
             await Promise.all(_.map(req.report_nozzle, async (item, key) => {
                 // Check Value
                 if(!item.nozzle_uuid || !item.last_meter) throw new Error('Data Pompa Ada Yang Belum Lengkap')
@@ -223,10 +232,25 @@ class OperatorReportController {
                     'date': req.date,
                 })
                 if (!data_nozzle) throw new Error('Gagal dalam mengisi data pompa')
+                _.pull(listNozzle, item.nozzle_uuid)
+
             }))
+            if (!_.isEmpty(listNozzle)) {
+                let nozzle = await Nozzle.query().where('uuid', listNozzle[0]).first()
+                throw new Error('Data Pompa (' + nozzle.name + ') Belom di isi')
+            }
 
             // Insert Data Payment
             if (!req.report_payment) throw new Error('Tolong Laporan Pembayaran di isi terlebih dahulu')
+            let qPayment = await SpbuPayment.query().where({
+                spbu_uuid: req.spbu_uuid
+            }).fetch()
+            let getPayment = qPayment.toJSON()
+            var listPayment = []
+            for (let i = 0; i < getPayment.length; i++) {
+                const row = getPayment[i];
+                listPayment.push(row.payment_uuid)
+            }
             await Promise.all(_.map(req.report_payment, async (item, key) => {
                 // Check Value
                 if(!item.payment_method_uuid || !item.amount) throw new Error('Data Pembayaran Ada Yang Belum Lengkap')
@@ -253,7 +277,12 @@ class OperatorReportController {
                     'date': req.date,
                 })
                 if (!data_payment_method) throw new Error('Gagal dalam mengisi data pembayaran')
+                _.pull(listPayment, item.payment_method_uuid)
             }))
+            if (!_.isEmpty(listPayment)) {
+                let payment_method = await PaymentMethod.query().where('uuid', listPayment[0]).first()
+                throw new Error('Data Pembayaran (' + payment_method.name + ') Belom di isi')
+            }
 
             // Insert Data Co Worker
             if (!req.report_co_worker) throw new Error('Tolong Rekan Kerja di isi terlebih dahulu')
