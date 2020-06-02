@@ -35,6 +35,7 @@ class FeederTankController {
             tank.spbu_uuid = req.spbu_uuid
             tank.name = req.name
             tank.product_uuid = req.product_uuid
+            tank.start_meter = parseFloat(req.start_meter) || 0
             await tank.save()
         } catch (error) {
             console.log(error);
@@ -73,6 +74,7 @@ class FeederTankController {
         try {
             if (req.name) tank.name = req.name
             if (req.product_uuid) tank.product_uuid = req.product_uuid
+            if (req.start_meter) tank.start_meter = req.start_meter
             await tank.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))

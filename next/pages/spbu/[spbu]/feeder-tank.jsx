@@ -17,6 +17,7 @@ class Report extends Component {
             uuid: '',
             name: '',
             product_uuid: '',
+            start_meter: null,
             dataItems: [],
             productData: [],
             title: 'Buat Feeder Tank',
@@ -61,6 +62,7 @@ class Report extends Component {
             uuid: item.uuid || '',
             name: item.name || '',
             product_uuid: (modalType == 'create') ? this.state.productData[0].uuid : ((item.product) ? item.product.uuid : ''),
+            start_meter: item.start_meter || '',
         })
     }
 
@@ -80,6 +82,7 @@ class Report extends Component {
                 spbu_uuid: this.props.query.spbu,
                 name: this.state.name,
                 product_uuid: this.state.product_uuid,
+                start_meter: this.state.start_meter,
                 custom_response: 'product'
             })
             if (response.success) {
@@ -131,6 +134,12 @@ class Report extends Component {
                                 ))
                             }
                         </select>
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Meteran Awal Penggunaan</label>
+                    <div className="col-lg-10">
+                        <input type="text" className="form-control" name="start_meter" value={this.state.start_meter} onChange={this.handleInputChange} />
                     </div>
                 </div>
             </form>

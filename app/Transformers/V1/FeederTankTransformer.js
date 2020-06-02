@@ -25,6 +25,7 @@ class FeederTankTransformer extends BumblebeeTransformer {
       name: model.name,
       spbu_uuid: model.spbu_uuid,
       product_uuid: model.product_uuid,
+      start_meter: model.start_meter,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
