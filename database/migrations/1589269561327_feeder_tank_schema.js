@@ -11,6 +11,7 @@ class FeederTankSchema extends Schema {
       table.string('name').notNullable()
       table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade').notNullable()
       table.uuid('product_uuid').references('uuid').inTable('products').onDelete('cascade')
+      table.double('start_meter').notNullable()
       table.timestamps()
     })
   }
