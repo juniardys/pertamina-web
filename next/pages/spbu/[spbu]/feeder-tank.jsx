@@ -99,6 +99,7 @@ class Report extends Component {
             const response = await update('/feeder-tank/update', this.state.uuid, {
                 name: this.state.name,
                 product_uuid: this.state.product_uuid,
+                start_meter: this.state.start_meter,
                 custom_response: 'product'
             })
             if (response.success) {
