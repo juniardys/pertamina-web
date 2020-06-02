@@ -67,7 +67,7 @@ class OperatorReportController {
                     shift.disable = !status
                 } else {
                     shift.done = status
-                    shift.disable = (lastReport.status_operator) ? false : true
+                    shift.disable = (lastReport.status_operator == true) ? true : false
                 }
                 lastReport = selectedShift
             }
