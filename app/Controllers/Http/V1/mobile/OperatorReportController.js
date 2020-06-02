@@ -137,6 +137,7 @@ class OperatorReportController {
                 nzl['data'] = null
             } else {
                 nzl['data'] = reportNozzle.toJSON()
+                nzl['data']['date'] = moment(reportNozzle.toJSON()['date']).format('YYYY-MM-DD HH:mm:ss')
             }
             data.push(nzl)
         }
@@ -170,6 +171,7 @@ class OperatorReportController {
                 dataPayment['data'] = null
             } else {
                 dataPayment['data'] = reportPayment.toJSON()
+                dataPayment['data']['date'] = moment(reportPayment.toJSON()['date']).format('YYYY-MM-DD HH:mm:ss')
             }
             data.push(dataPayment)
         }
