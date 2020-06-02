@@ -165,6 +165,7 @@ class OperatorReportController {
             .where('island_uuid', req.island_uuid)
             .where('shift_uuid', req.shift_uuid)
             .where('payment_method_uuid', dataPayment.uuid)
+            .where('date', moment(req.date).format('YYYY-MM-DD'))
             .first()
 
             if (!reportPayment) {
