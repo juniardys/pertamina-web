@@ -166,7 +166,7 @@ class OperatorReportController {
             .where('payment_method_uuid', dataPayment.uuid)
             .first()
 
-            if (reportPayment.toJSON().length == 0) {
+            if (!reportPayment) {
                 dataPayment['data'] = null
             } else {
                 dataPayment['data'] = reportPayment.toJSON()
