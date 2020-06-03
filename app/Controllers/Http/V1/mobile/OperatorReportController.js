@@ -12,7 +12,7 @@ const ReportPayment = use('App/Models/ReportPayment')
 const ReportCoWorker = use('App/Models/ReportCoWorker')
 const ReportIsland = use('App/Models/ReportIsland')
 const { validate } = use('Validator')
-const { baseResp, uploadImage, setReportShift, setReportSpbu } = use('App/Helpers')
+const { baseResp, uploadImage, setReportShift, setReportSpbu, getShiftBefore, getShiftAfter } = use('App/Helpers')
 const uuid = use('uuid-random')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
@@ -197,21 +197,26 @@ class OperatorReportController {
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
         const co_worker = await User.query().where('role_uuid', '0bec0af4-a32f-4b1e-bfc2-5f4933c49740').fetch()
-        let data = {
-            data: co_worker,
+        var data = {
+            data: [],
             checklist: []
         }
-        const reportCoWorker = await ReportCoWorker.query()
-            .where('spbu_uuid', req.spbu_uuid)
-            .where('island_uuid', req.island_uuid)
-            .where('shift_uuid', req.shift_uuid)
-            .where('date', moment(req.date).format('YYYY-MM-DD'))
-            .fetch()
-        for (let i = 0; i < reportCoWorker.toJSON().length; i++) {
-            const rpCoWork = reportCoWorker.toJSON()[i];
-            data.checklist.push(rpCoWork.user_uuid)
+        for (let i = 0; i < co_worker.toJSON().length; i++) {
+            const co_work = co_worker.toJSON()[i];
+            co_work['checked'] = false
+            let checked = await ReportCoWorker.query()
+                .where('spbu_uuid', req.spbu_uuid)
+                .where('island_uuid', req.island_uuid)
+                .where('shift_uuid', req.shift_uuid)
+                .where('user_uuid', co_work.uuid)
+                .where('date', moment(req.date).format('YYYY-MM-DD'))
+                .getCount()
+            if (checked > 0) {
+                co_work['checked'] = true
+                data.checklist.push(co_work.uuid)
+            }
+            data.data.push(co_work)
         }
-
         return response.status(200).json(baseResp(true, data, 'Data laporan rekan kerja sukses diterima'))
     }
 
