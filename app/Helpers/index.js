@@ -262,7 +262,48 @@ const setReportSpbu = async (spbu_uuid, date, is_admin = false) => {
         MyReportSpbu.status_operator = status
         await MyReportSpbu.save()
     }
+}
 
+const getShiftBefore = async (spbu_uuid, shift_uuid, date) => {
+    const shifts = await Shift.query().where('spbu_uuid', spbu_uuid).orderBy('no_order', 'asc').fetch()
+    var lastShift = {
+        date: date,
+        shift: null,
+    }
+    for (let i = 0; i < shifts.toJSON().length; i++) {
+        const shift = shifts.toJSON()[i];
+        if (shift.uuid == shift_uuid) {
+            // First Shift
+            if (i == 0) {
+                lastShift.date = moment(date).subtract(1, "days").format('YYYY-MM-DD')
+                lastShift.shift = shifts.toJSON().slice(-1)[0]
+            } else {
+                lastShift.shift = shifts.toJSON()[(i-1)]
+            }
+        }        
+    }
+    return lastShift
+}
+
+const getShiftAfter = async (spbu_uuid, shift_uuid, date) => {
+    const shifts = await Shift.query().where('spbu_uuid', spbu_uuid).orderBy('no_order', 'desc').fetch()
+    var afterShift = {
+        date: date,
+        shift: null,
+    }
+    for (let i = 0; i < shifts.toJSON().length; i++) {
+        const shift = shifts.toJSON()[i];
+        if (shift.uuid == shift_uuid) {
+            // Last Shift
+            if (i == 0) {
+                afterShift.date = moment(date).add(1, "days").format('YYYY-MM-DD')
+                afterShift.shift = shifts.toJSON().slice(-1)[0]
+            } else {
+                afterShift.shift = shifts.toJSON()[(i-1)]
+            }
+        }        
+    }
+    return afterShift
 }
 
 module.exports = {
@@ -274,5 +315,7 @@ module.exports = {
     rndmChr,
     pushNotification,
     setReportShift,
-    setReportSpbu
+    setReportSpbu,
+    getShiftBefore,
+    getShiftAfter
 }

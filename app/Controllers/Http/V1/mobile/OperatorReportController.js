@@ -196,7 +196,7 @@ class OperatorReportController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
-        const co_worker = await User.query().where('role_uuid', '0bec0af4-a32f-4b1e-bfc2-5f4933c49740').fetch()
+        const co_worker = await User.query().where('spbu_uuid', req.spbu_uuid).where('role_uuid', '0bec0af4-a32f-4b1e-bfc2-5f4933c49740').fetch()
         var data = {
             data: [],
             checklist: []
@@ -240,6 +240,8 @@ class OperatorReportController {
                 'date': req.date,
             }).first()
             if (reportIsland) throw new Error('Laporan Island ini sudah di isi')
+            // Get Shift Before
+            var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
             // Insert Data Nozzle
             if (!req.report_nozzle) throw new Error('Tolong Laporan Pompa di isi terlebih dahulu')
             let qNozzle = await Nozzle.query().where({
@@ -256,13 +258,37 @@ class OperatorReportController {
                 // Check Value
                 if(!item.nozzle_uuid || !item.last_meter) throw new Error('Data Pompa Ada Yang Belum Lengkap')
                 // Get Nozzle
-                let nozzle = await Nozzle.query().where('uuid', item.nozzle_uuid).first()
+                let getNozzle = await Nozzle.query().where('uuid', item.nozzle_uuid).with('product').fetch()
+                let nozzle = getNozzle.toJSON()[0]
                 if (!nozzle) throw new Error('Ada data pompa yang tidak ditemukan')
                 // Check Image
                 if(!request.file(`report_nozzle[${key}][image]`)) throw new Error('Gambar Pada Pompa ' + nozzle.name + ' Harap di cantumkan')
                 // Upload Image
                 let image = await uploadImage(request, `report_nozzle[${key}][image]`, 'report-nozzle/')
                 imagePath.push(image)
+                // Processing
+                // Checking report last shift
+                let start_meter = 0
+                let price = nozzle.product.price || 0
+                let volume = 0
+                let total_price = 0
+                if (shiftBefore.shift) {
+                    let before = await ReportNozzle.query().where({
+                        'spbu_uuid': req.spbu_uuid,
+                        'island_uuid': req.island_uuid,
+                        'shift_uuid': shiftBefore.shift.uuid,
+                        'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
+                    }).first()
+                    // Report available
+                    if (before) {
+                        start_meter = before.last_meter
+                    } else {
+                        start_meter = nozzle.start_meter
+                    }
+                }
+                if (item.last_meter < start_meter) throw new Error('Ada pompa yang meteran akhirnya kurang dari meteran awal')
+                volume = item.last_meter - start_meter
+                total_price = volume * price
                 // Insert Data
                 let data_nozzle = await ReportNozzle.create({
                     'uuid': uuid(),
@@ -270,7 +296,10 @@ class OperatorReportController {
                     'island_uuid': req.island_uuid,
                     'shift_uuid': req.shift_uuid,
                     'nozzle_uuid': item.nozzle_uuid,
+                    'start_meter': start_meter,
                     'last_meter': item.last_meter,
+                    'price': price,
+                    'total_price': total_price,
                     'image': image,
                     'date': req.date,
                 })
@@ -282,7 +311,6 @@ class OperatorReportController {
                 let nozzle = await Nozzle.query().where('uuid', listNozzle[0]).first()
                 throw new Error('Data Pompa (' + nozzle.name + ') Belom di isi')
             }
-
             // Insert Data Payment
             if (!req.report_payment) throw new Error('Tolong Laporan Pembayaran di isi terlebih dahulu')
             let qPayment = await SpbuPayment.query().where({

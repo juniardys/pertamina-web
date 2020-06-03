@@ -59,6 +59,8 @@ class AdminReportController {
             } else {
                 throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
             }
+            // Get Shift Before
+            var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
             // Insert Data Feeder Tank
             if (!req.report_feeder) throw new Error('Tolong Laporan Tangki Utama di isi terlebih dahulu')
             let qFeederTank = await FeederTank.query().where({
@@ -74,19 +76,38 @@ class AdminReportController {
                 // Check Value
                 if(!item.feeder_tank_uuid || !item.last_meter) throw new Error('Data Tangki Utama Ada Yang Belum Lengkap')
                 // Get Nozzle
-                let feeder_tank = await FeederTank.query().where('uuid', item.feeder_tank_uuid).first()
+                let get_feeder_tank = await FeederTank.query().where('uuid', item.feeder_tank_uuid).with('product').fetch()
+                let feeder_tank = get_feeder_tank[0]
                 if (!feeder_tank) throw new Error('Ada data Tangki Utama yang tidak ditemukan')
                 // Check Image
                 if(!request.file(`report_feeder[${key}][image]`)) throw new Error('Gambar Pada Tangki Utama ' + feeder_tank.name + ' Harap di cantumkan')
                 // Upload Image
                 let image = await uploadImage(request, `report_feeder[${key}][image]`, 'report-feeder-tank/')
                 imagePath.push(image)
+                // Processing
+                // Checking report last shift
+                let start_meter = 0
+                if (shiftBefore.shift) {
+                    let before = await ReportFeederTank.query().where({
+                        'spbu_uuid': req.spbu_uuid,
+                        'shift_uuid': shiftBefore.shift.uuid,
+                        'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
+                    }).first()
+                    // Report available
+                    if (before) {
+                        start_meter = before.last_meter
+                    } else {
+                        start_meter = nozzle.start_meter
+                    }
+                }
                 // Insert Data
                 let data_feeder_tank = await ReportFeederTank.create({
                     'uuid': uuid(),
                     'spbu_uuid': req.spbu_uuid,
                     'shift_uuid': req.shift_uuid,
                     'feeder_tank_uuid': item.feeder_tank_uuid,
+                    'start_meter': start_meter,
+                    'addition_amount': 0,
                     'last_meter': item.last_meter,
                     'image': image,
                     'date': req.date,
