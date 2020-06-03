@@ -24,7 +24,8 @@ class RoleSeeder {
         name: "Superadmin",
         description: "Jabatan SuperAdmin",
         mobile_layout: 'admin',
-        role: get()
+        role: get(),
+        uuid: "94372ea5-e24c-4330-a453-2b01c424ee5d"
       },
       {
         name: "Admin",
@@ -76,19 +77,21 @@ class RoleSeeder {
           "spbu.manage.setting": "Pengaturan SPBU",
           "spbu.manage.setting.detail": "Merubah Detail SPBU",
           "spbu.manage.setting.payment": "Merubah Pengaturan Metode Pembayaran",
-        }
+        },
+        uuid: "45982947-346a-43d6-9204-78202ad970ab"
       },
       {
         name: "Operator",
         description: "Jabatan Operator",
         mobile_layout: 'operator',
-        role: ""
+        role: "",
+        uuid: "0bec0af4-a32f-4b1e-bfc2-5f4933c49740"
       }
     ]
 
     for (let i = 0; i < data.length; i++) {
       const role = new Role()
-      role.uuid = uuid()
+      role.uuid = data[i].uuid
       role.name = data[i].name
       role.description = data[i].description
       await role.save()

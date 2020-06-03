@@ -122,6 +122,7 @@ Route.group(() => {
 	Route.get('mobile/island', 'mobile/OperatorReportController.getIsland')
 	Route.get('mobile/nozzle', 'mobile/OperatorReportController.getNozzle')
 	Route.get('mobile/payment', 'mobile/OperatorReportController.getPayment')
+	Route.get('mobile/co-worker', 'mobile/OperatorReportController.getCoWorker')
 	Route.post('mobile/report/operator', 'mobile/OperatorReportController.store')
 	Route.post('mobile/report/admin', 'mobile/AdminReportController.store')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])

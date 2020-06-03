@@ -1,5 +1,6 @@
 'use strict'
 
+const Role = use('App/Models/Role')
 const Shift = use('App/Models/Shift')
 const SpbuPayment = use('App/Models/SpbuPayment')
 const Island = use('App/Models/Island')
@@ -147,7 +148,7 @@ class OperatorReportController {
             data.push(nzl)
         }
 
-        return response.status(200).json(baseResp(true, data, 'Data Nozzle Report sukses diterima'))
+        return response.status(200).json(baseResp(true, data, 'Data laporan pompa sukses diterima'))
     }
 
     async getPayment({ request, response, transform }) {
@@ -182,7 +183,36 @@ class OperatorReportController {
             data.push(dataPayment)
         }
 
-        return response.status(200).json(baseResp(true, data, 'Data Payment Report sukses diterima'))
+        return response.status(200).json(baseResp(true, data, 'Data laporan pembayaran sukses diterima'))
+    }
+
+    async getCoWorker({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            spbu_uuid: 'required',
+            date: 'required',
+            shift_uuid: 'required',
+            island_uuid: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        const co_worker = await User.query().where('role_uuid', '0bec0af4-a32f-4b1e-bfc2-5f4933c49740').fetch()
+        let data = {
+            data: co_worker,
+            checklist: []
+        }
+        const reportCoWorker = await ReportCoWorker.query()
+            .where('spbu_uuid', req.spbu_uuid)
+            .where('island_uuid', req.island_uuid)
+            .where('shift_uuid', req.shift_uuid)
+            .where('date', moment(req.date).format('YYYY-MM-DD'))
+            .fetch()
+        for (let i = 0; i < reportCoWorker.toJSON().length; i++) {
+            const rpCoWork = reportCoWorker.toJSON()[i];
+            data.checklist.push(rpCoWork.user_uuid)
+        }
+
+        return response.status(200).json(baseResp(true, data, 'Data laporan rekan kerja sukses diterima'))
     }
 
     async store({ request, response, transform, auth }) {
