@@ -49,8 +49,8 @@ class OperatorReportController {
         const yesterdayLastReport = await Database.table('report_shifts').where('spbu_uuid', req.spbu_uuid).where('date', moment(req.date).subtract(1, "days").format('YYYY-MM-DD')).where('shift_uuid', lastShift.uuid).first()
 
         const reportShift = await Database.table('report_shifts').where('spbu_uuid', req.spbu_uuid).where('date', moment(req.date).format('YYYY-MM-DD'))
+        var lastReport = yesterdayLastReport || null
         if (reportShift.length > 0) {
-            let lastReport = yesterdayLastReport || null
             for (let i = 0; i < data.length; i++) {
                 const shift = data[i];
                 let selectedShift = null
@@ -67,7 +67,7 @@ class OperatorReportController {
                     shift.disable = !status
                 } else {
                     shift.done = status
-                    shift.disable = (lastReport.status_operator == true) ? true : false
+                    shift.disable = (lastReport.status_operator == true) ? false : true
                 }
                 lastReport = selectedShift
             }
