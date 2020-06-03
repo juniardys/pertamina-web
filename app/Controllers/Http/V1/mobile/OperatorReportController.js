@@ -67,15 +67,20 @@ class OperatorReportController {
                     shift.disable = !status
                 } else {
                     shift.done = status
-                    shift.disable = (lastReport.status_operator == true) ? false : true
+                    shift.disable = (lastReport.status_operator) ? false : true
                 }
                 lastReport = selectedShift
             }
         } else {
+            let status = false
+            let yesterdayHasDone = await Database.table('report_shifts').where('spbu_uuid', req.spbu_uuid).where('date', moment(req.date).subtract(1, "days").format('YYYY-MM-DD')).where('status_operator', true).count()
+            if (yesterdayHasDone[0].count > 0) {
+                status = true
+            }
             for (let i = 0; i < data.length; i++) {
                 const shift = data[i];
                 shift.done = false
-                shift.disable = false
+                shift.disable = status
             }
         }
         return response.status(200).json(baseResp(true, data, 'Data Shift Report sukses diterima'))
