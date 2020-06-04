@@ -56,6 +56,7 @@ class AdminReportController {
             }).first()
             if (reportShift) {
                 if (reportShift.status_admin == true) throw new Error('Laporan Shift ini sudah di isi')
+                if (reportShift.status_operator == false) throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
             } else {
                 throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
             }
@@ -147,11 +148,11 @@ class AdminReportController {
                 // Get Payment Method
                 let payment_method = await ReportPayment.query().where('uuid', item.uuid).first()
                 if (!payment_method) throw new Error('Ada data metode pembayaran yang tidak ditemukan')
-                // Upload Image
-                if (request.file(`report_payment[${key}][image]`)) {
-                    payment_method.image = await uploadImage(request, `report_payment[${key}][image]`, 'report-payment-method/')
-                    imagePath.push(image)
-                }
+                // // Upload Image
+                // if (request.file(`report_payment[${key}][image]`)) {
+                //     payment_method.image = await uploadImage(request, `report_payment[${key}][image]`, 'report-payment-method/')
+                //     imagePath.push(image)
+                // }
                 // Update Data
                 payment_method.amount = item.amount
                 await payment_method.save()

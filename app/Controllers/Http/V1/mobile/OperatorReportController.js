@@ -328,14 +328,14 @@ class OperatorReportController {
                 // Get Payment Method
                 let payment_method = await PaymentMethod.query().where('uuid', item.payment_method_uuid).first()
                 if (!payment_method) throw new Error('Ada data metode pembayaran yang tidak ditemukan')
-                // Check Image
-                if(payment_method.image_required && !request.file(`report_payment[${key}][image]`)) throw new Error('Gambar Pada Metode Pembayaran ' + payment_method.name + ' Harap di cantumkan')
-                // Upload Image
-                let image = null
-                if (request.file(`report_payment[${key}][image]`)) {
-                    image = await uploadImage(request, `report_payment[${key}][image]`, 'report-payment-method/')
-                    imagePath.push(image)
-                }
+                // // Check Image
+                // if(payment_method.image_required && !request.file(`report_payment[${key}][image]`)) throw new Error('Gambar Pada Metode Pembayaran ' + payment_method.name + ' Harap di cantumkan')
+                // // Upload Image
+                // let image = null
+                // if (request.file(`report_payment[${key}][image]`)) {
+                //     image = await uploadImage(request, `report_payment[${key}][image]`, 'report-payment-method/')
+                //     imagePath.push(image)
+                // }
                 // Insert Data
                 let data_payment_method = await ReportPayment.create({
                     'uuid': uuid(),

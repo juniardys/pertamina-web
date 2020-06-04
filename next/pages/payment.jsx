@@ -136,7 +136,7 @@ class Payment extends Component {
                         <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
                     </div>
                 </div>
-                <div className="form-group row">
+                {/* <div className="form-group row">
                     <label className="control-label col-lg-2">Harus Upload Gambar</label>
                     <div className="col-lg-10">
                         <label className="radio-inline">
@@ -148,7 +148,7 @@ class Payment extends Component {
                             Tidak
                         </label>
                     </div>
-                </div>
+                </div> */}
                 <div className="form-group row">
                     <label className="control-label col-lg-2">{(this.state.modalType == 'create') ? 'Ikon' : 'Ikon Baru (untuk mengganti ikon lama)'}</label>
                     <div className="col-lg-10">
@@ -210,7 +210,7 @@ class Payment extends Component {
                                                 <td>{i + 1}</td>
                                                 <td>{item.name}</td>
                                                 <td>{item.code}</td>
-                                                <td>{(item.image_required == "1") ? "Ya" : "Tidak"}</td>
+                                                {/* <td>{(item.image_required == "1") ? "Ya" : "Tidak"}</td> */}
                                                 <td>
                                                     <center>
                                                         {(item.icon) ? (
