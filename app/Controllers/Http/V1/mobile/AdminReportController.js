@@ -4,6 +4,7 @@ const Shift = use('App/Models/Shift')
 const Island = use('App/Models/Island')
 const FeederTank = use('App/Models/FeederTank')
 const Nozzle = use('App/Models/Nozzle')
+const Delivery = use('App/Models/Delivery')
 const User = use('App/Models/User')
 const PaymentMethod = use('App/Models/PaymentMethod')
 const Product = use('App/Models/Product')
@@ -14,7 +15,7 @@ const ReportCoWorker = use('App/Models/ReportCoWorker')
 const ReportShift = use('App/Models/ReportShift')
 const ReportIsland = use('App/Models/ReportIsland')
 const { validate } = use('Validator')
-const { baseResp, uploadImage, setReportShift, setReportSpbu } = use('App/Helpers')
+const { baseResp, uploadImage, setReportShift, setReportSpbu, getShiftBefore, getShiftAfter } = use('App/Helpers')
 const uuid = use('uuid-random')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
@@ -56,7 +57,7 @@ class AdminReportController {
             }).first()
             if (reportShift) {
                 if (reportShift.status_admin == true) throw new Error('Laporan Shift ini sudah di isi')
-                if (reportShift.status_operator == false) throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
+                if (reportShift.status_operator == false) throw new Error('Laporan Shift ini harus dilengkapi operator terlebih dahulu')
             } else {
                 throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
             }
@@ -76,9 +77,9 @@ class AdminReportController {
             await Promise.all(_.map(req.report_feeder, async (item, key) => {
                 // Check Value
                 if(!item.feeder_tank_uuid || !item.last_meter) throw new Error('Data Tangki Utama Ada Yang Belum Lengkap')
-                // Get Nozzle
+                // Get Feeder Tank
                 let get_feeder_tank = await FeederTank.query().where('uuid', item.feeder_tank_uuid).with('product').fetch()
-                let feeder_tank = get_feeder_tank[0]
+                let feeder_tank = get_feeder_tank.toJSON()[0]
                 if (!feeder_tank) throw new Error('Ada data Tangki Utama yang tidak ditemukan')
                 // Check Image
                 if(!request.file(`report_feeder[${key}][image]`)) throw new Error('Gambar Pada Tangki Utama ' + feeder_tank.name + ' Harap di cantumkan')
@@ -98,9 +99,13 @@ class AdminReportController {
                     if (before) {
                         start_meter = before.last_meter
                     } else {
-                        start_meter = nozzle.start_meter
+                        start_meter = feeder_tank.start_meter
                     }
                 }
+                let getAddition = await Delivery.query().whereHas('order', (builder) => {
+                    builder.where('spbu_uuid', req.spbu_uuid).where('product_uuid', feeder_tank.product.uuid)
+                }).where({ spbu_uuid: req.spbu_uuid, shift_uuid: req.shift_uuid, receipt_date: moment(req.date).format('YYYY-MM-DD') }).fetch()
+                let addition = _.sumBy(getAddition.toJSON(), 'quantity') || 0
                 // Insert Data
                 let data_feeder_tank = await ReportFeederTank.create({
                     'uuid': uuid(),
@@ -108,7 +113,7 @@ class AdminReportController {
                     'shift_uuid': req.shift_uuid,
                     'feeder_tank_uuid': item.feeder_tank_uuid,
                     'start_meter': start_meter,
-                    'addition_amount': 0,
+                    'addition_amount': addition,
                     'last_meter': item.last_meter,
                     'image': image,
                     'date': req.date,

@@ -344,7 +344,7 @@ class OperatorReportController {
                     'shift_uuid': req.shift_uuid,
                     'payment_method_uuid': item.payment_method_uuid,
                     'amount': item.amount,
-                    'image': image,
+                    'image': null,
                     'date': req.date,
                 })
                 if (!data_payment_method) throw new Error('Gagal dalam mengisi data pembayaran')
