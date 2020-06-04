@@ -194,7 +194,7 @@ class Payment extends Component {
                                     <th>#</th>
                                     <th>Nama</th>
                                     <th>Kode</th>
-                                    <th>Harus Upload Gambar</th>
+                                    {/* <th>Harus Upload Gambar</th> */}
                                     <th>Ikon</th>
                                     <th>Aksi</th>
                                 </tr>
