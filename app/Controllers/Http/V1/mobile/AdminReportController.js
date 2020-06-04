@@ -38,6 +38,60 @@ class AdminReportController {
         }
     }
 
+    async getShift({ request, response, transform }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            spbu_uuid: 'required',
+            date: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        const shift = await Shift.query().where('spbu_uuid', req.spbu_uuid).orderBy('no_order', 'asc').fetch()
+        const data = await transform.collection(shift, ShiftTransformer)
+        const lastShift = shift.toJSON().slice(-1)[0]
+
+        const yesterdayLastReport = await Database.table('report_shifts').where('spbu_uuid', req.spbu_uuid).where('date', moment(req.date).subtract(1, "days").format('YYYY-MM-DD')).where('shift_uuid', lastShift.uuid).first()
+
+        const reportShift = await Database.table('report_shifts').where('spbu_uuid', req.spbu_uuid).where('date', moment(req.date).format('YYYY-MM-DD'))
+        var lastReport = yesterdayLastReport || null
+        if (reportShift.length > 0) {
+            for (let i = 0; i < data.length; i++) {
+                const shift = data[i];
+                let selectedShift = null
+                let status = false
+                let operator_status = false
+                reportShift.forEach(report => {
+                    if (shift.uuid === report.shift_uuid) {
+                        operator_status = report.status_operator
+                        status = report.status_admin
+                        selectedShift = report
+                    }
+                })
+
+                if (lastReport == null) {
+                    shift.done = status
+                    shift.disable = (operator_status)? false : !status
+                } else {
+                    shift.done = status
+                    shift.disable = (lastReport.status_admin) ? false : true
+                }
+                lastReport = selectedShift
+            }
+        } else {
+            let status = false
+            let yesterdayHasDone = await Database.table('report_shifts').where('spbu_uuid', req.spbu_uuid).where('date', moment(req.date).subtract(1, "days").format('YYYY-MM-DD')).where('status_admin', true).count()
+            if (yesterdayHasDone[0].count > 0) {
+                status = true
+            }
+            for (let i = 0; i < data.length; i++) {
+                const shift = data[i];
+                shift.done = false
+                shift.disable = status
+            }
+        }
+        return response.status(200).json(baseResp(true, data, 'Data Shift Report sukses diterima'))
+    }
+
     async store({ request, response, transform, auth }) {
         const req = request.all()
         const validation = await validate(req, {
