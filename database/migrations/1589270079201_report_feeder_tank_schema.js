@@ -10,7 +10,7 @@ class ReportFeederTankSchema extends Schema {
       table.uuid('uuid').notNullable()
       table.uuid('spbu_uuid').references('uuid').inTable('spbu').onDelete('cascade').notNullable()
       table.uuid('shift_uuid').references('uuid').inTable('shifts').onDelete('cascade').notNullable()
-      table.uuid('fedeer_tank_uuid').references('uuid').inTable('feeder_tanks').onDelete('cascade').notNullable()
+      table.uuid('feeder_tank_uuid').references('uuid').inTable('feeder_tanks').onDelete('cascade').notNullable()
       table.double('start_meter').notNullable()
       table.float('last_meter').notNullable()
       table.float('addition_amount').defaultTo(0)
