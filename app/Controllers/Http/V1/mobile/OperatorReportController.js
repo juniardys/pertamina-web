@@ -64,8 +64,9 @@ class OperatorReportController {
                 })
 
                 if (lastReport == null) {
+                    const checkIslandRunning = await ReportIsland.query().where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('date', moment(req.date).format('YYYY-MM-DD')).getCount()
                     shift.done = status
-                    shift.disable = !status
+                    shift.disable = (checkIslandRunning > 0)? false : !status
                 } else {
                     shift.done = status
                     shift.disable = (lastReport.status_operator) ? false : true
