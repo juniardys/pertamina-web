@@ -130,6 +130,11 @@ Route.group(() => {
 	Route.get('mobile/admin/nozzle', 'mobile/AdminReportController.getNozzle')
 	Route.get('mobile/admin/payment', 'mobile/AdminReportController.getPayment')
 	Route.get('mobile/admin/co-worker', 'mobile/AdminReportController.getCoWorker')
+	Route.post('mobile/admin/nozzle', 'mobile/AdminReportController.updateNozzle')
+	Route.post('mobile/admin/nozzle/item', 'mobile/AdminReportController.updateNozzleItem')
+	Route.post('mobile/admin/payment', 'mobile/AdminReportController.updatePayment')
+	Route.post('mobile/admin/payment/item', 'mobile/AdminReportController.updatePaymentItem')
+	Route.post('mobile/admin/co-worker', 'mobile/AdminReportController.updateCoWorker')
 	Route.post('mobile/report/admin', 'mobile/AdminReportController.store')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 

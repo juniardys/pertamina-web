@@ -238,6 +238,297 @@ class AdminReportController {
         return response.status(200).json(baseResp(true, data, 'Data laporan rekan kerja sukses diterima'))
     }
 
+    async updateNozzle({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        var imagePath = []
+        try {
+            // Get Shift Before
+            var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
+            // Get Shift After
+            var shiftAfter = await getShiftAfter(req.spbu_uuid, req.shift_uuid, req.date)
+            // Edit Data Nozzle
+            if (!req.report_nozzle) throw new Error('Tolong Laporan Pompa di isi terlebih dahulu')
+            await Promise.all(_.map(req.report_nozzle, async (item, key) => {
+                // Check Value
+                if(!item.uuid || !item.last_meter) return item
+                // Get Report Nozzle
+                let nozzle = await ReportNozzle.query().where('uuid', item.uuid).first()
+                if (!nozzle) throw new Error('Ada data pompa yang tidak ditemukan')
+                // Check Image
+                if(request.file(`report_nozzle[${key}][image]`)) {
+                    // Upload Image
+                    nozzle.image = await uploadImage(request, `report_nozzle[${key}][image]`, 'report-nozzle/')
+                    imagePath.push(image)
+                }
+                // Processing
+                // Checking report last shift
+                let start_meter = nozzle.start_meter || 0
+                let price = nozzle.price || 0
+                let volume = (nozzle.last_meter - start_meter) || 0
+                let total_price = nozzle.total_price || 0
+                if (shiftBefore.shift) {
+                    let before = await ReportNozzle.query().where({
+                        'spbu_uuid': req.spbu_uuid,
+                        'island_uuid': req.island_uuid,
+                        'shift_uuid': shiftBefore.shift.uuid,
+                        'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
+                    }).first()
+                    // Report available
+                    if (before) {
+                        start_meter = before.last_meter
+                    } else {
+                        start_meter = nozzle.start_meter
+                    }
+                }
+                if (item.last_meter < start_meter) throw new Error('Ada pompa yang meteran akhirnya kurang dari meteran awal')
+                volume = item.last_meter - start_meter
+                total_price = volume * price
+                // Update Data
+                nozzle.total_price = total_price
+                nozzle.last_meter = item.last_meter
+                await nozzle.save()
+                // Updating Shift After if exist
+                if (shiftAfter.shift) {
+                    let after = await ReportNozzle.query().where({
+                        'spbu_uuid': req.spbu_uuid,
+                        'island_uuid': req.island_uuid,
+                        'shift_uuid': shiftAfter.shift.uuid,
+                        'date': moment(shiftAfter.date).format('YYYY-MM-DD'),
+                    }).first()
+                    // Initialization
+                    start_meter = item.last_meter || 0
+                    price = after.price || 0
+                    volume = (after.last_meter - start_meter) || 0
+                    total_price = after.total_price || 0
+                    // Calculation
+                    volume = after.last_meter - start_meter
+                    total_price = volume * price
+                    // Update Data
+                    after.start_meter = start_meter
+                    after.total_price = total_price
+                    await after.save()
+                }
+            }))
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+        } catch (e) {
+            // Rollback
+            this.deleteImages(imagePath)
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+    }
+
+    async updateNozzleItem({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+            uuid: 'required',
+            last_meter: 'required|number'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        var imagePath = []
+        try {
+            // Get Shift Before
+            var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
+            // Get Shift After
+            var shiftAfter = await getShiftAfter(req.spbu_uuid, req.shift_uuid, req.date)
+            // Get Report Nozzle
+            let nozzle = await ReportNozzle.query().where('uuid', req.uuid).first()
+            if (!nozzle) throw new Error('Data pompa tidak ditemukan')
+            // Check Image
+            if(request.file(`image`)) {
+                // Upload Image
+                nozzle.image = await uploadImage(request, `image`, 'report-nozzle/')
+                imagePath.push(image)
+            }
+            // Processing
+            // Checking report last shift
+            let start_meter = nozzle.start_meter || 0
+            let price = nozzle.price || 0
+            let volume = (nozzle.last_meter - start_meter) || 0
+            let total_price = nozzle.total_price || 0
+            if (shiftBefore.shift) {
+                let before = await ReportNozzle.query().where({
+                    'spbu_uuid': req.spbu_uuid,
+                    'island_uuid': req.island_uuid,
+                    'shift_uuid': shiftBefore.shift.uuid,
+                    'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
+                }).first()
+                // Report available
+                if (before) {
+                    start_meter = before.last_meter
+                } else {
+                    start_meter = nozzle.start_meter
+                }
+            }
+            if (req.last_meter < start_meter) throw new Error('Pompa meteran akhirnya kurang dari meteran awal')
+            volume = req.last_meter - start_meter
+            total_price = volume * price
+            // Update Data
+            nozzle.total_price = total_price
+            nozzle.last_meter = req.last_meter
+            await nozzle.save()
+            // Updating Shift After if exist
+            if (shiftAfter.shift) {
+                let after = await ReportNozzle.query().where({
+                    'spbu_uuid': req.spbu_uuid,
+                    'island_uuid': req.island_uuid,
+                    'shift_uuid': shiftAfter.shift.uuid,
+                    'date': moment(shiftAfter.date).format('YYYY-MM-DD'),
+                }).first()
+                // Initialization
+                start_meter = req.last_meter || 0
+                price = after.price || 0
+                volume = (after.last_meter - start_meter) || 0
+                total_price = after.total_price || 0
+                // Calculation
+                volume = after.last_meter - start_meter
+                total_price = volume * price
+                // Update Data
+                after.start_meter = start_meter
+                after.total_price = total_price
+                await after.save()
+            }
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+        } catch (e) {
+            // Rollback
+            this.deleteImages(imagePath)
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+    }
+
+    async updatePayment({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        var imagePath = []
+        try {
+            // Edit Data Payment
+            if (!req.report_payment) throw new Error('Tolong Laporan Pembayaran di isi terlebih dahulu')
+            await Promise.all(_.map(req.report_payment, async (item, key) => {
+                // Check Value
+                if(!item.uuid || !item.amount) return item
+                // Get Payment Method
+                let payment_method = await ReportPayment.query().where('uuid', item.uuid).first()
+                if (!payment_method) throw new Error('Ada data metode pembayaran yang tidak ditemukan')
+                // // Upload Image
+                // if (request.file(`report_payment[${key}][image]`)) {
+                //     payment_method.image = await uploadImage(request, `report_payment[${key}][image]`, 'report-payment-method/')
+                //     imagePath.push(image)
+                // }
+                // Update Data
+                payment_method.amount = item.amount
+                await payment_method.save()
+            }))
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+        } catch (e) {
+            // Rollback
+            this.deleteImages(imagePath)
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+    }
+
+    async updatePaymentItem({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+            uuid: 'required',
+            amount: 'required|number',
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        var imagePath = []
+        try {
+            // Get Payment Method
+            let payment_method = await ReportPayment.query().where('uuid', req.uuid).first()
+            if (!payment_method) throw new Error('Data laporan metode pembayaran tidak ditemukan')
+            // // Upload Image
+            // if (request.file(`image`)) {
+            //     payment_method.image = await uploadImage(request, `image`, 'report-payment-method/')
+            //     imagePath.push(image)
+            // }
+            // Update Data
+            payment_method.amount = req.amount
+            await payment_method.save()
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+        } catch (e) {
+            // Rollback
+            this.deleteImages(imagePath)
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+    }
+
+    async updateCoWorker({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+            island_uuid: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        var imagePath = []
+        try {
+            // Edit Data Co Worker
+            if (!req.user_uuid) throw new Error('Tolong isi setidaknya 1 rekan kerja')
+            await Promise.all(_.map(req.user_uuid, async (item, key) => {
+                // Check Value
+                if(!item) return item
+                if(!uuid_validate(item)) return item
+                // Get User
+                let user = await User.query().where('uuid', item).first()
+                if (!user) return item
+                // Check Data Report
+                let checkReport = await ReportCoWorker.query().where({
+                    'spbu_uuid': req.spbu_uuid,
+                    'island_uuid': req.island_uuid,
+                    'shift_uuid': req.shift_uuid,
+                    'user_uuid': item,
+                    'date': req.date,
+                }).first()
+                if (!checkReport) {
+                    // Insert Data
+                    await ReportCoWorker.create({
+                        'uuid': uuid(),
+                        'spbu_uuid': req.spbu_uuid,
+                        'island_uuid': req.island_uuid,
+                        'shift_uuid': req.shift_uuid,
+                        'user_uuid': item,
+                        'date': req.date,
+                    })
+                }
+            }))
+        // Remove uncheckable
+        await ReportCoWorker.query().where({
+            'spbu_uuid': req.spbu_uuid,
+            'island_uuid': req.island_uuid,
+            'shift_uuid': req.shift_uuid,
+            'date': req.date,
+        }).whereNotIn('user_uuid', req.user_uuid).delete()
+        } catch (e) {
+            // Rollback
+            this.deleteImages(imagePath)
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+    }
+
     async store({ request, response, transform, auth }) {
         const req = request.all()
         const validation = await validate(req, {
@@ -325,85 +616,6 @@ class AdminReportController {
                 let feeder_tank = await FeederTank.query().where('uuid', listFeederTank[0]).first()
                 throw new Error('Data Tangki Utama (' + feeder_tank.name + ') Belom di isi')
             }
-
-            // Edit Data Nozzle
-            if (!req.report_nozzle) throw new Error('Tolong Laporan Pompa di isi terlebih dahulu')
-            await Promise.all(_.map(req.report_nozzle, async (item, key) => {
-                // Check Value
-                if(!item.uuid || !item.last_meter) return item
-                // Get Report Nozzle
-                let nozzle = await ReportNozzle.query().where('uuid', item.uuid).first()
-                if (!nozzle) throw new Error('Ada data pompa yang tidak ditemukan')
-                // Check Image
-                if(request.file(`report_nozzle[${key}][image]`)) {
-                    nozzle.image = await uploadImage(request, `report_nozzle[${key}][image]`, 'report-nozzle/')
-                    imagePath.push(image)
-                }
-                // Upload Image
-                // Update Data
-                nozzle.last_meter = item.last_meter
-                await nozzle.save()
-            }))
-
-            // Edit Data Payment
-            if (!req.report_payment) throw new Error('Tolong Laporan Pembayaran di isi terlebih dahulu')
-            await Promise.all(_.map(req.report_payment, async (item, key) => {
-                // Check Value
-                if(!item.uuid || !item.amount) return item
-                // Get Payment Method
-                let payment_method = await ReportPayment.query().where('uuid', item.uuid).first()
-                if (!payment_method) throw new Error('Ada data metode pembayaran yang tidak ditemukan')
-                // // Upload Image
-                // if (request.file(`report_payment[${key}][image]`)) {
-                //     payment_method.image = await uploadImage(request, `report_payment[${key}][image]`, 'report-payment-method/')
-                //     imagePath.push(image)
-                // }
-                // Update Data
-                payment_method.amount = item.amount
-                await payment_method.save()
-            }))
-
-            // Edit Data Co Worker
-            if (!req.report_co_worker) throw new Error('Tolong Rekan Kerja di isi terlebih dahulu')
-            await Promise.all(_.map(req.report_co_worker, async (co_work) => {
-                if (!co_work.island_uuid) return co_work
-                if (co_work.user_uuid) {
-                    await Promise.all(_.map(co_work.user_uuid, async (item, key) => {
-                        // Check Value
-                        if(!item) return item
-                        if(!uuid_validate(item)) return item
-                        // Get User
-                        let user = await User.query().where('uuid', item).first()
-                        if (!user) throw new Error('Ada data rekan kerja yang tidak ditemukan')
-                        // Check Data Report
-                        let checkReport = await ReportCoWorker.query().where({
-                            'spbu_uuid': req.spbu_uuid,
-                            'island_uuid': co_work.island_uuid,
-                            'shift_uuid': req.shift_uuid,
-                            'user_uuid': item,
-                            'date': req.date,
-                        }).first()
-                        if (!checkReport) {
-                            // Insert Data
-                            await ReportCoWorker.create({
-                                'uuid': uuid(),
-                                'spbu_uuid': req.spbu_uuid,
-                                'island_uuid': co_work.island_uuid,
-                                'shift_uuid': req.shift_uuid,
-                                'user_uuid': item,
-                                'date': req.date,
-                            })
-                        }
-                    }))
-                }
-                // Remove uncheckable
-                await ReportCoWorker.query().where({
-                    'spbu_uuid': req.spbu_uuid,
-                    'island_uuid': co_work.island_uuid,
-                    'shift_uuid': req.shift_uuid,
-                    'date': req.date,
-                }).whereNotIn('user_uuid', co_work.user_uuid).delete()
-            }))
 
             reportShift.admin_acc =  auth.user.uuid
             reportShift.status_admin =  true
