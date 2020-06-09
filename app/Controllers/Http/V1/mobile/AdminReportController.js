@@ -105,21 +105,21 @@ class AdminReportController {
         const feeder_tank = await FeederTank.query().where('spbu_uuid', req.spbu_uuid).with('product').fetch()
         let data = []
         for (let i = 0; i < feeder_tank.toJSON().length; i++) {
-            const nzl = feeder_tank.toJSON()[i];
+            const feeder = feeder_tank.toJSON()[i];
             const reportFeederTank = await ReportFeederTank.query()
             .where('spbu_uuid', req.spbu_uuid)
             .where('shift_uuid', req.shift_uuid)
-            .where('feeder_tank_uuid', nzl.uuid)
+            .where('feeder_tank_uuid', feeder.uuid)
             .where('date', moment(req.date).format('YYYY-MM-DD'))
             .first()
 
             if (!reportFeederTank) {
-                nzl['data'] = null
+                feeder['data'] = null
             } else {
-                nzl['data'] = reportFeederTank.toJSON()
-                nzl['data']['date'] = moment(reportFeederTank.toJSON()['date']).format('YYYY-MM-DD HH:mm:ss')
+                feeder['data'] = reportFeederTank.toJSON()
+                feeder['data']['date'] = moment(reportFeederTank.toJSON()['date']).format('YYYY-MM-DD HH:mm:ss')
             }
-            data.push(nzl)
+            data.push(feeder)
         }
 
         return response.status(200).json(baseResp(true, data, 'Data laporan tangki utama sukses diterima'))
@@ -193,7 +193,7 @@ class AdminReportController {
                     dataPayment['data'] = reportPayment.toJSON()
                     dataPayment['data']['date'] = moment(reportPayment.toJSON()['date']).format('YYYY-MM-DD HH:mm:ss')
                 }
-                island['payment'].push(nzl)
+                island['payment'].push(dataPayment)
             }
         }
         
