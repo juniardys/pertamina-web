@@ -269,14 +269,14 @@ class AdminReportController {
                 }
                 // Processing
                 // Checking report last shift
-                let start_meter = nozzle.start_meter || 0
-                let price = nozzle.price || 0
-                let volume = (nozzle.last_meter - start_meter) || 0
-                let total_price = nozzle.total_price || 0
+                var start_meter = nozzle.start_meter || 0
+                var price = nozzle.price || 0
+                var volume = (nozzle.last_meter - start_meter) || 0
+                var total_price = nozzle.total_price || 0
                 if (shiftBefore.shift) {
                     let before = await ReportNozzle.query().where({
                         'spbu_uuid': req.spbu_uuid,
-                        'island_uuid': req.island_uuid,
+                        'island_uuid': nozzle.island_uuid,
                         'shift_uuid': shiftBefore.shift.uuid,
                         'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
                     }).first()
@@ -298,22 +298,24 @@ class AdminReportController {
                 if (shiftAfter.shift) {
                     let after = await ReportNozzle.query().where({
                         'spbu_uuid': req.spbu_uuid,
-                        'island_uuid': req.island_uuid,
+                        'island_uuid': nozzle.island_uuid,
                         'shift_uuid': shiftAfter.shift.uuid,
                         'date': moment(shiftAfter.date).format('YYYY-MM-DD'),
                     }).first()
-                    // Initialization
-                    start_meter = item.last_meter || 0
-                    price = after.price || 0
-                    volume = (after.last_meter - start_meter) || 0
-                    total_price = after.total_price || 0
-                    // Calculation
-                    volume = after.last_meter - start_meter
-                    total_price = volume * price
-                    // Update Data
-                    after.start_meter = start_meter
-                    after.total_price = total_price
-                    await after.save()
+                    if (after) {
+                        // Initialization
+                        start_meter = item.last_meter || 0
+                        price = after.price || 0
+                        volume = (after.last_meter - start_meter) || 0
+                        total_price = after.total_price || 0
+                        // Calculation
+                        volume = after.last_meter - start_meter
+                        total_price = volume * price
+                        // Update Data
+                        after.start_meter = start_meter
+                        after.total_price = total_price
+                        await after.save()
+                    }
                 }
             }))
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
@@ -360,7 +362,7 @@ class AdminReportController {
             if (shiftBefore.shift) {
                 let before = await ReportNozzle.query().where({
                     'spbu_uuid': req.spbu_uuid,
-                    'island_uuid': req.island_uuid,
+                    'island_uuid': nozzle.island_uuid,
                     'shift_uuid': shiftBefore.shift.uuid,
                     'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
                 }).first()
@@ -382,22 +384,24 @@ class AdminReportController {
             if (shiftAfter.shift) {
                 let after = await ReportNozzle.query().where({
                     'spbu_uuid': req.spbu_uuid,
-                    'island_uuid': req.island_uuid,
+                    'island_uuid': nozzle.island_uuid,
                     'shift_uuid': shiftAfter.shift.uuid,
                     'date': moment(shiftAfter.date).format('YYYY-MM-DD'),
                 }).first()
-                // Initialization
-                start_meter = req.last_meter || 0
-                price = after.price || 0
-                volume = (after.last_meter - start_meter) || 0
-                total_price = after.total_price || 0
-                // Calculation
-                volume = after.last_meter - start_meter
-                total_price = volume * price
-                // Update Data
-                after.start_meter = start_meter
-                after.total_price = total_price
-                await after.save()
+                if (after) {
+                    // Initialization
+                    start_meter = req.last_meter || 0
+                    price = after.price || 0
+                    volume = (after.last_meter - start_meter) || 0
+                    total_price = after.total_price || 0
+                    // Calculation
+                    volume = after.last_meter - start_meter
+                    total_price = volume * price
+                    // Update Data
+                    after.start_meter = start_meter
+                    after.total_price = total_price
+                    await after.save()
+                }
             }
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
@@ -516,13 +520,14 @@ class AdminReportController {
                     })
                 }
             }))
-        // Remove uncheckable
-        await ReportCoWorker.query().where({
-            'spbu_uuid': req.spbu_uuid,
-            'island_uuid': req.island_uuid,
-            'shift_uuid': req.shift_uuid,
-            'date': req.date,
-        }).whereNotIn('user_uuid', req.user_uuid).delete()
+            // Remove uncheckable
+            await ReportCoWorker.query().where({
+                'spbu_uuid': req.spbu_uuid,
+                'island_uuid': req.island_uuid,
+                'shift_uuid': req.shift_uuid,
+                'date': req.date,
+            }).whereNotIn('user_uuid', req.user_uuid).delete()
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
             this.deleteImages(imagePath)
