@@ -230,8 +230,8 @@ class AdminReportController {
                 if (checked > 0) {
                     co_work['checked'] = true
                     island['co_worker'].checklist.push(co_work.uuid)
+                    island['co_worker'].data.push(co_work)
                 }
-                island['co_worker'].data.push(co_work)
             }
         }
 
