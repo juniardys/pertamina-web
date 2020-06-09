@@ -222,7 +222,7 @@ class AdminReportController {
                 co_work['checked'] = false
                 let checked = await ReportCoWorker.query()
                     .where('spbu_uuid', req.spbu_uuid)
-                    .where('island_uuid', req.island_uuid)
+                    .where('island_uuid', island.uuid)
                     .where('shift_uuid', req.shift_uuid)
                     .where('user_uuid', co_work.uuid)
                     .where('date', moment(req.date).format('YYYY-MM-DD'))
@@ -347,8 +347,9 @@ class AdminReportController {
             // Check Image
             if(request.file(`image`)) {
                 // Upload Image
-                nozzle.image = await uploadImage(request, `image`, 'report-nozzle/')
+                let image = await uploadImage(request, `image`, 'report-nozzle/')
                 imagePath.push(image)
+                nozzle.image(image)
             }
             // Processing
             // Checking report last shift
