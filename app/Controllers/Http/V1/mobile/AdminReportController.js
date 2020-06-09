@@ -535,6 +535,46 @@ class AdminReportController {
         }
     }
 
+    async removeCoWorker({ request, response, transform, auth }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            date: 'required',
+            spbu_uuid: 'required',
+            shift_uuid: 'required',
+            island_uuid: 'required',
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        var imagePath = []
+        try {
+            // Edit Data Co Worker
+            if (!req.user_uuid) throw new Error('User Tidak ditemukan')
+            let user = await User.query().where('uuid', req.user_uuid).first()
+            if (!user) throw new Error('User tidak ditemukan')
+            // Check Co Worker
+            const count = await ReportCoWorker.query().where({
+                'spbu_uuid': req.spbu_uuid,
+                'island_uuid': req.island_uuid,
+                'shift_uuid': req.shift_uuid,
+                'date': moment(req.date).format('YYYY-MM-DD'),
+            }).getCount()
+            if (count < 2) throw new Error('Setidaknya harus ada 1 rekan kerja')
+            // Remove uncheckable
+            await ReportCoWorker.query().where({
+                'spbu_uuid': req.spbu_uuid,
+                'island_uuid': req.island_uuid,
+                'shift_uuid': req.shift_uuid,
+                'date': moment(req.date).format('YYYY-MM-DD'),
+                'user_uuid': req.user_uuid
+            }).delete()
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+        } catch (e) {
+            // Rollback
+            this.deleteImages(imagePath)
+            return response.status(400).json(baseResp(false, [], e.message))
+        }
+    }
+
     async store({ request, response, transform, auth }) {
         const req = request.all()
         const validation = await validate(req, {

@@ -135,6 +135,7 @@ Route.group(() => {
 	Route.post('mobile/admin/payment', 'mobile/AdminReportController.updatePayment')
 	Route.post('mobile/admin/payment/item', 'mobile/AdminReportController.updatePaymentItem')
 	Route.post('mobile/admin/co-worker', 'mobile/AdminReportController.updateCoWorker')
+	Route.post('mobile/admin/co-worker/remove', 'mobile/AdminReportController.removeCoWorker')
 	Route.post('mobile/report/admin', 'mobile/AdminReportController.store')
 }).namespace('V1').prefix('api/v1').middleware(['secureApi', 'auth'])
 
