@@ -264,8 +264,9 @@ class AdminReportController {
                 // Check Image
                 if(request.file(`report_nozzle[${key}][image]`)) {
                     // Upload Image
-                    nozzle.image = await uploadImage(request, `report_nozzle[${key}][image]`, 'report-nozzle/')
+                    let image = await uploadImage(request, `report_nozzle[${key}][image]`, 'report-nozzle/')
                     imagePath.push(image)
+                    nozzle.image = image
                 }
                 // Processing
                 // Checking report last shift
@@ -351,7 +352,7 @@ class AdminReportController {
                 // Upload Image
                 let image = await uploadImage(request, `image`, 'report-nozzle/')
                 imagePath.push(image)
-                nozzle.image(image)
+                nozzle.image = image
             }
             // Processing
             // Checking report last shift
