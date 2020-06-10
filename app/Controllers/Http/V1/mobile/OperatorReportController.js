@@ -6,6 +6,7 @@ const SpbuPayment = use('App/Models/SpbuPayment')
 const Island = use('App/Models/Island')
 const Nozzle = use('App/Models/Nozzle')
 const User = use('App/Models/User')
+const Product = use('App/Models/Product')
 const PaymentMethod = use('App/Models/PaymentMethod')
 const ReportNozzle = use('App/Models/ReportNozzle')
 const ReportPayment = use('App/Models/ReportPayment')
@@ -132,6 +133,11 @@ class OperatorReportController {
         let data = []
         for (let i = 0; i < nozzle.toJSON().length; i++) {
             const nzl = nozzle.toJSON()[i];
+            const getProduct = await Product.query().where('uuid', nzl.product_uuid).first()
+            const product = getProduct.toJSON() || null
+            if (product) {
+                nzl['product_name'] = product.name
+            }
             const reportNozzle = await ReportNozzle.query()
             .where('spbu_uuid', req.spbu_uuid)
             .where('island_uuid', req.island_uuid)
@@ -287,7 +293,7 @@ class OperatorReportController {
                         start_meter = nozzle.start_meter
                     }
                 }
-                if (item.last_meter < start_meter) throw new Error('Ada pompa yang meteran akhirnya kurang dari meteran awal')
+                if (item.last_meter < start_meter) throw new Error('Pompa (' + nozzle.code + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
                 volume = item.last_meter - start_meter
                 total_price = volume * price
                 // Insert Data

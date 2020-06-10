@@ -76,6 +76,7 @@ class AdminReportController {
                     shift.done = status
                     shift.disable = (lastReport.status_admin) ? false : true
                 }
+                shift.done_operator = operator_status
                 lastReport = selectedShift
             }
         } else {
@@ -86,6 +87,7 @@ class AdminReportController {
             }
             for (let i = 0; i < data.length; i++) {
                 const shift = data[i];
+                shift.done_operator = false
                 shift.done = false
                 shift.disable = status
             }
@@ -141,6 +143,11 @@ class AdminReportController {
             const nozzle = await Nozzle.query().where('spbu_uuid', req.spbu_uuid).where('island_uuid', island.uuid).fetch()
             for (let i = 0; i < nozzle.toJSON().length; i++) {
                 const nzl = nozzle.toJSON()[i];
+                const getProduct = await Product.query().where('uuid', nzl.product_uuid).first()
+                const product = getProduct.toJSON() || null
+                if (product) {
+                    nzl['product_name'] = product.name
+                }
                 const reportNozzle = await ReportNozzle.query()
                 .where('spbu_uuid', req.spbu_uuid)
                 .where('island_uuid', island.uuid)
@@ -261,6 +268,8 @@ class AdminReportController {
                 // Get Report Nozzle
                 let nozzle = await ReportNozzle.query().where('uuid', item.uuid).first()
                 if (!nozzle) throw new Error('Ada data pompa yang tidak ditemukan')
+                let dataNozzle = await Nozzle.query().where('uuid', nozzle.nozzle_uuid).first()
+                if (!dataNozzle) throw new Error('Ada data pompa yang tidak ditemukan')
                 // Check Image
                 if(request.file(`report_nozzle[${key}][image]`)) {
                     // Upload Image
@@ -288,7 +297,7 @@ class AdminReportController {
                         start_meter = nozzle.start_meter
                     }
                 }
-                if (item.last_meter < start_meter) throw new Error('Ada pompa yang meteran akhirnya kurang dari meteran awal')
+                if (item.last_meter < start_meter) throw new Error('Pompa (' + dataNozzle.code + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
                 volume = item.last_meter - start_meter
                 total_price = volume * price
                 // Update Data
@@ -347,6 +356,8 @@ class AdminReportController {
             // Get Report Nozzle
             let nozzle = await ReportNozzle.query().where('uuid', req.uuid).first()
             if (!nozzle) throw new Error('Data pompa tidak ditemukan')
+            let dataNozzle = await Nozzle.query().where('uuid', nozzle.nozzle_uuid).first()
+            if (!dataNozzle) throw new Error('Data pompa tidak ditemukan')
             // Check Image
             if(request.file(`image`)) {
                 // Upload Image
@@ -374,7 +385,7 @@ class AdminReportController {
                     start_meter = nozzle.start_meter
                 }
             }
-            if (req.last_meter < start_meter) throw new Error('Pompa meteran akhirnya kurang dari meteran awal')
+            if (req.last_meter < start_meter) throw new Error('Pompa (' + dataNozzle.code + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
             volume = req.last_meter - start_meter
             total_price = volume * price
             // Update Data
