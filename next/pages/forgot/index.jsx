@@ -26,21 +26,19 @@ class Index extends Component {
 
     async _tryLogin() {
         this.btnLogin.start()
-        if (this.state.email == '' || this.state.password == '') {
+        if (this.state.email == '') {
             toast.fire({ icon: 'warning', title: 'Email dan password tidak boleh kosong' })
             this.btnLogin.stop()
         } else {
-            await axios.post(`/api/v1/sign-in`, {
+            await axios.post(`/api/v1/forgot`, {
                 api_key: process.env.APP_API_KEY,
-                email: this.state.email,
-                password: this.state.password
+                email: this.state.email
             })
                 .then(async response => {
                     await login(response.data.data.token)
                 })
                 .catch(error => {
-                    console.log(error);
-                    if (error.response.data) toast.fire({ icon: 'warning', title: 'Email atau password salah' })
+                    if (error.response.data) toast.fire({ icon: 'warning', title: 'Terjadi Kesalahan' })
                     this.btnLogin.stop()
                 });
         }
@@ -53,7 +51,7 @@ class Index extends Component {
                     <div className="panel panel-body login-form">
                         <div className="text-center">
                             <div className="icon-object border-slate-300 text-slate-300"><i className="icon-reading"></i></div>
-                            <h5 className="content-group">Masuk ke akun anda <small className="display-block">Ketikkan kredensial dengan benar.</small></h5>
+                            <h5 className="content-group">Lupa Password <small className="display-block">Ketikkan kredensial dengan benar.</small></h5>
                         </div>
 
                         <div className="form-group has-feedback has-feedback-left">
@@ -63,24 +61,16 @@ class Index extends Component {
                             </div>
                         </div>
 
-                        <div className="form-group has-feedback has-feedback-left">
-                            <input type="password" className="form-control" placeholder="Password" name="password" value={this.state.password} onChange={this.handleInputChange} />
-                            <div className="form-control-feedback">
-                                <i className="icon-lock2 text-muted"></i>
-                            </div>
-                        </div>
-
                         <div className="form-group">
-
                             <button className="btn btn-primary btn-block btn-ladda btn-ladda-spinner ladda-button btn-spinner" data-spinner-color="#333" data-style="slide-down" onClick={() => this._tryLogin()}>
-                                <span className="ladda-label">Masuk <i className="icon-circle-right2 position-right"></i></span>
+                                <span className="ladda-label">Submit <i className="icon-circle-right2 position-right"></i></span>
                                 <span className="ladda-spinner"></span>
                             </button>
                         </div>
 
                         <div className="text-center">
-                            <Link href="/forgot" as="/forgot">
-                                <a href="#">Lupa Password?</a>
+                            <Link href="/" as="/">
+                                <a href="#">Sudah Punya Akun?</a>
                             </Link>
                         </div>
                     </div>

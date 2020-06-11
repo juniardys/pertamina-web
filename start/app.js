@@ -23,7 +23,8 @@ const providers = [
   '@radmen/adonis-lucid-soft-deletes/providers/SoftDeletesProvider',
   '@adonisjs/validator/providers/ValidatorProvider',
   'adonis-bumblebee/providers/BumblebeeProvider',
-  'adonis-lucid-update-or-create/providers/UpdateOrCreateProvider'
+  'adonis-lucid-update-or-create/providers/UpdateOrCreateProvider',
+  '@adonisjs/mail/providers/MailProvider'
 ]
 
 /*
