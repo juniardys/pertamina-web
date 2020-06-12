@@ -130,6 +130,7 @@ Route.group(() => {
 	Route.get('mobile/admin/nozzle', 'mobile/AdminReportController.getNozzle')
 	Route.get('mobile/admin/payment', 'mobile/AdminReportController.getPayment')
 	Route.get('mobile/admin/co-worker', 'mobile/AdminReportController.getCoWorker')
+	Route.get('mobile/admin/review-data', 'mobile/AdminReportController.getReviewData')
 	Route.post('mobile/admin/nozzle', 'mobile/AdminReportController.updateNozzle')
 	Route.post('mobile/admin/nozzle/item', 'mobile/AdminReportController.updateNozzleItem')
 	Route.post('mobile/admin/payment', 'mobile/AdminReportController.updatePayment')
