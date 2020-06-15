@@ -3,6 +3,7 @@ import Layout from "~/components/layouts/Auth";
 import { toast, login, redirectPath } from '~/helpers'
 import axios from 'axios'
 import Router from 'next/router'
+import Link from "next/link"
 
 class Index extends Component {
     constructor(props) {
