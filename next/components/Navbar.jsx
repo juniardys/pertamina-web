@@ -31,6 +31,7 @@ class Navbar extends Component {
 
 	async _getUnreadNotif() {
 		const count = await get('/notification/count-unread')
+		console.log(count)
 		if (count.success) await this.setState({ unReadNotif: count.data.count })
 	}
 

@@ -19,9 +19,11 @@ class Report extends Component {
             filterShift: '',
             filterShiftName: '',
             modalType: '',
+            modalItem: '',
             productData: [],
             shiftData: [],
             dataReportIsland: [],
+            dataReportFeederTank: [],
             selectedIsland: ''
         }
     }
@@ -36,18 +38,35 @@ class Report extends Component {
 
         const shifts = await get('/shift', {
             filter_col: ['spbu_uuid'],
-            filter_val: [this.state.spbu_uuid]
+            filter_val: [this.state.spbu_uuid],
+            order_col: 'no_order'
         })
-        if (shifts) this.setState({ shiftData: shifts.data.data })
+        if (shifts) this.setState({ shiftData: shifts.data.data, filterShift: shifts.data.data[0].uuid, filterShiftName: shifts.data.data[0].name })
 
         const products = await get('/product')
         if (products) this.setState({ productData: products.data.data })
 
-        await axios.get(`/api/v1/report/island?api_key=${process.env.APP_API_KEY}&spbu_uuid=${this.props.query.spbu}&shift_uuid=${this.state.filterShift}&date=${this.state.filterDate}`,
+        await axios.get(`/api/v1/report?api_key=${process.env.APP_API_KEY}&spbu_uuid=${this.props.query.spbu}&shift_uuid=${this.state.filterShift}&date=${this.state.filterDate}`,
             { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
-                console.log(response.data);
-                this.setState({ dataReportIsland: response.data.data })
+                this.setState({
+                    dataReportIsland: response.data.data.island,
+                    dataReportFeederTank: response.data.data.feeder_tank
+                })
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    getReport = async () => {
+        await axios.get(`/api/v1/report?api_key=${process.env.APP_API_KEY}&spbu_uuid=${this.props.query.spbu}&shift_uuid=${this.state.filterShift}&date=${this.state.filterDate}`,
+            { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+            .then(response => {
+                this.setState({
+                    dataReportIsland: response.data.data.island,
+                    dataReportFeederTank: response.data.data.feeder_tank
+                })
             })
             .catch(error => {
                 console.log(error);
@@ -71,6 +90,7 @@ class Report extends Component {
             value.push(this.state.filterShift)
             const filterShift = document.getElementById("filterShift");
             await this.setState({ filterShiftName: filterShift.options[filterShift.selectedIndex].text })
+            await this.getReport()
         }
     }
 
@@ -83,7 +103,8 @@ class Report extends Component {
     _setModalState = async (title, modalType, item) => {
         await this.setState({
             title: title,
-            modalType: modalType
+            modalType: modalType,
+            modalItem: item
         })
     }
 
@@ -180,6 +201,12 @@ class Report extends Component {
                     </div>
                 </form>
             )
+        } else {
+            return (
+                <div className="thumb">
+                    <img src={"http://spbu.nalarnaluri.com/"+this.state.modalItem} />
+                </div>
+            )
         }
 
         return null
@@ -211,7 +238,7 @@ class Report extends Component {
                         <div className="form-group">
                             <label>Shift</label>
                             <select id="filterShift" className="form-control" name="filterShift" defaultValue="" onChange={this.handleSelectChange}>
-                                <option value="">Semua</option>
+                                {/* <option value="">Semua</option> */}
                                 {
                                     this.state.shiftData.map((item, i) => (
                                         <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterShift}>{item.name}</option>
@@ -251,7 +278,7 @@ class Report extends Component {
                                     <div id={data.uuid} className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
                                         <div className="panel-body">
                                             <h5>
-                                                Laporan Pompa <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Pompa', 'create-report-nozzle', [])}><i className="icon-plus3"></i></button>
+                                                Laporan Pompa
                                             </h5>
                                             <table className="table table-striped">
                                                 <thead>
@@ -260,31 +287,28 @@ class Report extends Component {
                                                         <th>Pompa</th>
                                                         <th>Produk</th>
                                                         <th>Meteran Awal</th>
-                                                        <th>Pembelian (Liter)</th>
                                                         <th>Meteran Akhir</th>
                                                         <th>Volume</th>
+                                                        <th>Harga</th>
                                                         <th style={{ width: '140px' }}>Omset</th>
                                                         <th style={{ width: '172px' }}>Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {(data.reportNozzle == '') ? null : (
-                                                        data.reportNozzle.map((report, i) => (
+                                                    {(data.nozzle == '') ? null : (
+                                                        data.nozzle.map((report, i) => (
                                                             <tr>
                                                                 <td>{i + 1}</td>
-                                                                <td>{report.nozzle.name}</td>
-                                                                <td>{report.nozzle.product.name}</td>
-                                                                <td>-</td>
-                                                                <td>-</td>
-                                                                <td>{report.value}</td>
-                                                                <td>-</td>
-                                                                <td>Rp. -</td>
+                                                                <td>{report.name}</td>
+                                                                <td>{report.product_name}</td>
+                                                                <td>{report.data == null ? 0 : report.data.start_meter.toLocaleString()}</td>
+                                                                <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
+                                                                <td>{report.data == null ? 0 : (report.data.last_meter - report.data.start_meter).toLocaleString()}</td>
+                                                                <td>Rp. {report.data == null ? 0 : report.data.price.toLocaleString() || 0}</td>
+                                                                <td>Rp. {report.data == null ? 0 : parseInt(report.data.total_price).toLocaleString() || 0}</td>
                                                                 <td>
                                                                     <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
-
-                                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
-
-                                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
+                                                                    <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Detail Foto', 'foto', report.data.image)} data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                                 </td>
                                                             </tr>
                                                         ))
@@ -293,7 +317,7 @@ class Report extends Component {
                                             </table>
 
                                             <h5 style={{ marginTop: '20px' }}>
-                                                Laporan Keuangan <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Keuangan', 'create-report-payment', [])}><i className="icon-plus3"></i></button>
+                                                Laporan Keuangan
                                             </h5>
                                             <table className="table table-striped">
                                                 <thead>
@@ -306,17 +330,15 @@ class Report extends Component {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {(data.reportPayment == '') ? null : (
-                                                        data.reportPayment.map((report, i) => (
+                                                    {(data.payment == '') ? null : (
+                                                        data.payment.map((report, i) => (
                                                             <tr>
                                                                 <td>{i + 1}</td>
-                                                                <td>{report.paymentMethod.name}</td>
+                                                                <td>{report.name}</td>
                                                                 <td> - </td>
-                                                                <td>Rp. {report.value}</td>
+                                                                <td>Rp. {report.data == null ? 0 : report.data.amount}</td>
                                                                 <td>
                                                                     <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
-
-                                                                    <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
                                                                 </td>
                                                             </tr>
                                                         ))
@@ -328,7 +350,7 @@ class Report extends Component {
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. 1.200.000</td>
+                                                        <td>Rp. {data.payment.reduce((prev, next) => prev + next.amount, 0) || 0}</td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -396,26 +418,28 @@ class Report extends Component {
                                     <th style={{ width: '10px' }}>#</th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
-                                    <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
+                                    <th>Pembelian</th>
                                     <th style={{ width: '172px', padding: '0px' }}>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Premium</td>
-                                    <td>1000</td>
-                                    <td>300</td>
-                                    <td>400</td>
-                                    <td>600</td>
-                                    <td style={{ padding: '0px' }}>
-                                        <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
-
-                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" style={{ margin: '4px' }}><i className="icon-trash"></i></button>
-                                    </td>
-                                </tr>
+                                {(this.state.dataReportFeederTank == '') ? null : (
+                                    this.state.dataReportFeederTank.map((report, i) => (
+                                        <tr>
+                                            <td>{++i}</td>
+                                            <td>{report.product.name}</td>
+                                            <td>{report.data == null ? 0 : report.data.start_meter.toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : (report.data.last_meter - report.data.start_meter).toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : report.data.addition_amount.toLocaleString()}</td>
+                                            <td style={{ padding: '0px' }}>
+                                                <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
