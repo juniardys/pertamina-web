@@ -691,10 +691,10 @@ class AdminReportController {
                 spbu_uuid: req.spbu_uuid,
             }).first()
             if (reportShift) {
-                if (reportShift.status_admin == true) throw new Error('Laporan Shift ini sudah di isi')
-                if (reportShift.status_operator == false) throw new Error('Laporan Shift ini harus dilengkapi operator terlebih dahulu')
+                if (reportShift.status_admin == true) return response.status(400).json(baseResp(false, [], 'Laporan Shift ini sudah di isi'))
+                if (reportShift.status_operator == false) return response.status(400).json(baseResp(false, [], 'Laporan Shift ini harus dilengkapi operator terlebih dahulu'))
             } else {
-                throw new Error('Laporan Shift ini harus di isi operator terlebih dahulu')
+                return response.status(400).json(baseResp(false, [], 'Laporan Shift ini harus di isi operator terlebih dahulu'))
             }
             // Get Shift Before
             var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)

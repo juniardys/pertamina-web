@@ -14,14 +14,6 @@ class Nozzle extends Model {
         return ['id']
     }
 
-    static get computed () {
-      return ['volume']
-    }
-
-    getVolume({ start_meter, last_meter }) {
-        return last_meter - start_meter
-    }
-
     spbu() {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }

@@ -10,6 +10,10 @@ class Product extends Model {
         this.addTrait('@provider:Lucid/SoftDeletes')
         this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
+    
+    nozzle() {
+        return this.belongsTo('App/Models/Nozzle', 'uuid', 'product_uuid')
+    }
 
     // Setters
     setDeletedAt(deleted_at) {
