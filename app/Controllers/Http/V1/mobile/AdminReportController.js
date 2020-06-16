@@ -328,7 +328,7 @@ class AdminReportController {
                 }
             }
         }
-        return response.status(200).json(baseResp(true, data, 'Data laporan rekan kerja sukses diterima'))
+        return response.status(200).json(baseResp(true, data, 'Data laporan sukses diterima'))
     }
 
     async updateNozzle({ request, response, transform, auth }) {
