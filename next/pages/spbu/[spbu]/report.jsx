@@ -24,6 +24,8 @@ class Report extends Component {
             shiftData: [],
             dataReportIsland: [],
             dataReportFeederTank: [],
+            dataTotalFinance: [],
+            dataTotalSales: [],
             selectedIsland: ''
         }
     }
@@ -51,7 +53,9 @@ class Report extends Component {
             .then(response => {
                 this.setState({
                     dataReportIsland: response.data.data.island,
-                    dataReportFeederTank: response.data.data.feeder_tank
+                    dataReportFeederTank: response.data.data.feeder_tank,
+                    dataTotalFinance: response.data.data.total_finance,
+                    dataTotalSales: response.data.data.total_sales
                 })
             })
             .catch(error => {
@@ -65,7 +69,9 @@ class Report extends Component {
             .then(response => {
                 this.setState({
                     dataReportIsland: response.data.data.island,
-                    dataReportFeederTank: response.data.data.feeder_tank
+                    dataReportFeederTank: response.data.data.feeder_tank,
+                    dataTotalFinance: response.data.data.total_finance,
+                    dataTotalSales: response.data.data.total_sales
                 })
             })
             .catch(error => {
@@ -92,6 +98,10 @@ class Report extends Component {
             await this.setState({ filterShiftName: filterShift.options[filterShift.selectedIndex].text })
             await this.getReport()
         }
+    }
+
+    _submit = () => {
+
     }
 
     handleInputChange = async (e) => {
@@ -204,7 +214,7 @@ class Report extends Component {
         } else {
             return (
                 <div className="thumb">
-                    <img src={"http://spbu.nalarnaluri.com/"+this.state.modalItem} />
+                    <img src={"http://spbu.nalarnaluri.com/" + this.state.modalItem} />
                 </div>
             )
         }
@@ -379,25 +389,23 @@ class Report extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Pertamax Racing</td>
-                                    <td>2000</td>
-                                    <td>Rp. 2.400.000</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Pertamax Turbo</td>
-                                    <td>2000</td>
-                                    <td>Rp. 2.400.000</td>
-                                </tr>
+                                {(this.state.dataTotalSales == '') ? null : (
+                                    this.state.dataTotalSales.map((report, i) => (
+                                        <tr>
+                                            <td>{i+1}</td>
+                                            <td>{report.product_name}</td>
+                                            <td>{report.volume.toLocaleString()}</td>
+                                            <td>Rp. {report.total_price.toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                             <tfoot style={{ borderTop: '2px solid #bbb' }}>
                                 <tr>
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td>Rp. 4.800.000</td>
+                                    <td>Rp. {this.state.dataTotalSales.reduce((prev, next) => prev + next.total_price, 0).toLocaleString() || 0}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -418,9 +426,9 @@ class Report extends Component {
                                     <th style={{ width: '10px' }}>#</th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
+                                    <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
-                                    <th>Pembelian</th>
                                     <th style={{ width: '172px', padding: '0px' }}>Aksi</th>
                                 </tr>
                             </thead>
@@ -431,9 +439,9 @@ class Report extends Component {
                                             <td>{++i}</td>
                                             <td>{report.product.name}</td>
                                             <td>{report.data == null ? 0 : report.data.start_meter.toLocaleString()}</td>
-                                            <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
-                                            <td>{report.data == null ? 0 : (report.data.last_meter - report.data.start_meter).toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : report.data.addition_amount.toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : (report.data.start_meter - report.data.last_meter).toLocaleString()}</td>
                                             <td style={{ padding: '0px' }}>
                                                 <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                             </td>
@@ -461,22 +469,21 @@ class Report extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Tunai</td>
-                                    <td>Rp. 1.200.000</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>CC</td>
-                                    <td>Rp. 1.200.000</td>
-                                </tr>
+                                {(this.state.dataTotalFinance == '') ? null : (
+                                    this.state.dataTotalFinance.map((report, i) => (
+                                        <tr>
+                                            <td>{i + 1}</td>
+                                            <td>{report.payment_name}</td>
+                                            <td>Rp. {report.amount.toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                             <tfoot style={{ borderTop: '2px solid #bbb' }}>
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td>Rp. 2.400.000</td>
+                                    <td>Rp. {this.state.dataTotalFinance.reduce((prev, next) => prev + next.amount, 0) || 0}</td>
                                 </tr>
                             </tfoot>
                         </table>
