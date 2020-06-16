@@ -6,14 +6,26 @@ import SubSidebar from "~/components/SubSidebar";
 import Breadcrumb from "~/components/Breadcrumb";
 
 class Base extends Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			notOnlyManageSPBU: true
+		}
+	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		appCustom()
+		if (typeof window !== 'undefined') {
+			await this.setState({
+				notOnlyManageSPBU: window.localStorage.getItem('notOnlyManageSPBU')
+			})
+		}
 		console.log('Base Component Mounted!');
 	}
 
 	render() {
 		const breadcrumb = this.props.breadcrumb || []
+
 		return (
 			<div className="BaseLayout">
 				<Head title={this.props.title} />
@@ -21,7 +33,7 @@ class Base extends Component {
 				<div className="page-container">
 					<div className="page-content">
 						<Sidebar />
-						<SubSidebar />
+						{(this.state.notOnlyManageSPBU == 'true') ? (<SubSidebar />) : null}
 						<div className="content-wrapper">
 
 							<div className="page-header page-header-default">
@@ -43,7 +55,7 @@ class Base extends Component {
 							</div>
 							<div className="content">
 								<div className="row">
-								{this.props.children}
+									{this.props.children}
 								</div>
 								<div className="footer text-muted">
 									&copy; 2020. <a href="#">Pertamina</a> by <a href="https://nalarnaluri.com" target="_blank">Nalar Naluri</a>

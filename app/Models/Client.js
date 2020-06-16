@@ -21,6 +21,7 @@ class Client extends Model {
         })
 
         this.addTrait('@provider:Lucid/SoftDeletes')
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
 
     /**

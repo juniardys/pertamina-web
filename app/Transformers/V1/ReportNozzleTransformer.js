@@ -37,11 +37,15 @@ class ReportNozzleTransformer extends BumblebeeTransformer {
       island_uuid: model.island_uuid,
       shift_uuid: model.shift_uuid,
       nozzle_uuid: model.nozzle_uuid,
-      value: model.value,
+      start_meter: model.start_meter,
+      last_meter: model.last_meter,
+      volume: model.volume,
+      price: model.price,
+      total_price: model.total_price,
       image: `${Env.get('APP_API_URL')}/${model.image}`,
       date: moment(model.date, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
 

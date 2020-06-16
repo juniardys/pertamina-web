@@ -18,7 +18,7 @@ export const toast = Swal.mixin({
 export const checkAclPage = (pageAcl) => {
     if (!checkAcl(pageAcl)) {
         Swal.fire('Akses Ditolak.', 'Kamu tidak punya akses untuk mengakses halaman ini.', 'warning')
-        setTimeout(() => window.history.back(), 1000);
+        setTimeout(async () => await redirectPath(), 1000);
     }
 }
 
@@ -39,9 +39,12 @@ export const generateAcl = (acl) => {
 
 export const setAcl = async (uuid) => {
     const role = await get('/role', {
-        search: uuid
+        search: uuid,
+        with: ['accessList']
     })
     if (role && role.success) {
+        console.log(role);
+
         const acl = generateAcl(role.data.data[0].accessList)
         await localStorage.setItem('accessList', JSON.stringify(acl))
         // console.log(JSON.parse(localStorage.getItem('accessList')));
@@ -51,13 +54,11 @@ export const setAcl = async (uuid) => {
 export const checkAuth = async () => {
     const auth = localStorage.getItem('auth')
     const { pathname } = Router
-
-    if (auth) {
+    if (auth != null) {
         let profile
         await axios.get(`/api/v1/profile?api_key=${process.env.APP_API_KEY}&with[0]=role`,
             { headers: { Authorization: `Bearer ${auth}` } })
             .then(response => {
-                console.log(response.data);
                 profile = response.data.data
             })
             .catch(error => {
@@ -82,7 +83,6 @@ export const checkAuth = async () => {
         }
     } else {
         localStorage.clear()
-        if (pathname != '/sign-in') Router.push('/sign-in')
     }
 }
 
@@ -100,6 +100,7 @@ export const login = async (data) => {
         });
     await setAcl(profile.role_uuid)
     localStorage.setItem('user_uuid', profile.uuid)
+    localStorage.setItem('spbu_uuid', profile.spbu_uuid)
     await redirectPath()
     toast.fire({ icon: 'success', title: 'Anda berhasil masuk' })
 }
@@ -110,17 +111,29 @@ export const logout = () => {
     toast.fire({ icon: 'success', title: 'Anda berhasil keluar' })
 }
 
-const redirectPath = async () => {
-    const path = await getPathDecission()
-    if (path != null) {
-        Router.push(path)
+export const redirectPath = async () => {
+    if (localStorage.getItem('auth')) {
+        const path = await getPathDecission()
+        if (path != null) {
+            Router.push(path)
+        } else {
+            localStorage.clear()
+        }
     } else {
-        localStorage.clear()
+        Router.push('/sign-in')
     }
 }
 
 const getPathDecission = async (spbu = null) => {
     const acl = localStorage.getItem('accessList')
+
+    let accessList = JSON.parse(acl)
+    console.log(accessList);
+
+    let notOnlyManageSPBU = 0
+    accessList.forEach(dataACL => { if (!dataACL.includes('spbu.manage')) notOnlyManageSPBU++ });
+    (notOnlyManageSPBU >= 1) ? window.localStorage.setItem('notOnlyManageSPBU', true) : window.localStorage.setItem('notOnlyManageSPBU', false)
+
     const avaiableRoute = getAvaiableRoute(spbu)
     for (let i = 0; i < avaiableRoute.length; i++) {
         if (acl.includes(avaiableRoute[i].access)) return avaiableRoute[i].path
@@ -129,7 +142,9 @@ const getPathDecission = async (spbu = null) => {
     return null
 }
 
-const getAvaiableRoute = (spbu = null) => {
+const getAvaiableRoute = () => {
+    let spbu = null
+    if (typeof window !== 'undefined') { spbu = window.localStorage.getItem('spbu_uuid') }
     const data = [
         {
             access: 'dashboard',
@@ -162,7 +177,7 @@ const getAvaiableRoute = (spbu = null) => {
     ]
 
     if (spbu != null) {
-        data.concat([
+        const spbuRoute = [
             {
                 access: 'spbu.manage.report',
                 path: `/spbu/${spbu}/report`
@@ -187,7 +202,10 @@ const getAvaiableRoute = (spbu = null) => {
                 access: 'spbu.manage.setting',
                 path: `/spbu/${spbu}/setting`
             }
-        ])
+        ]
+        spbuRoute.forEach(route => {
+            data.push({ access: route.access, path: route.path })
+        });
     }
 
     return data;

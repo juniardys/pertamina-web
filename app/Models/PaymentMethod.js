@@ -4,9 +4,11 @@
 const Model = use('Model')
 
 class PaymentMethod extends Model {
+
     static boot() {
         super.boot()
         this.addTrait('@provider:Lucid/SoftDeletes')
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
 
     static get hidden() {

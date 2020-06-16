@@ -25,7 +25,8 @@ class NozzleController {
             island_uuid: 'required',
             product_uuid: 'required',
             name: 'required|max:254',
-            code: 'required|unique:nozzles|max:254'
+            code: 'required|unique:nozzles|max:254',
+            start_meter: 'required|number',
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -37,6 +38,7 @@ class NozzleController {
             nozzle.product_uuid = req.product_uuid
             nozzle.name = req.name
             nozzle.code = req.code
+            nozzle.start_meter = req.start_meter
             await nozzle.save()
         } catch (error) {
             console.log(error);
@@ -55,6 +57,7 @@ class NozzleController {
         if (req.product_uuid) rules['product_uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
         if (req.code) rules['code'] = `required|unique:nozzles,code,uuid,${req.uuid}|max:254`
+        if (req.start_meter) rules['start_meter'] = 'required|number'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -71,6 +74,7 @@ class NozzleController {
             if (req.product_uuid) nozzle.product_uuid = req.product_uuid
             if (req.name) nozzle.name = req.name
             if (req.code) nozzle.code = req.code
+            if (req.start_meter) nozzle.start_meter = req.start_meter
             await nozzle.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))

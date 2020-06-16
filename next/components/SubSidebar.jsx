@@ -8,6 +8,7 @@ const SubSidebar = () => {
 
 	const { spbu, company } = router.query
 	let datas = []
+	
 
 	if (router.pathname.includes('/spbu/[spbu]')) {
 		datas = [
@@ -42,6 +43,14 @@ const SubSidebar = () => {
 				icon: 'icon-grid-alt',
 				url: `/spbu/${spbu}/island`,
 				path: '/spbu/[spbu]/island'
+			},
+			{
+				access: 'spbu.manage.feeder-tank.read',
+				type: 'menu',
+				title: 'Feeder Tank',
+				icon: 'icon-inbox',
+				url: `/spbu/${spbu}/feeder-tank`,
+				path: '/spbu/[spbu]/feeder-tank'
 			},
 			{
 				access: 'spbu.manage.losis.read',

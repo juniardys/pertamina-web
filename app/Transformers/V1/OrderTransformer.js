@@ -4,6 +4,7 @@ const BumblebeeTransformer = use('Bumblebee/Transformer')
 const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 const moment = use('moment')
+const Delivery = use('App/Models/Delivery')
 
 /**
  * OrderTransformer class
@@ -19,8 +20,11 @@ class OrderTransformer extends BumblebeeTransformer {
   /**
    * This method is used to transform the data.
    */
-  transform (model) {
+  async transform(model) {
     moment.locale('id')
+    let delivered = 0
+    const data = await Delivery.query().select('quantity').where('order_uuid', model.uuid).fetch()
+    data.toJSON().forEach(data => { delivered = delivered + parseInt(data.quantity) });
 
     return {
       uuid: model.uuid,
@@ -29,8 +33,9 @@ class OrderTransformer extends BumblebeeTransformer {
       order_date: moment(model.order_date, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD'),
       order_no: model.order_no,
       quantity: model.quantity,
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      delivered: delivered,
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
 

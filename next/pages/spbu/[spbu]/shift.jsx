@@ -26,7 +26,11 @@ class Report extends Component {
     }
 
     async componentDidMount() {
-        anyTimePicker("#time-start, #time-end")
+        try {
+            anyTimePicker("#time-start, #time-end")
+        } catch (error) {
+
+        }
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const spbu = await get('/spbu', { search: this.props.query.spbu })
@@ -34,6 +38,8 @@ class Report extends Component {
         const data = await get('/shift', {
             filter_col: ['spbu_uuid'],
             filter_val: [this.props.query.spbu],
+            order_col: ['no_order'],
+            order_val: ['asc'],
         })
         if (data != undefined && data.success) {
             this.setState({

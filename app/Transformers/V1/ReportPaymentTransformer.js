@@ -36,10 +36,10 @@ class ReportPaymentTransformer extends BumblebeeTransformer {
       island_uuid: model.island_uuid,
       shift_uuid: model.shift_uuid,
       payment_method_uuid: model.payment_method_uuid,
-      value: model.value,
+      amount: model.amount,
       date: moment(model.date, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
 

@@ -10,7 +10,7 @@ const moment = use('moment')
  * @constructor
  */
 class RoleTransformer extends BumblebeeTransformer {
-  static get defaultInclude() {
+  static get availableInclude() {
     return ['accessList']
   }
 
@@ -24,17 +24,22 @@ class RoleTransformer extends BumblebeeTransformer {
       uuid: model.uuid,
       name: model.name,
       description: model.description,
-      slug: model.slug,
-      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
-      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY')
+      mobile_layout: model.mobile_layout,
+      created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
   }
 
-  transformWithLevel (model) {
-    
+  transformWithLevel(model) {
+    let getLevel = null
+    try {
+      getLevel = model.getRelated('accessList').toJSON().length
+    } catch (error) {
+
+    }
     return {
       ...this.transform(model),
-      level: model.getRelated('accessList').toJSON().length
+      level: getLevel
     }
   }
 

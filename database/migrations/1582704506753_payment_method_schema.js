@@ -12,6 +12,7 @@ class PaymentMethodSchema extends Schema {
       table.string('name').notNullable()
       table.boolean('image_required').defaultTo(0)
       table.text('slug').unique().notNullable()
+      table.text('icon').nullable()
       table.timestamp('deleted_at').nullable()
       table.timestamps()
     })

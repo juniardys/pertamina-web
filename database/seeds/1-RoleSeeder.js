@@ -24,14 +24,18 @@ class RoleSeeder {
         name: "Superadmin",
         description: "Jabatan SuperAdmin",
         mobile_layout: 'admin',
-        role: get()
+        role: get(),
+        uuid: "94372ea5-e24c-4330-a453-2b01c424ee5d"
       },
       {
         name: "Admin",
         description: "Jabatan Admin",
-        mobile_layout: 'operator',
+        mobile_layout: 'admin',
         role: {
+          "spbu.manage": "Manajemen SPBU",
           "spbu.manage.report": "Mengatur Report",
+          "spbu.manage.report.read": "Melihat",
+          "spbu.manage.report.export": "Ekspor",
           "spbu.manage.user": "Mengatur Pengguna",
           "spbu.manage.user.read": "Melihat",
           "spbu.manage.user.create": "Membuat",
@@ -52,22 +56,42 @@ class RoleSeeder {
           "spbu.manage.island.nozzle.create": "Membuat",
           "spbu.manage.island.nozzle.update": "Mengubah",
           "spbu.manage.island.nozzle.delete": "Menghapus",
+          "spbu.manage.feeder-tank": "Mengatur Island",
+          "spbu.manage.feeder-tank.read": "Melihat",
+          "spbu.manage.feeder-tank.create": "Membuat",
+          "spbu.manage.feeder-tank.update": "Mengubah",
+          "spbu.manage.feeder-tank.delete": "Menghapus",
+          "spbu.manage.losis": "Mengatur Losis",
+          "spbu.manage.losis.read": "Melihat",
+          "spbu.manage.losis.export": "Ekspor",
+          "spbu.manage.order": "Mengatur Pemesanan",
+          "spbu.manage.order.read": "Melihat",
+          "spbu.manage.order.create": "Membuat",
+          "spbu.manage.order.update": "Mengubah",
+          "spbu.manage.order.delete": "Menghapus",
+          "spbu.manage.order.delivery": "Mengatur Pengiriman",
+          "spbu.manage.order.delivery.read": "Melihat",
+          "spbu.manage.order.delivery.create": "Membuat",
+          "spbu.manage.order.delivery.update": "Mengubah",
+          "spbu.manage.order.delivery.delete": "Menghapus",
           "spbu.manage.setting": "Pengaturan SPBU",
           "spbu.manage.setting.detail": "Merubah Detail SPBU",
-          "spbu.manage.setting.payment": "Merubah Pengaturan Metode Pembayaran"
-        }
+          "spbu.manage.setting.payment": "Merubah Pengaturan Metode Pembayaran",
+        },
+        uuid: "45982947-346a-43d6-9204-78202ad970ab"
       },
       {
         name: "Operator",
         description: "Jabatan Operator",
         mobile_layout: 'operator',
-        role: ""
+        role: "",
+        uuid: "0bec0af4-a32f-4b1e-bfc2-5f4933c49740"
       }
     ]
 
     for (let i = 0; i < data.length; i++) {
       const role = new Role()
-      role.uuid = uuid()
+      role.uuid = data[i].uuid
       role.name = data[i].name
       role.description = data[i].description
       await role.save()

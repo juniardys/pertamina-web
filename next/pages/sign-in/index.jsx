@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import Layout from "~/components/layouts/Auth";
-import { checkAuth, toast, login, setAcl } from '~/helpers'
+import { toast, login, redirectPath } from '~/helpers'
 import axios from 'axios'
 import Router from 'next/router'
+import Link from "next/link"
 
 class Index extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        checkAuth()
+        if (localStorage.getItem('auth') != null) redirectPath()
         this.btnLogin = Ladda.create(document.querySelector('.btn-spinner'))
     }
 
@@ -39,6 +40,7 @@ class Index extends Component {
                     await login(response.data.data.token)
                 })
                 .catch(error => {
+                    console.log(error);
                     if (error.response.data) toast.fire({ icon: 'warning', title: 'Email atau password salah' })
                     this.btnLogin.stop()
                 });
@@ -78,7 +80,9 @@ class Index extends Component {
                         </div>
 
                         <div className="text-center">
-                            <a href="login_password_recover.html">Lupa Password?</a>
+                            <Link href="/forgot" as="/forgot">
+                                <a href="#">Lupa Password?</a>
+                            </Link>
                         </div>
                     </div>
                 </form>

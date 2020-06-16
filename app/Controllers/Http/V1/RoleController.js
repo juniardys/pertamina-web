@@ -11,14 +11,14 @@ class RoleController {
     getRules() {
         let rules = {
             name: 'required|max:254',
-            mobile_layout: 'required'
+            mobile_layout: 'required|in:admin,operator'
         }
 
         return rules
     }
 
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'], ['accessList'])
+        const builder = await queryBuilder(Role.query(), request.all(), ['name', 'description'])
         let data = transform
         if (request.get().with) {
             data = data.include(request.get().with)
@@ -50,11 +50,11 @@ class RoleController {
             role.uuid = uuid()
             role.name = req.name
             role.description = req.description
-            role.mobile_layout = req.mobile_layout
+            role.mobile_layout = req.mobile_layout || 'operator'
             await role.save()
             if (req.acl) {
                 let acl
-                (Array.isArray(req.acl)) ?  acl = req.acl : acl = JSON.parse(req.acl.replace(/'/g, '"'))
+                (Array.isArray(req.acl)) ?  acl = req.acl : acl = req.acl.split(',')
                 await this.storeAcl(role, acl)
             }
         } catch (error) {
@@ -87,11 +87,11 @@ class RoleController {
         try {
             role.name = req.name
             role.description = req.description
-            role.mobile_layout = req.mobile_layout
+            role.mobile_layout = req.mobile_layout || 'operator'
             await role.save()
             if (req.acl) {
                 let acl
-                (Array.isArray(req.acl)) ?  acl = req.acl : acl = JSON.parse(req.acl.replace(/'/g, '"'))
+                (Array.isArray(req.acl)) ?  acl = req.acl : acl = req.acl.split(',')
                 await this.storeAcl(role, acl)
             }
         } catch (error) {

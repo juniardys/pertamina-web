@@ -16,6 +16,7 @@ class UserSchema extends Schema {
       table.string('phone').nullable()
       table.string('ktp').nullable()
       table.text('address').nullable()
+      table.text('FCM_TOKEN').nullable()
       table.text('image').nullable()
       table.timestamp('deleted_at').nullable()
       table.timestamps()

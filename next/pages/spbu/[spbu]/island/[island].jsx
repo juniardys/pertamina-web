@@ -21,6 +21,7 @@ class Index extends Component {
             code: '',
             product_uuid: '',
             product_name: '',
+            start_meter: '',
             productData: [],
             dataItems: [],
             island: {},
@@ -69,6 +70,7 @@ class Index extends Component {
             code: item.code || '',
             product_uuid: (modalType == 'create') ? this.state.productData[0].uuid : ((item.product) ? item.product.uuid : ''),
             product_name: (item.product) ? item.product.name : '',
+            start_meter: item.start_meter || '',
         })
     }
 
@@ -89,6 +91,7 @@ class Index extends Component {
                 product_uuid: this.state.product_uuid,
                 name: this.state.name,
                 code: this.state.code,
+                start_meter: this.state.start_meter,
             })
             if (response.success) {
                 this.setState({
@@ -107,6 +110,7 @@ class Index extends Component {
                 product_uuid: this.state.product_uuid,
                 name: this.state.name,
                 code: this.state.code,
+                start_meter: this.state.start_meter,
             })
             if (response.success) {
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
@@ -147,6 +151,12 @@ class Index extends Component {
                                 ))
                             }
                         </select>
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Meteran awal penggunaan</label>
+                    <div className="col-lg-10">
+                        <input type="text" className="form-control" name="start_meter" value={this.state.start_meter} onChange={this.handleInputChange} />
                     </div>
                 </div>
             </form>

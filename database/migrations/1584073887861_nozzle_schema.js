@@ -13,6 +13,7 @@ class NozzleSchema extends Schema {
       table.uuid('product_uuid').references('uuid').inTable('products').onDelete('cascade')
       table.string('name').notNullable()
       table.string('code').unique().notNullable()
+      table.double('start_meter').notNullable()
       table.timestamps()
     })
   }

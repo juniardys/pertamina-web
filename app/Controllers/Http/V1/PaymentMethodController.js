@@ -2,9 +2,10 @@
 
 const PaymentMethod = use('App/Models/PaymentMethod')
 const { validate } = use('Validator')
-const { queryBuilder, slugify, baseResp } = use('App/Helpers')
+const { queryBuilder, slugify, baseResp, uploadImage } = use('App/Helpers')
 const uuid = use('uuid-random')
 const PaymentMethodTransformer = use('App/Transformers/V1/PaymentMethodTransformer')
+const Helpers = use('Helpers')
 
 class PaymentMethodController {
     async get({ request, response, transform }) {
@@ -30,6 +31,22 @@ class PaymentMethodController {
             role.code = req.code
             role.image_required = req.image_required
             role.slug = await slugify(req.name, 'payment_methods', 'slug')
+            if (request.file('icon')) {
+                const upload = await uploadImage(request, 'icon', 'payment_methods/')
+                if (upload) {
+                    if (payment.icon != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        try {
+                            await fs.unlink(Helpers.publicPath(payment.icon))
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }
+                    payment.icon = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await role.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
@@ -66,6 +83,22 @@ class PaymentMethodController {
             }
             if (req.name && payment.code != req.name) payment.code = req.code
             if (req.image_required) payment.image_required = req.image_required
+            if (request.file('icon')) {
+                const upload = await uploadImage(request, 'icon', 'payment_methods/')
+                if (upload) {
+                    if (payment.icon != null) {
+                        const fs = Helpers.promisify(require('fs'))
+                        try {
+                            await fs.unlink(Helpers.publicPath(payment.icon))
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }
+                    payment.icon = upload
+                } else {
+                    return response.status(400).json(baseResp(false, [], 'Terjadi kesalahan pada saat mengunggah gambar.'))
+                }
+            }
             await payment.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
@@ -74,6 +107,38 @@ class PaymentMethodController {
         payment = await transform.item(payment, PaymentMethodTransformer)
 
         return response.status(200).json(baseResp(true, payment, 'Mengedit Metode Pembayaran ' + payment.name))
+    }
+
+    async deleteIcon({ request, response }) {
+        const req = request.all()
+        const validation = await validate(req, {
+            uuid: 'required'
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+
+        let payment
+        try {
+            payment = await PaymentMethod.query()
+                .where('uuid', req.uuid)
+                .first()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
+        }
+
+        if (!payment) return response.status(400).json(baseResp(false, [], 'Metode Pembayaran tidak ditemukan'))
+
+        if (payment.icon != null) {
+            const fs = Helpers.promisify(require('fs'))
+            try {
+                await fs.unlink(Helpers.publicPath(payment.icon))
+                payment.icon = null
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        await payment.save()
+
+        return response.status(200).json(baseResp(true, payment, 'Menghapus Ikon Metode Pembayaran ' + payment.name))
     }
 
     async delete({ request, response, transform }) {
@@ -94,6 +159,14 @@ class PaymentMethodController {
 
         if (!payment) return response.status(400).json(baseResp(false, [], 'Metode Pembayaran tidak ditemukan'))
 
+        if (payment.icon != null) {
+            const fs = Helpers.promisify(require('fs'))
+            try {
+                await fs.unlink(Helpers.publicPath(payment.icon))
+            } catch (error) {
+                console.log(error)
+            }
+        }
         await payment.delete()
 
         payment = await transform.item(payment, PaymentMethodTransformer)

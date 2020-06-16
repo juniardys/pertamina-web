@@ -12,10 +12,13 @@ class Payment extends Component {
             uuid: '',
             name: '',
             code: '',
-            image_required: "0",
+            image_required: false,
             dataItems: [],
+            icon: '',
+            preview_icon: '',
             title: 'Buat Metode Pembayaran',
-            modalType: "create"
+            modalType: "create",
+            item: {}
         }
     }
 
@@ -36,18 +39,26 @@ class Payment extends Component {
         await this.setState({
             [e.target.name]: e.target.value
         })
+    }
 
+    handleFileChange = e => {
+        this.setState({
+            preview_icon: URL.createObjectURL(e.target.files[0]),
+            icon: e.target.files[0]
+        })
     }
 
     _setModalState = async (title, modalType, item) => {
-        console.log(item.image_required === false);
         await this.setState({
             title: title,
             modalType: modalType,
             uuid: item.uuid || '',
             name: item.name || '',
             code: item.code || '',
-            image_required: item.image_required || "0",
+            image_required: item.image_required || false,
+            icon: '',
+            preview_icon: item.icon || '',
+            item: item || {}
         })
     }
 
@@ -65,9 +76,10 @@ class Payment extends Component {
             const response = await store('/payment-method/store', {
                 name: this.state.name,
                 code: this.state.code,
-                image_required: this.state.image_required
+                image_required: this.state.image_required,
+                icon: this.state.icon
             })
-            if (response) {
+            if (response.success) {
                 this.setState({
                     dataItems: [...this.state.dataItems, response.res.data]
                 })
@@ -81,9 +93,10 @@ class Payment extends Component {
             const response = await update('/payment-method/update', this.state.uuid, {
                 name: this.state.name,
                 code: this.state.code,
-                image_required: this.state.image_required
+                image_required: this.state.image_required,
+                icon: this.state.icon
             })
-            if (response) {
+            if (response.success) {
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
                 this.setState({ dataItems: dataItems })
 
@@ -93,6 +106,17 @@ class Payment extends Component {
             } else {
                 this.btnModal.stop()
             }
+        }
+    }
+
+    _deleteIcon = async () => {
+        const response = await removeWithSwal('/payment-method/delete/icon', this.state.uuid)
+        if (response != null) {
+            const newItemData = this.state.item
+            newItemData.icon = null
+            const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? newItemData : item))
+            await this.setState({ dataItems: dataItems, icon: '', preview_icon: '' })
+            this.fileInput.value = "";
         }
     }
 
@@ -112,19 +136,33 @@ class Payment extends Component {
                         <input type="text" className="form-control" name="code" value={this.state.code} onChange={this.handleInputChange} />
                     </div>
                 </div>
-                <div className="form-group row">
+                {/* <div className="form-group row">
                     <label className="control-label col-lg-2">Harus Upload Gambar</label>
                     <div className="col-lg-10">
                         <label className="radio-inline">
-                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="1" checked={this.state.image_required !== false} onChange={this.handleInputChange} />
+                            <input type="radio" name="image_required" value={true} checked={this.state.image_required === true ||this.state.image_required === "true"} onChange={this.handleInputChange} />
                             Ya
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" name="radio-unstyled-inline-left" name="image_required" value="0" checked={this.state.image_required === false} onChange={this.handleInputChange} />
+                            <input type="radio" name="image_required" value={false} checked={this.state.image_required === false || this.state.image_required === "false"} onChange={this.handleInputChange} />
                             Tidak
                         </label>
                     </div>
+                </div> */}
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">{(this.state.modalType == 'create') ? 'Ikon' : 'Ikon Baru (untuk mengganti ikon lama)'}</label>
+                    <div className="col-lg-10">
+                        <input type="file" className="form-control" name="file" accept="image/png, image/jpeg" onChange={this.handleFileChange} ref={ref => this.fileInput = ref} />
+                    </div>
                 </div>
+                {(this.state.preview_icon != '') ? (
+                    <center>
+                        <div className="thumbnail" style={{ maxWidth: '50%' }}>
+                            <img src={this.state.preview_icon} />
+                        </div>
+                        <button type="button" class="btn btn-danger" onClick={this._deleteIcon}><i class="icon-trash position-left"></i> Hapus</button>
+                    </center>
+                ) : (<center>Belum ada ikon.</center>)}
             </form>
         )
     }
@@ -156,7 +194,8 @@ class Payment extends Component {
                                     <th>#</th>
                                     <th>Nama</th>
                                     <th>Kode</th>
-                                    <th>Harus Upload Gambar</th>
+                                    {/* <th>Harus Upload Gambar</th> */}
+                                    <th>Ikon</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -171,7 +210,16 @@ class Payment extends Component {
                                                 <td>{i + 1}</td>
                                                 <td>{item.name}</td>
                                                 <td>{item.code}</td>
-                                                <td>{(item.image_required == "1") ? "Ya" : "Tidak"}</td>
+                                                {/* <td>{(item.image_required == "1") ? "Ya" : "Tidak"}</td> */}
+                                                <td>
+                                                    <center>
+                                                        {(item.icon) ? (
+                                                            <div className="thumbnail">
+                                                                <img src={item.icon} alt={this.state.name} style={{ maxWidth: '100px' }} />
+                                                            </div>
+                                                        ) : null }
+                                                    </center>
+                                                </td>
                                                 <td>
                                                     <AccessList acl="payment-method.update">
                                                         <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Metode Pembayaran', 'edit', item)}><i className="icon-pencil7"></i></button>

@@ -4,8 +4,22 @@
 const Model = use('Model')
 
 class Nozzle extends Model {
+    static boot() {
+        super.boot()
+     
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
+    }
+
     static get hidden() {
         return ['id']
+    }
+
+    static get computed () {
+      return ['volume']
+    }
+
+    getVolume({ start_meter, last_meter }) {
+        return last_meter - start_meter
     }
 
     spbu() {

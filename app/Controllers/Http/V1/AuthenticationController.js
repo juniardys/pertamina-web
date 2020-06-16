@@ -2,9 +2,12 @@
 
 const { validate } = use('Validator')
 const { baseResp } = use('App/Helpers')
+const Mail = use('Mail')
+const User = use('App/Models/User')
+const UserTransformer = use('App/Transformers/V1/UserTransformer')
 
 class AuthenticationController {
-    async signIn({ request, auth, response }) {
+    async signIn({ request, auth, response, transform }) {
         const req = request.all()
         const rules = {
             email: 'required|email|max:254',
@@ -17,6 +20,24 @@ class AuthenticationController {
 
         try {
             const authenticated = await auth.attempt(req.email, req.password)
+            if (req.imei) {
+                const user = await User.query().where('email', req.email).with('role').first()
+
+                if (req.fcm) {
+                    user.FCM_TOKEN = req.fcm
+                    await user.save()
+                }
+
+                // if (user.spbu_uuid === null) return response.status(400).json(baseResp(false, null, 'SPBU belum di isi.'))
+
+                let data = await transform.include('role').item(user, UserTransformer)
+
+                return response.status(200).json(baseResp(true, data, 'Data Profil sukses diterima', null, {
+                    type: authenticated.type,
+                    token: authenticated.token
+                }))
+            }
+
             return response.status(200).json(baseResp(true, authenticated, `Data Bearer ${req.email} diterima`))
         } catch (error) {
             return response.status(400).json(baseResp(false, null, 'username / password salah'))
@@ -39,6 +60,38 @@ class AuthenticationController {
             return response.status(400).json(baseResp(true, authenticated, `Data Bearer ${req.email} diterima`))
         } catch (error) {
             return response.status(400).json(baseResp(false, null, 'username / password salah'))
+        }
+    }
+
+    async forgotPassword({ request, response }) {
+        const rules = {
+            email: 'required|email|max:254'
+        }
+        const { email } = request.all()
+        const validation = await validate(request.all(), rules)
+        if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
+        try {
+            const data = await db
+                .table("users")
+                .where("email", email)
+                .getCount();
+            if (data == 0) {
+                return response.status(400).json(baseResp(false, null, "Email tidak ditemukan"))
+            } else {
+                await Mail.send("emails.forgot", { email: email }, message => {
+                    message
+                        .to(email)
+                        .from(
+                            "noreply@kriwil.id",
+                            "Kriwil - your curls bff"
+                        )
+                        .subject("Lupa Password - Kriwil");
+                });
+
+                return response.status(200).json(baseResp(true, null, "Silahkan cek email anda"))
+            }
+        } catch (error) {
+            return response.status(400).json(baseResp(false, null, error.message))
         }
     }
 }

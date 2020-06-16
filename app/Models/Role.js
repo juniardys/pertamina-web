@@ -4,6 +4,12 @@
 const Model = use('Model')
 
 class Role extends Model {
+    static boot() {
+        super.boot()
+     
+        this.addTrait("@provider:Lucid/UpdateOrCreate")
+    }
+    
     static get hidden() {
         return ['id']
     }
