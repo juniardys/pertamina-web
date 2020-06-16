@@ -33,7 +33,7 @@ class Report extends Component {
     async componentDidMount() {
         helperBlock('.container-data')
         await this.setState({ filterDate: moment().format('YYYY-MM-DD') })
-        this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
+        // this.btnExport = Ladda.create(document.querySelector('.btn-export-spinner'))
 
         const spbu = await get('/spbu', { search: this.props.query.spbu })
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name, spbu_uuid: spbu.data.data[0].uuid })
