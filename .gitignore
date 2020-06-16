@@ -19,3 +19,4 @@ public/img/*
 
 # Next Build
 next/.next
+yarn.lock

@@ -137,4 +137,4 @@ export const removeWithSwal = async (url, uuid, builder = [], ver = null) => {
     })
 
     return res
-} 
+}
