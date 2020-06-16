@@ -383,7 +383,7 @@ class OperatorReportController {
                 if (!data_co_worker) throw new Error('Gagal dalam mengisi data rekan kerja')
             }))
 
-            const reportIsland = await ReportIsland.create({
+            let saveReportIsland = await ReportIsland.create({
                 'uuid': uuid(),
                 'spbu_uuid': req.spbu_uuid,
                 'island_uuid': req.island_uuid,
@@ -393,7 +393,7 @@ class OperatorReportController {
                 'status_operator': true
             })
 
-            if (reportIsland) {
+            if (saveReportIsland) {
                 await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
     
                 await setReportSpbu(req.spbu_uuid, req.date)
