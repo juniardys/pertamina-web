@@ -11,6 +11,18 @@ class ReportNozzle extends Model {
         this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
 
+    static get computed () {
+      return ['volume']
+    }
+
+    getVolume({ start_meter, last_meter }) {
+        return last_meter - start_meter
+    }
+
+    getTotalPrice(total_price) {
+        return parseInt(total_price) || 0
+    }
+
     spbu() {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }

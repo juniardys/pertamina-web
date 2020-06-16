@@ -41,7 +41,7 @@ class ReportNozzleTransformer extends BumblebeeTransformer {
       last_meter: model.last_meter,
       volume: model.volume,
       price: model.price,
-      total_price: model.total_price,
+      total_price: parseFloat(model.total_price) || 0,
       image: `${Env.get('APP_API_URL')}/${model.image}`,
       date: moment(model.date, 'YYYY-MM-DD').format('YYYY-MM-DD'),
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
