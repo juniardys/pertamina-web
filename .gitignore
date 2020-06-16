@@ -17,3 +17,4 @@ database/*.sqlite
 
 # Next Build
 next/.next
+yarn.lock

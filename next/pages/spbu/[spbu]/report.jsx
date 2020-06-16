@@ -384,7 +384,7 @@ class Report extends Component {
                     {/* Feeder Tank */}
                     <div className="panel panel-flat" style={{ margin: '4px' }}>
                         <div className="panel-heading">
-                            <h5 className="panel-title">Feeder Tank <button type="button" className="btn btn-sm bg-primary-400 btn-icon btn-rnd-cstom" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Buat Laporan Feeder Tank', 'create-report-feeder', [])}><i className="icon-plus3"></i></button>
+                            <h5 className="panel-title">Feeder Tank
                                 <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                             <div className="heading-elements">
 
