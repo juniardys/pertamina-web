@@ -293,7 +293,7 @@ class OperatorReportController {
                         start_meter = nozzle.start_meter
                     }
                 }
-                if (item.last_meter < start_meter) throw new Error('Pompa (' + nozzle.code + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
+                if (item.last_meter < start_meter) throw new Error('Meteran akhir Pompa ' + nozzle.code + ' kurang dari meteran awal')
                 volume = item.last_meter - start_meter
                 total_price = volume * price
                 // Insert Data
