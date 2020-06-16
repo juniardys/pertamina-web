@@ -246,7 +246,7 @@ class OperatorReportController {
                 'shift_uuid': req.shift_uuid,
                 'date': req.date,
             }).first()
-            if (reportIsland) throw new Error('Laporan Island ini sudah di isi')
+            if (reportIsland) response.status(400).json(baseResp(false, [], 'Laporan Island ini sudah di isi'))
             // Get Shift Before
             var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
             // Insert Data Nozzle
@@ -393,15 +393,11 @@ class OperatorReportController {
                 'status_operator': true
             })
 
-            if (saveReportIsland) {
-                await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
-    
-                await setReportSpbu(req.spbu_uuid, req.date)
-    
-                return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
-            } else {
-                throw new Error('Error input data')
-            }
+            await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
+
+            await setReportSpbu(req.spbu_uuid, req.date)
+
+            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
             this.deleteImages(imagePath)
