@@ -383,7 +383,7 @@ class OperatorReportController {
                 if (!data_co_worker) throw new Error('Gagal dalam mengisi data rekan kerja')
             }))
 
-            await ReportIsland.create({
+            const reportIsland = await ReportIsland.create({
                 'uuid': uuid(),
                 'spbu_uuid': req.spbu_uuid,
                 'island_uuid': req.island_uuid,
@@ -393,11 +393,15 @@ class OperatorReportController {
                 'status_operator': true
             })
 
-            await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
-
-            await setReportSpbu(req.spbu_uuid, req.date)
-
-            return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+            if (reportIsland) {
+                await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
+    
+                await setReportSpbu(req.spbu_uuid, req.date)
+    
+                return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
+            } else {
+                throw new Error('Error input data')
+            }
         } catch (e) {
             // Rollback
             this.deleteImages(imagePath)
