@@ -246,7 +246,7 @@ class OperatorReportController {
                 'shift_uuid': req.shift_uuid,
                 'date': req.date,
             }).first()
-            if (reportIsland) response.status(400).json(baseResp(false, [], 'Laporan Island ini sudah di isi'))
+            if (reportIsland) return response.status(400).json(baseResp(false, [], 'Laporan Island ini sudah di isi'))
             // Get Shift Before
             var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
             // Insert Data Nozzle
