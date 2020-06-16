@@ -106,9 +106,7 @@ Route.group(() => {
 	Route.post('report-coworker/store', 'ReportCoWorkerController.store')
 	Route.post('report-coworker/delete', 'ReportCoWorkerController.delete')
 	// Get Report
-	Route.get('report/island', 'ReportController.island')
-	Route.get('report/payment', 'ReportController.payment')
-	Route.get('report/feeder', 'ReportController.feeder')
+	Route.get('report', 'ReportController.index')
 
 	// Notification
 	Route.get('notification', 'NotificationController.get')
