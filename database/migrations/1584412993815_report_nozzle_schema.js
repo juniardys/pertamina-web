@@ -15,7 +15,7 @@ class ReportNozzleSchema extends Schema {
       table.double('start_meter').notNullable()
       table.double('last_meter').notNullable()
       table.integer('price').defaultTo(0)
-      table.integer('total_price').defaultTo(0)
+      table.bigInteger('total_price').defaultTo(0)
       table.text('image').notNullable()
       table.date('date').notNullable()
       table.timestamps()

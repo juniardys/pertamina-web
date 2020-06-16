@@ -89,7 +89,7 @@ class AdminReportController {
                 const shift = data[i];
                 shift.done_operator = false
                 shift.done = false
-                shift.disable = status
+                shift.disable = (i == 0 && status)? false : status
             }
         }
         return response.status(200).json(baseResp(true, data, 'Data Shift Report sukses diterima'))

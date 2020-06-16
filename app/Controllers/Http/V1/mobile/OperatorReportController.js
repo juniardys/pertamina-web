@@ -83,7 +83,7 @@ class OperatorReportController {
             for (let i = 0; i < data.length; i++) {
                 const shift = data[i];
                 shift.done = false
-                shift.disable = status
+                shift.disable = (i == 0 && status)? false : status
             }
         }
         return response.status(200).json(baseResp(true, data, 'Data Shift Report sukses diterima'))
