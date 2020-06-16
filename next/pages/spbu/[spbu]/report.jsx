@@ -267,11 +267,10 @@ class Report extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Laporan <span className={(this.state.filterShift == '') ? 'badge badge-primary' : 'badge badge-warning'} style={{ borderRadius: '2px' }}>{(this.state.filterShift == '') ? 'Semua' : this.state.filterShiftName}</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-
-                            <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
+                            {/* <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
                                 <span className="ladda-label"> Ekspor</span>
                                 <span className="ladda-spinner"></span>
-                            </button>
+                            </button> */}
                         </div>
                     </div>
 

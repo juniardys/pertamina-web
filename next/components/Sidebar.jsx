@@ -69,13 +69,13 @@ const Sidebar = (props) => {
 				icon: ' icon-coin-dollar',
 				url: '/payment'
 			},
-			{
-				access: 'company.read',
-				type: 'menu',
-				title: 'Perusahaan',
-				icon: 'icon-office',
-				url: '/company'
-			},
+			// {
+			// 	access: 'company.read',
+			// 	type: 'menu',
+			// 	title: 'Perusahaan',
+			// 	icon: 'icon-office',
+			// 	url: '/company'
+			// },
 		]
 	} else {
 		// Menu For SPBU
