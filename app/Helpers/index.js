@@ -117,7 +117,7 @@ const uploadImage = async (request, fileParam, folder = '/', fileName = null, si
     const img = request.file(fileParam, {
         // types: ['image'],
         size: size,
-        extnames: ['png', 'jpg']
+        extnames: ['png', 'jpg', 'jpeg']
     })
 
     if (fileName == null) {
