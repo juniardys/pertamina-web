@@ -15,8 +15,20 @@ const { baseResp, uploadImage, getShiftBefore, getShiftAfter } = use('App/Helper
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const moment = use('moment')
 const _ = use('lodash')
+const Helpers = use('Helpers')
 
 class ReportController {
+
+    async deleteImages(path = []) {
+        for (let i = 0; i < path.length; i++) {
+            const fs = Helpers.promisify(require('fs'))
+            try {
+                await fs.unlink(Helpers.publicPath(path[i]))
+            } catch (error) {
+                // console.log(error)
+            }
+        }
+    }
 
     async index({ response, request, transform }) {
         const req = request.all()
