@@ -107,12 +107,14 @@ Route.group(() => {
 	Route.post('report-coworker/delete', 'ReportCoWorkerController.delete')
 	// Get Report
 	Route.get('report', 'ReportController.index')
+	Route.post('report/nozzle/update', 'ReportController.updateNozzle')
+	Route.post('report/payment/update', 'ReportController.updatePayment')
+	Route.post('report/feeder-tank/update', 'ReportController.updateFeederTank')
 
 	// Notification
 	Route.get('notification', 'NotificationController.get')
 	Route.get('notification/count-unread', 'NotificationController.countUnread')
 	Route.get('notification/create', 'NotificationController.create')
-
 
 	// Report for mobile API
 	// Report Operator
