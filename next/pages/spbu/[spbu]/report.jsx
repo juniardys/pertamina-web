@@ -30,7 +30,8 @@ class Report extends Component {
             selectedIsland: '',
             feederEndMeter: 0,
             nozzleEndMeter: 0,
-            file: null
+            file: null,
+            paymentAmount: 0
         }
     }
 
@@ -129,27 +130,52 @@ class Report extends Component {
                 })
             }
         } else if (this.state.modalType.includes('nozzle')) {
-            const formData = new FormData()
-            formData.append('api_key', 'farizink')
-            formData.append('spbu_uuid', this.state.spbu_uuid)
-            formData.append('date', this.state.filterDate)
-            formData.append('shift_uuid', this.state.filterShift)
-            formData.append('uuid', this.state.modalItem)
-            formData.append('last_meter', this.state.nozzleEndMeter)
-            formData.append('file', this.state.file)
-            await axios.post('/api/v1/report/nozzle/update', formData, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
-            .then((resp) => {
-                if (!resp.data.success) {
-                    toast.fire({ icon: 'error', title: resp.data.message })
-                } else {
-                    toast.fire({ icon: 'success', title: resp.data.message })
-                }
-            })
-            .catch((err) => {
-                toast.fire({ icon: 'error', title: err.message })
-            })
+            if (this.state.modalItem == null) {
+                toast.fire({ icon: 'error', title: "Data Kosong" })
+            } else {
+                const formData = new FormData()
+                formData.append('api_key', 'farizink')
+                formData.append('spbu_uuid', this.state.spbu_uuid)
+                formData.append('date', this.state.filterDate)
+                formData.append('shift_uuid', this.state.filterShift)
+                formData.append('uuid', this.state.modalItem)
+                formData.append('last_meter', this.state.nozzleEndMeter)
+                formData.append('file', this.state.file)
+                await axios.post('/api/v1/report/nozzle/update', formData, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+                .then((resp) => {
+                    if (!resp.data.success) {
+                        toast.fire({ icon: 'error', title: resp.data.message })
+                    } else {
+                        toast.fire({ icon: 'success', title: resp.data.message })
+                    }
+                })
+                .catch((err) => {
+                    toast.fire({ icon: 'error', title: err.message })
+                })
+            }
         } else {
-
+            if (this.state.modalItem == null) {
+                toast.fire({ icon: 'error', title: "Data Kosong" })
+            } else {
+                await axios.post('/api/v1/report/payment/update', {
+                    api_key: "farizink",
+                    spbu_uuid: this.state.spbu_uuid,
+                    date: this.state.filterDate,
+                    shift_uuid: this.state.filterShift,
+                    uuid: this.state.modalItem,
+                    amount: this.state.paymentAmount
+                }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+                .then((resp) => {
+                    if (!resp.data.success) {
+                        toast.fire({ icon: 'error', title: resp.data.message })
+                    } else {
+                        toast.fire({ icon: 'success', title: resp.data.message })
+                    }
+                })
+                .catch((err) => {
+                    toast.fire({ icon: 'error', title: err.message })
+                })
+            }
         }
     }
 
@@ -198,25 +224,9 @@ class Report extends Component {
                 <form className="form-horizontal" action="#">
                     <input type="hidden" name="uuid" value={this.state.uuid} />
                     <div className="form-group row">
-                        <label className="control-label col-lg-2">Metode Pembayaran</label>
-                        <div className="col-lg-10">
-                            <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
-                                <option value="">--- Pilih Metode Pembayaran ---</option>
-                                <option value="Tunai">Tunai</option>
-                                <option value="CC">CC</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="form-group row">
-                        <label className="control-label col-lg-2">Keterangan</label>
-                        <div className="col-lg-10">
-                            <input type="text" className="form-control" name="description" value={this.state.description} onChange={this.handleInputChange} />
-                        </div>
-                    </div>
-                    <div className="form-group row">
                         <label className="control-label col-lg-2">Nominal</label>
                         <div className="col-lg-10">
-                            <input type="number" className="form-control" name="nominal" value={this.state.nominal} onChange={this.handleInputChange} />
+                            <input type="number" className="form-control" name="paymentAmount" value={this.state.paymentAmount} onChange={this.handleInputChange} />
                         </div>
                     </div>
                 </form>
@@ -350,7 +360,7 @@ class Report extends Component {
                                                                 <td>Rp. {report.data == null ? 0 : report.data.price.toLocaleString() || 0}</td>
                                                                 <td>Rp. {report.data == null ? 0 : parseInt(report.data.total_price).toLocaleString() || 0}</td>
                                                                 <td>
-                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', (report.data == null) ? 0 : report.data.last_meter)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', (report.data == null) ? 0 : report.data.uuid)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                                                     <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Detail Foto', 'foto', report.data.image)} data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                                 </td>
                                                             </tr>
