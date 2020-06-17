@@ -18,6 +18,10 @@ class ReportFeederTank extends Model {
         return this.belongsTo('App/Models/Shift', 'shift_uuid', 'uuid')
     }
 
+    feeder_tank() {
+        return this.belongsTo('App/Models/FeederTank', 'feeder_tank_uuid', 'uuid')
+    }
+
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

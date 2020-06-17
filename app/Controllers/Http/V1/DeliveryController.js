@@ -1,11 +1,14 @@
 'use strict'
 
+const Order = use('App/Models/Order')
 const Delivery = use('App/Models/Delivery')
+const ReportFeederTank = use('App/Models/ReportFeederTank')
 const { validate } = use('Validator')
 const { queryBuilder, baseResp, uploadImage } = use('App/Helpers')
 const uuid = use('uuid-random')
 const DeliveryTransformer = use('App/Transformers/V1/DeliveryTransformer')
 const Helpers = use('Helpers')
+const moment = use('moment')
 
 class DeliveryController {
     async get({ request, response, transform }) {
@@ -62,6 +65,20 @@ class DeliveryController {
                 }
             }
             await delivery.save()
+            // Add addition amount to report feeder tank
+            const order = await Order.query().where('uuid', delivery.order_uuid).first()
+            const reportFeederTank = await ReportFeederTank.query().where({
+                spbu_uuid: delivery.spbu_uuid,
+                shift_uuid: delivery.shift_uuid,
+                date: moment(delivery.receipt_date).format('YYYY-MM-DD')
+            }).whereHas('feeder_tank', (builder) => {
+                builder.where('product_uuid', order.product_uuid)
+            }).first()
+            // Add addition amount
+            if (reportFeederTank) {
+                reportFeederTank.addition_amount += parseFloat(delivery.quantity) || 0
+                await reportFeederTank.save()
+            }
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
@@ -96,6 +113,7 @@ class DeliveryController {
         }
 
         try {
+            let qty_before = parseFloat(delivery.quantity) || 0
             if (req.spbu_uuid) delivery.spbu_uuid = req.spbu_uuid
             if (req.shift_uuid) delivery.shift_uuid = req.shift_uuid
             if (req.order_uuid) delivery.order_uuid = req.order_uuid
@@ -122,8 +140,22 @@ class DeliveryController {
                 }
             }
             await delivery.save()
+            // Update addition amount from report feeder tank
+            const order = await Order.query().where('uuid', delivery.order_uuid).first()
+            const reportFeederTank = await ReportFeederTank.query().where({
+                spbu_uuid: delivery.spbu_uuid,
+                shift_uuid: delivery.shift_uuid,
+                date: moment(delivery.receipt_date).format('YYYY-MM-DD')
+            }).whereHas('feeder_tank', (builder) => {
+                builder.where('product_uuid', order.product_uuid)
+            }).first()
+            // Subtract addition amount
+            if (reportFeederTank) {
+                let quantity = (parseFloat(delivery.quantity) || 0) - qty_before
+                reportFeederTank.addition_amount += quantity
+                await reportFeederTank.save()
+            }
         } catch (error) {
-            console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
@@ -158,6 +190,22 @@ class DeliveryController {
                 console.log(error)
             }
         }
+        // Remove addition amount from report feeder tank
+        const order = await Order.query().where('uuid', delivery.order_uuid).first()
+        const reportFeederTank = await ReportFeederTank.query().where({
+            spbu_uuid: delivery.spbu_uuid,
+            shift_uuid: delivery.shift_uuid,
+            date: moment(delivery.receipt_date).format('YYYY-MM-DD')
+        }).whereHas('feeder_tank', (builder) => {
+            builder.where('product_uuid', order.product_uuid)
+        }).first()
+        // Subtract addition amount
+        if (reportFeederTank) {
+            let quantity = parseFloat(delivery.quantity) || 0
+            reportFeederTank.addition_amount -= quantity
+            await reportFeederTank.save()
+        }
+
         await delivery.delete()
 
         delivery = await transform.item(delivery, DeliveryTransformer)
