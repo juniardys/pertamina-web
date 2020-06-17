@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Layout from "~/components/layouts/Base";
 import { checkAuth } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import { toast } from '~/helpers'
 import Modal from '~/components/Modal'
 import axios from 'axios'
 
@@ -26,7 +27,10 @@ class Report extends Component {
             dataReportFeederTank: [],
             dataTotalFinance: [],
             dataTotalSales: [],
-            selectedIsland: ''
+            selectedIsland: '',
+            feederEndMeter: 0,
+            nozzleEndMeter: 0,
+            file: null
         }
     }
 
@@ -100,8 +104,53 @@ class Report extends Component {
         }
     }
 
-    _submit = () => {
+    _submit = async () => {
+        if (this.state.modalType.includes('feeder')) {
+            if (this.state.modalItem == null) {
+                toast.fire({ icon: 'error', title: "Data Kosong" })
+            } else {
+                await axios.post('/api/v1/report/feeder-tank/update', {
+                    api_key: "farizink",
+                    spbu_uuid: this.state.spbu_uuid,
+                    date: this.state.filterDate,
+                    shift_uuid: this.state.filterShift,
+                    uuid: this.state.modalItem,
+                    last_meter: this.state.feederEndMeter
+                }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+                .then((resp) => {
+                    if (!resp.data.success) {
+                        toast.fire({ icon: 'error', title: resp.data.message })
+                    } else {
+                        toast.fire({ icon: 'success', title: resp.data.message })
+                    }
+                })
+                .catch((err) => {
+                    toast.fire({ icon: 'error', title: err.message })
+                })
+            }
+        } else if (this.state.modalType.includes('nozzle')) {
+            const formData = new FormData()
+            formData.append('api_key', 'farizink')
+            formData.append('spbu_uuid', this.state.spbu_uuid)
+            formData.append('date', this.state.filterDate)
+            formData.append('shift_uuid', this.state.filterShift)
+            formData.append('uuid', this.state.modalItem)
+            formData.append('last_meter', this.state.nozzleEndMeter)
+            formData.append('file', this.state.file)
+            await axios.post('/api/v1/report/nozzle/update', formData, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+            .then((resp) => {
+                if (!resp.data.success) {
+                    toast.fire({ icon: 'error', title: resp.data.message })
+                } else {
+                    toast.fire({ icon: 'success', title: resp.data.message })
+                }
+            })
+            .catch((err) => {
+                toast.fire({ icon: 'error', title: err.message })
+            })
+        } else {
 
+        }
     }
 
     handleInputChange = async (e) => {
@@ -110,7 +159,14 @@ class Report extends Component {
         })
     }
 
+    handleFileChange = async (e) => {
+        await this.setState({
+            [e.target.name]: e.target.files[0]
+        })
+    }
+
     _setModalState = async (title, modalType, item) => {
+        console.log(item)
         await this.setState({
             title: title,
             modalType: modalType,
@@ -124,25 +180,9 @@ class Report extends Component {
                 <form className="form-horizontal" action="#">
                     <input type="hidden" name="uuid" value={this.state.uuid} />
                     <div className="form-group row">
-                        <label className="control-label col-lg-2">Pompa</label>
-                        <div className="col-lg-10">
-                            <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
-                                <option value="">--- Pilih Pompa ---</option>
-                                <option value="A1">A1</option>
-                                <option value="A2">A2</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="form-group row">
-                        <label className="control-label col-lg-2">Meteran Awal</label>
-                        <div className="col-lg-10">
-                            <input type="number" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
-                        </div>
-                    </div>
-                    <div className="form-group row">
                         <label className="control-label col-lg-2">Meteran Akhir</label>
                         <div className="col-lg-10">
-                            <input type="number" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
+                            <input type="number" className="form-control" name="nozzleEndMeter" value={this.state.nozzleEndMeter} onChange={this.handleInputChange} />
                         </div>
                     </div>
                     <div className="form-group row">
@@ -185,7 +225,7 @@ class Report extends Component {
             return (
                 <form className="form-horizontal" action="#">
                     <input type="hidden" name="uuid" value={this.state.uuid} />
-                    <div className="form-group row">
+                    {/* <div className="form-group row">
                         <label className="control-label col-lg-2">Produk</label>
                         <div className="col-lg-10">
                             <select className="form-control col-lg-10" defaultValue="" name="product_uuid" onChange={this.handleInputChange}>
@@ -196,17 +236,11 @@ class Report extends Component {
                                 }
                             </select>
                         </div>
-                    </div>
-                    <div className="form-group row">
-                        <label className="control-label col-lg-2">Meteran Awal</label>
-                        <div className="col-lg-10">
-                            <input type="number" className="form-control" name="start" value={this.state.start} onChange={this.handleInputChange} />
-                        </div>
-                    </div>
+                    </div> */}
                     <div className="form-group row">
                         <label className="control-label col-lg-2">Meteran Akhir</label>
                         <div className="col-lg-10">
-                            <input type="number" className="form-control" name="end" value={this.state.end} onChange={this.handleInputChange} />
+                            <input type="number" className="form-control" name="feederEndMeter" value={this.state.feederEndMeter} onChange={this.handleInputChange} />
                         </div>
                     </div>
                 </form>
@@ -316,7 +350,7 @@ class Report extends Component {
                                                                 <td>Rp. {report.data == null ? 0 : report.data.price.toLocaleString() || 0}</td>
                                                                 <td>Rp. {report.data == null ? 0 : parseInt(report.data.total_price).toLocaleString() || 0}</td>
                                                                 <td>
-                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', (report.data == null) ? 0 : report.data.last_meter)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                                                     <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Detail Foto', 'foto', report.data.image)} data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                                 </td>
                                                             </tr>
@@ -333,7 +367,6 @@ class Report extends Component {
                                                     <tr>
                                                         <th style={{ width: '10px' }}>#</th>
                                                         <th>Metode Pembayaran</th>
-                                                        <th>Keterangan</th>
                                                         <th style={{ width: '140px' }}>Nominal</th>
                                                         <th style={{ width: '172px' }}>Aksi</th>
                                                     </tr>
@@ -344,7 +377,6 @@ class Report extends Component {
                                                             <tr>
                                                                 <td>{i + 1}</td>
                                                                 <td>{report.name}</td>
-                                                                <td> - </td>
                                                                 <td>Rp. {report.data == null ? 0 : report.data.amount}</td>
                                                                 <td>
                                                                     <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
@@ -424,7 +456,6 @@ class Report extends Component {
                                 <tr>
                                     <th style={{ width: '10px' }}>#</th>
                                     <th>Produk</th>
-                                    <th>Meteran Awal</th>
                                     <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
@@ -437,12 +468,11 @@ class Report extends Component {
                                         <tr>
                                             <td>{++i}</td>
                                             <td>{report.product.name}</td>
-                                            <td>{report.data == null ? 0 : report.data.start_meter.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : report.data.addition_amount.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : (report.data.start_meter - report.data.last_meter).toLocaleString()}</td>
                                             <td style={{ padding: '0px' }}>
-                                                <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', (report.data == null) ? null : report.data.uuid)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                             </td>
                                         </tr>
                                     ))
