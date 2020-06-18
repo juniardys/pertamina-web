@@ -407,7 +407,6 @@ class OperatorReportController {
             await Database.table('report_islands').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
             return response.status(400).json(baseResp(false, [], e.message))
         }
-
     }
 }
 

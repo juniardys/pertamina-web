@@ -14,6 +14,18 @@ class ReportShift extends Model {
         return this.belongsTo('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }
     
+    shift() {
+        return this.belongsTo('App/Models/Shift', 'shift_uuid', 'uuid')
+    }
+    
+    island() {
+        return this.belongsTo('App/Models/Island', 'island_uuid', 'uuid')
+    }
+    
+    operator() {
+        return this.belongsTo('App/Models/User', 'operator_uuid', 'uuid')
+    }
+    
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

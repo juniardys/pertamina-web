@@ -18,6 +18,10 @@ class ReportIsland extends Model {
         return this.belongsTo('App/Models/Shift', 'shift_uuid', 'uuid')
     }
     
+    admin() {
+        return this.belongsTo('App/Models/User', 'admin_acc', 'uuid')
+    }
+    
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()

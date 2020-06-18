@@ -1,9 +1,15 @@
 'use strict'
 
 const User = use('App/Models/User')
+const Island = use('App/Models/Island')
+const Shift = use('App/Models/Shift')
+const ReportIsland = use('App/Models/ReportIsland')
+const ReportShift = use('App/Models/ReportShift')
 const { validate } = use('Validator')
 const { baseResp, uploadImage } = use('App/Helpers')
 const UserTransformer = use('App/Transformers/V1/UserTransformer')
+const ReportIslandTransformer = use('App/Transformers/V1/ReportIslandTransformer')
+const ReportShiftTransformer = use('App/Transformers/V1/ReportShiftTransformer')
 // const sharp = use('sharp')
 const Helpers = use('Helpers')
 
@@ -120,6 +126,39 @@ class ProfileController {
         user = await transform.include('role').item(user, UserTransformer)
 
         return response.status(200).json(baseResp(true, user, 'Data Password Profil sukses siperbarui'))
+    }
+
+    async historyReport({ request, response, transform, auth }) {
+        const req = request.all()
+        const user = await User.query().where('id', auth.user.id).with('role').first()
+        var data = {}
+        if (user.role_uuid == '0bec0af4-a32f-4b1e-bfc2-5f4933c49740') {
+        // Operator
+            const reportIsland = await ReportIsland.query().where({
+                operator_uuid: user.uuid,
+            }).orderBy('id', 'desc').paginate(req.page || 1, req.paginate || 20)
+            data = await transform.paginate(reportIsland, ReportIslandTransformer)
+            for (let index = 0; index < data.data.length; index++) {
+                const dt = data.data[index];
+                const shift = await Shift.query().where('uuid', dt.shift_uuid).first()
+                const island = await Island.query().where('uuid', dt.island_uuid).first()
+                dt['shift_name'] = shift.name || null
+                dt['island_name'] = island.name || null
+            }
+        } else if (user.role_uuid == '45982947-346a-43d6-9204-78202ad970ab') {
+        // Admin
+            const reportShift = await ReportShift.query().where({
+                admin_acc: user.uuid,
+            }).orderBy('id', 'desc').paginate(req.page || 1, req.paginate || 20)
+            data = await transform.paginate(reportShift, ReportShiftTransformer)
+            for (let index = 0; index < data.data.length; index++) {
+                const dt = data.data[index];
+                const shift = await Shift.query().where('uuid', dt.shift_uuid).first()
+                dt['shift_name'] = shift.name || null
+            }
+        }
+
+        return response.status(200).json(baseResp(true, data, 'Data riwayat laporan sukses diterima'))
     }
 }
 
