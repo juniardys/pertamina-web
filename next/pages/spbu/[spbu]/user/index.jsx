@@ -145,7 +145,6 @@ class User extends Component {
                 this.btnModal.stop()
                 return;
             }
-            console.log(this.state.spbu_uuid);
             const response = await store('/user/store', {
                 name: this.state.name,
                 email: this.state.email,
@@ -153,7 +152,7 @@ class User extends Component {
                 address: this.state.address,
                 password: this.state.password,
                 role_uuid: this.state.role_uuid,
-                spbu_uuid: this.state.spbu_uuid,
+                spbu_uuid: this.props.query.spbu,
                 ktp: this.state.ktp,
                 custom_response: 'role,spbu'
             })
