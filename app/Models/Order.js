@@ -22,7 +22,7 @@ class Order extends Model {
         return this.belongsTo('App/Models/Product', 'product_uuid', 'uuid')
     }
 
-    deliverys() {
+    deliveries() {
         return this.hasMany('App/Models/Delivery', 'uuid', 'order_uuid')
     }
 

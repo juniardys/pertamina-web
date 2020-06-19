@@ -14,6 +14,9 @@ const Env = use('Env')
  * @constructor
  */
 class ReportIslandTransformer extends BumblebeeTransformer {
+  static get availableInclude() {
+    return ['spbu', 'island', 'shift', 'operator']
+  }
   /**
    * This method is used to transform the data.
    */

@@ -15,8 +15,12 @@ const Env = use('Env')
  * @constructor
  */
 class ReportCoWorkerTransformer extends BumblebeeTransformer {
+  static get defaultInclude() {
+    return ['user']
+  }
+
   static get availableInclude() {
-    return ['spbu', 'island', 'shift', 'user']
+    return ['spbu', 'island', 'shift']
   }
 
   /**

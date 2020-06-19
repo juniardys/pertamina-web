@@ -3,6 +3,7 @@
 const BumblebeeTransformer = use('Bumblebee/Transformer')
 const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
+const DeliveryTransformer = use('App/Transformers/V1/DeliveryTransformer')
 const moment = use('moment')
 const Delivery = use('App/Models/Delivery')
 
@@ -14,7 +15,7 @@ const Delivery = use('App/Models/Delivery')
  */
 class OrderTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['spbu', 'product']
+    return ['spbu', 'product', 'deliveries']
   }
 
   /**
@@ -45,6 +46,10 @@ class OrderTransformer extends BumblebeeTransformer {
 
   includeSpbu(model) {
     return this.item(model.getRelated('spbu'), SpbuTransformer)
+  }
+
+  includeDeliveries(model) {
+    return this.collection(model.getRelated('deliveries'), DeliveryTransformer)
   }
 }
 

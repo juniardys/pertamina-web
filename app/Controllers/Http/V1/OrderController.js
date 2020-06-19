@@ -5,10 +5,26 @@ const { validate } = use('Validator')
 const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
 const OrderTransformer = use('App/Transformers/V1/OrderTransformer')
+const Database = use('Database')
 
 class OrderController {
     async get({ request, response, transform }) {
-        const builder = await queryBuilder(Order.query(), request.all(), ['spbu_uuid', 'product_uuid', 'order_date', 'order_no', 'quantity'])
+        const req = request.all()
+        var query = Order.query()
+        if (req.status == 'ongoing') {
+            query = query.where('quantity', '>', (builder) => {
+                builder.from('deliveries')
+                    .select(Database.raw("coalesce(sum(quantity), 0) as quantity"))
+                    .whereRaw('order_uuid = orders.uuid')
+            })
+        } else if (req.status == 'done') {
+            query = query.where('quantity', '<=', (builder) => {
+                builder.from('deliveries')
+                    .select(Database.raw("coalesce(sum(quantity), 0) as quantity"))
+                    .whereRaw('order_uuid = orders.uuid')
+            })
+        }
+        const builder = await queryBuilder(query, request.all(), ['spbu_uuid', 'product_uuid', 'order_date', 'order_no', 'quantity'])
         let data = transform
         if (request.get().with) {
             data = data.include(request.get().with)
@@ -39,7 +55,6 @@ class OrderController {
             order.quantity = req.quantity
             await order.save()
         } catch (error) {
-            console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
         }
 
@@ -77,7 +92,6 @@ class OrderController {
             if (req.quantity) order.quantity = req.quantity
             await order.save()
         } catch (error) {
-            console.log(error)
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 

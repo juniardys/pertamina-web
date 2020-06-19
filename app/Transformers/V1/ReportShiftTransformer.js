@@ -14,6 +14,9 @@ const Env = use('Env')
  * @constructor
  */
 class ReportShiftTransformer extends BumblebeeTransformer {
+  static get availableInclude() {
+    return ['spbu', 'shift', 'admin']
+  }
   /**
    * This method is used to transform the data.
    */
