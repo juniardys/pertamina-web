@@ -24,9 +24,11 @@ class OrderTransformer extends BumblebeeTransformer {
   async transform(model) {
     moment.locale('id')
     let delivered = 0
-    const data = await Delivery.query().select('quantity').where('order_uuid', model.uuid).fetch()
-    data.toJSON().forEach(data => { delivered = delivered + parseInt(data.quantity) });
-
+    const data = await Delivery.query().select('quantity', 'receipt_date').where('order_uuid', model.uuid).fetch()
+    data.toJSON().forEach(data => { 
+      delivered = delivered + parseInt(data.quantity)
+    });
+    const lastDelivery = data.toJSON().slice(-1)[0]
     return {
       uuid: model.uuid,
       spbu_uuid: model.spbu_uuid,
@@ -35,6 +37,7 @@ class OrderTransformer extends BumblebeeTransformer {
       order_no: model.order_no,
       quantity: model.quantity,
       delivered: delivered,
+      complete_date: (delivered >= model.quantity)? moment(lastDelivery.receipt_date, 'YYYY-MM-DD').format('YYYY-MM-DD') : null,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
