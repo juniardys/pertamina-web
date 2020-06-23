@@ -13,7 +13,7 @@ const ReportPayment = use('App/Models/ReportPayment')
 const ReportCoWorker = use('App/Models/ReportCoWorker')
 const ReportIsland = use('App/Models/ReportIsland')
 const { validate } = use('Validator')
-const { baseResp, uploadImage, setReportShift, setReportSpbu, getShiftBefore, getShiftAfter } = use('App/Helpers')
+const { baseResp, uploadImage, setReportShift, setReportSpbu, getShiftBefore, pushNotification } = use('App/Helpers')
 const uuid = use('uuid-random')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
@@ -247,6 +247,10 @@ class OperatorReportController {
                 'date': req.date,
             }).first()
             if (reportIsland) return response.status(400).json(baseResp(false, [], 'Laporan Island ini sudah di isi'))
+            // Get Shift
+            const shift = await Shift.query().where('uuid', req.shift_uuid).first()
+            // Get Island
+            const island = await Island.query().where('uuid', req.island_uuid).first()
             // Get Shift Before
             var shiftBefore = await getShiftBefore(req.spbu_uuid, req.shift_uuid, req.date)
             // Insert Data Nozzle
@@ -396,6 +400,18 @@ class OperatorReportController {
             await setReportShift(req.shift_uuid, req.spbu_uuid, req.date)
 
             await setReportSpbu(req.spbu_uuid, req.date)
+
+            const admins = await User.query().where({
+                spbu_uuid: req.spbu_uuid,
+                role_uuid: '45982947-346a-43d6-9204-78202ad970ab'
+            }).fetch()
+
+            for (let i = 0; i < admins.toJSON().length; i++) {
+                const admin = admins.toJSON()[i];
+                let title = 'Laporan Baru!'
+                let body = 'Operator ' + auth.user.name + ' telah mengisi laporan tgl ' + req.date + ', ' + shift.name + ', ' + island.name
+                await pushNotification(admin.uuid, title, body)
+            }
 
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {

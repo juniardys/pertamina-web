@@ -114,7 +114,7 @@ class Navbar extends Component {
 					</ul>
 
 					<ul className="nav navbar-nav navbar-right">
-						<li className="dropdown">
+						{/* <li className="dropdown">
 							<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false" onClick={() => this._getMoreNotification()}>
 								<i className="icon-bell2"></i>
 								<span className="visible-xs-inline-block position-right">Notification</span>
@@ -125,7 +125,7 @@ class Navbar extends Component {
 								<div className="dropdown-content-heading">
 									Notifikasi
 									<ul className="icons-list">
-										{/* <li><a href="#">Mark All as Read</a></li> */}
+										<li><a href="#">Mark All as Read</a></li>
 									</ul>
 								</div>
 
@@ -137,7 +137,7 @@ class Navbar extends Component {
 									<a href="#" data-popup="tooltip" title="" data-original-title="Lebih banyak Notifikasi" onClick={() => this._getNotification(this.state.page + 1)}><i className="icon-menu display-block"></i></a>
 								</div>
 							</div>
-						</li>
+						</li> */}
 						<li className="dropdown dropdown-user">
 							<a className="dropdown-toggle" data-toggle="dropdown">
 								<img src={(this.props.image) ? this.props.image : "/image/avatar.jpg"} alt="" />

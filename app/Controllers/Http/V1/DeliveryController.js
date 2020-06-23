@@ -1,10 +1,12 @@
 'use strict'
 
+const User = use('App/Models/User')
+const Shift = use('App/Models/Shift')
 const Order = use('App/Models/Order')
 const Delivery = use('App/Models/Delivery')
 const ReportFeederTank = use('App/Models/ReportFeederTank')
 const { validate } = use('Validator')
-const { queryBuilder, baseResp, uploadImage } = use('App/Helpers')
+const { queryBuilder, baseResp, uploadImage, pushNotification } = use('App/Helpers')
 const uuid = use('uuid-random')
 const DeliveryTransformer = use('App/Transformers/V1/DeliveryTransformer')
 const Helpers = use('Helpers')
@@ -79,8 +81,21 @@ class DeliveryController {
                 reportFeederTank.addition_amount += parseFloat(delivery.quantity) || 0
                 await reportFeederTank.save()
             }
+
+            const shift = await Shift.query().where('uuid', req.shift_uuid).first()
+            const admins = await User.query().where({
+                spbu_uuid: req.spbu_uuid,
+                role_uuid: '45982947-346a-43d6-9204-78202ad970ab'
+            }).fetch()
+
+            for (let i = 0; i < admins.toJSON().length; i++) {
+                const admin = admins.toJSON()[i];
+                let title = 'Pengiriman Baru!'
+                let body = 'Terdapat pengiriman baru untuk pemesanan (' + order.order_no + ') pada tgl ' + req.receipt_date + ', ' + shift.name
+                await pushNotification(admin.uuid, title, body)
+            }
         } catch (error) {
-            return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
+            return response.status(400).json(baseResp(false, [], error.message))
         }
 
         delivery = await transform.item(delivery, DeliveryTransformer)
