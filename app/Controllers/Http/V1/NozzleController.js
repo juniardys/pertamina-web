@@ -56,7 +56,7 @@ class NozzleController {
         rules['uuid'] = 'required'
         if (req.product_uuid) rules['product_uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
-        if (req.code) rules['code'] = `required|unique:nozzles,code,uuid,${req.uuid}|max:254`
+        if (req.code) rules['code'] = `required|max:254`
         if (req.start_meter) rules['start_meter'] = 'required|number'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
