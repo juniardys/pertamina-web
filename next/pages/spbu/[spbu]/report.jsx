@@ -5,6 +5,7 @@ import { get, store, update, removeWithSwal } from '~/helpers/request'
 import { toast } from '~/helpers'
 import Modal from '~/components/Modal'
 import axios from 'axios'
+import _ from 'lodash'
 
 class Report extends Component {
     static getInitialProps({ query }) {
@@ -367,6 +368,19 @@ class Report extends Component {
                                                         ))
                                                     )}
                                                 </tbody>
+                                                <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>Rp. { data.nozzle.reduce((prev, next) => prev + next.data.total_price, 0).toLocaleString() || 0 }</td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tfoot>
                                             </table>
 
                                             <h5 style={{ marginTop: '20px' }}>
@@ -400,8 +414,8 @@ class Report extends Component {
                                                     <tr>
                                                         <td></td>
                                                         <td></td>
+                                                        <td>Rp. { data.payment.reduce((prev, next) => prev + next.data.amount, 0) || 0 }</td>
                                                         <td></td>
-                                                        <td>Rp. {data.payment.reduce((prev, next) => prev + next.amount, 0) || 0}</td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -483,7 +497,7 @@ class Report extends Component {
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td>Rp. {this.state.dataTotalFinance.reduce((prev, next) => prev + next.amount, 0) || 0}</td>
+                                    <td>Rp. {this.state.dataTotalFinance.reduce((prev, next) => prev + next.amount, 0).toLocaleString() || 0}</td>
                                 </tr>
                             </tfoot>
                         </table>
