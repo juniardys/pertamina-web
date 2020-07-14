@@ -101,6 +101,7 @@ export const login = async (data) => {
     await setAcl(profile.role_uuid)
     localStorage.setItem('user_uuid', profile.uuid)
     localStorage.setItem('spbu_uuid', profile.spbu_uuid)
+    localStorage.setItem('role_uuid', profile.role_uuid)
     await redirectPath()
     toast.fire({ icon: 'success', title: 'Anda berhasil masuk' })
 }

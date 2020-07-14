@@ -233,6 +233,7 @@ class User extends Component {
     }
 
     renderModal = () => {
+        console.log(this.props)
         if (this.state.modalType === 'edit-password') {
             return (
                 <form className="form-horizontal" action="#">
@@ -311,7 +312,15 @@ class User extends Component {
                             <select className="form-control col-lg-10" defaultValue="" name="role_uuid" onChange={this.handleInputChange}>
                                 {
                                     this.state.roleData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={this.state.modalType === 'edit' && item.uuid == this.state.role_uuid}>{item.name}</option>
+                                        <>
+                                        {
+                                            ((localStorage.getItem('role_uuid') == '94372ea5-e24c-4330-a453-2b01c424ee5d' && item.uuid != '94372ea5-e24c-4330-a453-2b01c424ee5d') || item.uuid == '0bec0af4-a32f-4b1e-bfc2-5f4933c49740')
+                                            ?
+                                            (<option key={i + 1} value={item.uuid} selected={this.state.modalType === 'edit' && item.uuid == this.state.role_uuid}>{item.name}</option>)
+                                            :
+                                            ''
+                                        }
+                                        </>
                                     ))
                                 }
                             </select>
