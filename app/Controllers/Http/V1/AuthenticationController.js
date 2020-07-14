@@ -5,6 +5,7 @@ const { baseResp } = use('App/Helpers')
 const Mail = use('Mail')
 const User = use('App/Models/User')
 const UserTransformer = use('App/Transformers/V1/UserTransformer')
+const Hash = use('Hash')
 
 class AuthenticationController {
     async signIn({ request, auth, response, transform }) {
@@ -19,7 +20,12 @@ class AuthenticationController {
         if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
 
         try {
-            const authenticated = await auth.attempt(req.email, req.password)
+            const getUser = await User.query().whereRaw('LOWER(email) = LOWER(?)', req.email).first()
+            if (!getUser) throw new Error('username / password salah')
+            const validPassword = await Hash.verify(req.password, getUser.password)
+            if (!validPassword) throw new Error('username / password salah')
+
+            const authenticated = await auth.generate(getUser)
             if (req.imei) {
                 const user = await User.query().where('email', req.email).with('role').first()
 
@@ -40,6 +46,7 @@ class AuthenticationController {
 
             return response.status(200).json(baseResp(true, authenticated, `Data Bearer ${req.email} diterima`))
         } catch (error) {
+            console.log(error.message)
             return response.status(400).json(baseResp(false, null, 'username / password salah'))
         }
     }

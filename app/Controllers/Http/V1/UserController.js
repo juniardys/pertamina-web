@@ -102,7 +102,7 @@ class UserController {
 
         try {
             if (req.role_uuid) user.role_uuid = req.role_uuid
-            user.spbu_uuid = req.spbu_uuid
+            if (req.spbu_uuid) user.spbu_uuid = req.spbu_uuid
             if (req.name) user.name = req.name
             if (req.email && user.email != req.email) user.email = req.email
             if (req.password) user.password = req.password

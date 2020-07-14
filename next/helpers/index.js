@@ -125,10 +125,6 @@ export const redirectPath = async () => {
     }
 }
 
-export const FormatCurrency = async (number) => {
-    
-}
-
 const getPathDecission = async (spbu = null) => {
     const acl = localStorage.getItem('accessList')
 
