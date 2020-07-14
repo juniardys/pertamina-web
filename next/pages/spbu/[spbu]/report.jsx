@@ -452,6 +452,43 @@ class Report extends Component {
                         </table>
                     </div>
 
+                    {/* Total Keuangan */}
+                    <div className="panel panel-flat" style={{ margin: '4px' }}>
+                        <div className="panel-heading">
+                            <h5 className="panel-title">Total Keuangan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                            <div className="heading-elements">
+
+                            </div>
+                        </div>
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '10px' }}>#</th>
+                                    <th>Metode Pembayaran</th>
+                                    <th style={{ width: '332px' }}>Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {(this.state.dataTotalFinance == '') ? null : (
+                                    this.state.dataTotalFinance.map((report, i) => (
+                                        <tr>
+                                            <td>{i + 1}</td>
+                                            <td>{report.payment_name}</td>
+                                            <td>Rp. {report.amount.toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                            <tfoot style={{ borderTop: '2px solid #bbb' }}>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Rp. {this.state.dataTotalFinance.reduce((prev, next) => prev + next.amount, 0) || 0}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
                     {/* Feeder Tank */}
                     <div className="panel panel-flat" style={{ margin: '4px' }}>
                         <div className="panel-heading">
@@ -490,43 +527,6 @@ class Report extends Component {
                                     ))
                                 )}
                             </tbody>
-                        </table>
-                    </div>
-
-                    {/* Total Keuangan */}
-                    <div className="panel panel-flat" style={{ margin: '4px' }}>
-                        <div className="panel-heading">
-                            <h5 className="panel-title">Total Keuangan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
-                            <div className="heading-elements">
-
-                            </div>
-                        </div>
-                        <table className="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th style={{ width: '10px' }}>#</th>
-                                    <th>Metode Pembayaran</th>
-                                    <th style={{ width: '332px' }}>Nominal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(this.state.dataTotalFinance == '') ? null : (
-                                    this.state.dataTotalFinance.map((report, i) => (
-                                        <tr>
-                                            <td>{i + 1}</td>
-                                            <td>{report.payment_name}</td>
-                                            <td>Rp. {report.amount.toLocaleString()}</td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                            <tfoot style={{ borderTop: '2px solid #bbb' }}>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td>Rp. {this.state.dataTotalFinance.reduce((prev, next) => prev + next.amount, 0) || 0}</td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 </div>
