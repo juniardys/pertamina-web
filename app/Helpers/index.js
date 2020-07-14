@@ -205,7 +205,7 @@ const setReportShift = async (shift_uuid, spbu_uuid, date) => {
         const row = getReportIsland[i];
         _.pull(dataIsland, row.island_uuid)
     }
-    if (dataIsland.length == 0) {
+    if (dataIsland.length >= 1) {
         status = true
     }
 

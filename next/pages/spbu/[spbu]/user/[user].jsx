@@ -94,9 +94,11 @@ class User extends Component {
             role_uuid: this.state.role_uuid,
             spbu_uuid: this.state.spbu_uuid,
             ktp: this.state.ktp,
+            custom_response: 'role'
         })
         if (response.success) {
             const user = response.res.data
+            console.log(user)
             this.setState({
                 uuid: user.uuid,
                 name: user.name,
