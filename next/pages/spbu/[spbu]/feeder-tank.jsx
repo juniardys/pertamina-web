@@ -36,8 +36,8 @@ class Report extends Component {
         const data = await get('/feeder-tank', {
             filter_col: ['spbu_uuid'],
             filter_val: [this.props.query.spbu],
-            order_col: ['created_at'],
-            order_val: ['desc'],
+            order_col: ['name'],
+            order_val: ['asc'],
             with: ['product']
         })
         if (data != undefined && data.success) {

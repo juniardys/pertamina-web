@@ -38,7 +38,7 @@ class ReportController {
             shift_uuid: 'required',
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
-        const getIsland = await Island.query().where('spbu_uuid', req.spbu_uuid).fetch()
+        const getIsland = await Island.query().where('spbu_uuid', req.spbu_uuid).orderBy('name', 'asc').fetch()
         const data = {
             island: await transform.collection(getIsland, IslandTransformer),
             feeder_tank: [],

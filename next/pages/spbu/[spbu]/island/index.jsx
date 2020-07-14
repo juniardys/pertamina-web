@@ -33,6 +33,7 @@ class Index extends Component {
         const data = await get('/island', {
             filter_col: ['spbu_uuid'],
             filter_val: [this.props.query.spbu],
+            order_col: 'name:asc'
         })
         if (data != undefined && data.success) {
             this.setState({
