@@ -19,7 +19,7 @@ class IslandController {
         const validation = await validate(req, {
             spbu_uuid: 'required',
             name: 'required|max:254',
-            code: 'required|unique:islands|max:254'
+            code: 'required|max:254'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
