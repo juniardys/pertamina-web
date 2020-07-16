@@ -11,7 +11,7 @@ class SpbuSchema extends Schema {
       table.string('name').notNullable()
       table.text('address').notNullable()
       table.string('phone').notNullable()
-      table.string('code').unique().notNullable()
+      table.string('code').notNullable()
       table.timestamp('deleted_at').nullable()
       table.timestamps()
     })
