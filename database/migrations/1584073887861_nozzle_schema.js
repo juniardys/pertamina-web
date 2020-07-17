@@ -12,7 +12,7 @@ class NozzleSchema extends Schema {
       table.uuid('island_uuid').references('uuid').inTable('islands').onDelete('cascade').notNullable()
       table.uuid('product_uuid').references('uuid').inTable('products').onDelete('cascade')
       table.string('name').notNullable()
-      table.string('code').unique().notNullable()
+      table.string('code').notNullable()
       table.double('start_meter').notNullable()
       table.timestamps()
     })
