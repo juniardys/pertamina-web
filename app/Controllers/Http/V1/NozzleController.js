@@ -25,7 +25,7 @@ class NozzleController {
             island_uuid: 'required',
             product_uuid: 'required',
             name: 'required|max:254',
-            code: 'required|unique:nozzles|max:254',
+            code: 'required|max:254',
             start_meter: 'required|number',
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
