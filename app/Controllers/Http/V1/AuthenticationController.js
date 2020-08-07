@@ -20,8 +20,8 @@ class AuthenticationController {
         if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
 
         try {
-            const getUser = await User.query().whereRaw('LOWER(email) = LOWER(?)', req.email).first()
-            if (!getUser) throw new Error('username / password salah')
+            const getUser = await User.query().whereRaw('LOWER(email) = LOWER(?)', req.email).where('deleted_at', null).first()
+            if (!getUser) throw new Error('user tidak ditemukan')
             const validPassword = await Hash.verify(req.password, getUser.password)
             if (!validPassword) throw new Error('username / password salah')
 
