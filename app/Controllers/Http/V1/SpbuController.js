@@ -1,6 +1,7 @@
 'use strict'
 
 const Spbu = use('App/Models/Spbu')
+const User = use('App/Models/User')
 const { validate } = use('Validator')
 const { queryBuilder, slugify, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
@@ -101,6 +102,7 @@ class SpbuController {
         if (!spbu) return response.status(400).json(baseResp(false, [], 'SPBU tidak ditemukan'))
 
         await spbu.delete()
+        await User.query().where('spbu_uuid', req.uuid).delete()
 
         spbu = await transform.item(spbu, SpbuTransformer)
 
