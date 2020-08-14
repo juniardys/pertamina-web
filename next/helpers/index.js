@@ -131,9 +131,10 @@ const getPathDecission = async (spbu = null) => {
     let accessList = JSON.parse(acl)
     console.log(accessList);
 
-    let notOnlyManageSPBU = 0
-    accessList.forEach(dataACL => { if (!dataACL.includes('spbu.manage')) notOnlyManageSPBU++ });
-    (notOnlyManageSPBU >= 1) ? window.localStorage.setItem('notOnlyManageSPBU', true) : window.localStorage.setItem('notOnlyManageSPBU', false)
+    // let notOnlyManageSPBU = 0
+    // accessList.forEach(dataACL => { if (!dataACL.includes('spbu.manage')) notOnlyManageSPBU++ });
+    // (notOnlyManageSPBU >= 1) ? window.localStorage.setItem('notOnlyManageSPBU', true) : window.localStorage.setItem('notOnlyManageSPBU', false)
+    (window.localStorage.getItem('role_uuid') == '94372ea5-e24c-4330-a453-2b01c424ee5d') ? window.localStorage.setItem('notOnlyManageSPBU', true) : window.localStorage.setItem('notOnlyManageSPBU', false)
 
     const avaiableRoute = getAvaiableRoute(spbu)
     for (let i = 0; i < avaiableRoute.length; i++) {

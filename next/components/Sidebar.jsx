@@ -81,6 +81,13 @@ const Sidebar = (props) => {
 		// Menu For SPBU
 		datas = [
 			{
+				access: 'product.read',
+				type: 'menu',
+				title: 'Produk',
+				icon: 'icon-box',
+				url: '/product'
+			},
+			{
 				access: 'spbu.manage.report',
 				type: 'menu',
 				title: 'Laporan',

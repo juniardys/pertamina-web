@@ -77,6 +77,11 @@ class RoleSeeder {
           "spbu.manage.setting": "Pengaturan SPBU",
           "spbu.manage.setting.detail": "Merubah Detail SPBU",
           "spbu.manage.setting.payment": "Merubah Pengaturan Metode Pembayaran",
+          "product": "Produk",
+          "product.read": "Melihat",
+          "product.create": "Membuat",
+          "product.update": "Mengubah",
+          "product.delete": "Menghapus",
         },
         uuid: "45982947-346a-43d6-9204-78202ad970ab"
       },

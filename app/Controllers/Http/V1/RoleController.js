@@ -82,7 +82,7 @@ class RoleController {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
-        if (role.id == 1 || role.id == 2 || role.id == 3) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Mengubah Jabatan'))
+        // if (role.id == 1 || role.id == 2 || role.id == 3) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Mengubah Jabatan'))
 
         try {
             role.name = req.name
@@ -119,7 +119,7 @@ class RoleController {
             return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
         }
 
-        if (role.id == 1 || role.id == 2 || role.id == 3) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Menghapus Jabatan'))
+        // if (role.id == 1 || role.id == 2 || role.id == 3) return response.status(400).json(baseResp(false, [], 'Tidak Bisa Menghapus Jabatan'))
 
         await role.delete()
 
