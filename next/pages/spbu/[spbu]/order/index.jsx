@@ -269,7 +269,7 @@ class Order extends Component {
                     </div>
                     <div className="col-md-3">
                         <div className="form-group">
-                            <label>Tanggal</label>
+                            <label>Tanggal Pemesanan</label>
                             <div>
                                 <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
                             </div>
