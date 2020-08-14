@@ -14,6 +14,7 @@ class OrderSchema extends Schema {
       table.string('order_no').notNullable()
       table.integer('quantity').notNullable()
       table.timestamps()
+      table.enu('status', ['pending', 'partial', 'delivered']).defaultTo('pending')
     })
   }
 

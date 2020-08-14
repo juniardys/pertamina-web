@@ -24,6 +24,7 @@ class Order extends Component {
             filterSPBU: '',
             filterDate: '',
             filterProduct: '',
+            filterStatus: '',
             title: 'Buat Pemesanan',
             modalType: "create",
         }
@@ -69,6 +70,11 @@ class Order extends Component {
         if (this.state.filterProduct != '') {
             column.push('product_uuid')
             value.push(this.state.filterProduct)
+        }
+
+        if (this.state.filterStatus != '') {
+            column.push('status')
+            value.push(this.state.filterStatus)
         }
 
         column.push('order_date')
@@ -274,6 +280,17 @@ class Order extends Component {
                     </div>
                     <div className="col-md-3">
                         <div className="form-group">
+                            <label>Status</label>
+                            <select className="form-control" name="filterStatus" defaultValue="" onChange={this.handleSelectChange}>
+                                <option key={0} value="">Semua</option>
+                                <option key={1} value="pending" selected={"pending" == this.state.filterStatus}>Pending</option>
+                                <option key={2} value="partial" selected={"partial" == this.state.filterStatus}>Partial</option>
+                                <option key={3} value="delivered" selected={"delivered" == this.state.filterStatus}>Delivered</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="col-md-3">
+                        <div className="form-group">
                             <label>Tanggal</label>
                             <div>
                                 <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
@@ -322,7 +339,7 @@ class Order extends Component {
                                                 <td>{item.order_date}</td>
                                                 <td>{item.order_no}</td>
                                                 <td>{item.quantity}</td>
-                                                <td>{item.status}</td>
+                                                <td>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</td>
                                                 <td>
                                                     <AccessList acl="order.delivery.read">
                                                         <Link href={'/order/[order]'} as={'/order/' + item.uuid}>

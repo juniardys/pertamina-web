@@ -26,6 +26,7 @@ class OrderDetail extends Component {
             spbu_uuid: '',
             product_name: '',
             order_date: '',
+            order_status: '',
             order_no: '',
             shift_uuid: '',
             order_quantity: '',
@@ -57,6 +58,7 @@ class OrderDetail extends Component {
                 order_date: dataOrder.order_date,
                 order_no: dataOrder.order_no,
                 order_quantity: dataOrder.quantity,
+                order_status: dataOrder.status
             })
             helperUnblock('.container-order')
             const delivery = await get('/delivery', {
@@ -116,8 +118,22 @@ class OrderDetail extends Component {
     _deleteProduct = async (uuid) => {
         const response = await removeWithSwal('/delivery/delete', uuid)
         if (response != null) {
+            const order = await get('/order', {
+                with: ['spbu', 'product'],
+                search: this.props.query.order,
+                filter_col: ['spbu_uuid'],
+                filter_val: [this.props.query.spbu]
+            })
+            var order_status = 'pending'
+            if (order != undefined && order.success) {
+                const dataOrder = order.data.data[0]
+                order_status = dataOrder.status
+            }
             const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
-            this.setState({ dataItems: dataItems })
+            this.setState({ 
+                dataItems: dataItems,
+                order_status: order_status
+            })
         }
     }
 
@@ -137,9 +153,22 @@ class OrderDetail extends Component {
                 image: this.state.image
             })
             if (response.success) {
-                this.setState({
-                    dataItems: [...this.state.dataItems, response.res.data]
+                const order = await get('/order', {
+                    with: ['spbu', 'product'],
+                    search: this.props.query.order,
+                    filter_col: ['spbu_uuid'],
+                    filter_val: [this.props.query.spbu]
                 })
+                var order_status = 'pending'
+                if (order != undefined && order.success) {
+                    const dataOrder = order.data.data[0]
+                    order_status = dataOrder.status
+                }
+                this.setState({
+                    dataItems: [...this.state.dataItems, response.res.data],
+                    order_status: order_status
+                })
+
                 this.btnModal.stop()
                 helperModalHide()
             } else {
@@ -159,8 +188,22 @@ class OrderDetail extends Component {
                 image: this.state.image
             })
             if (response.success) {
+                const order = await get('/order', {
+                    with: ['spbu', 'product'],
+                    search: this.props.query.order,
+                    filter_col: ['spbu_uuid'],
+                    filter_val: [this.props.query.spbu]
+                })
+                var order_status = 'pending'
+                if (order != undefined && order.success) {
+                    const dataOrder = order.data.data[0]
+                    order_status = dataOrder.status
+                }
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
-                this.setState({ dataItems: dataItems })
+                this.setState({ 
+                    dataItems: dataItems,
+                    order_status: order_status
+                })
 
                 this.btnModal.stop()
                 helperModalHide()
@@ -267,10 +310,23 @@ class OrderDetail extends Component {
                             <span className="heading-text">
                                 <i className="icon-history position-left"></i>{this.state.order_date}
                             </span>
-
-                            <span className="heading-text pull-right label label-info">
-                                Proses
-                            </span>
+                            {
+                                (this.state.order_status == 'delivered')
+                                ?
+                                <span className="heading-text pull-right label label-success">
+                                    Delivered
+                                </span>
+                                :
+                                (this.state.order_status == 'partial')
+                                ?
+                                <span className="heading-text pull-right label label-primary">
+                                    Partial
+                                </span>
+                                :
+                                <span className="heading-text pull-right label label-info">
+                                    Pending
+                                </span>
+                            }
                         </div>
                     </div>
                 </div>

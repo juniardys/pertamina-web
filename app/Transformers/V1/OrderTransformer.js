@@ -36,6 +36,7 @@ class OrderTransformer extends BumblebeeTransformer {
       order_date: moment(model.order_date, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD'),
       order_no: model.order_no,
       quantity: model.quantity,
+      status: model.status,
       delivered: delivered,
       complete_date: (delivered >= model.quantity)? moment(lastDelivery.receipt_date, 'YYYY-MM-DD').format('YYYY-MM-DD') : null,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),

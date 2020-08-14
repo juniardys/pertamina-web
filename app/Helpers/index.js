@@ -10,6 +10,8 @@ const ReportShift = use('App/Models/ReportShift')
 const Spbu = use('App/Models/Spbu')
 const ReportSpbu = use('App/Models/ReportSpbu')
 const Island = use('App/Models/Island')
+const Order = use('App/Models/Order')
+const Delivery = use('App/Models/Delivery')
 const FeederTank = use('App/Models/FeederTank')
 const ReportIsland = use('App/Models/ReportIsland')
 const ReportFeederTank = use('App/Models/ReportFeederTank')
@@ -306,6 +308,24 @@ const getShiftAfter = async (spbu_uuid, shift_uuid, date) => {
     return afterShift
 }
 
+const setOrderStatus = async (order_uuid) => {
+    const order = await Order.query().where('uuid', order_uuid).first()
+    const deliveries = await Delivery.query().where('order_uuid', order_uuid).fetch()
+    var total = 0
+    var status = 'pending'
+    for (let index = 0; index < deliveries.toJSON().length; index++) {
+        const delivery = deliveries.toJSON()[index];
+        total += delivery.quantity   
+    }
+    if (total >= order.quantity) {
+        status = 'delivered'
+    } else if (total > 0) {
+        status = 'partial'
+    }
+    order.status = status
+    await order.save()
+}
+
 module.exports = {
     baseResp,
     queryBuilder,
@@ -317,5 +337,6 @@ module.exports = {
     setReportShift,
     setReportSpbu,
     getShiftBefore,
-    getShiftAfter
+    getShiftAfter,
+    setOrderStatus
 }

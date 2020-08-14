@@ -11,6 +11,7 @@ const uuid = use('uuid-random')
 const DeliveryTransformer = use('App/Transformers/V1/DeliveryTransformer')
 const Helpers = use('Helpers')
 const moment = use('moment')
+const Helper = use('App/Helpers')
 
 class DeliveryController {
     async get({ request, response, transform }) {
@@ -67,6 +68,8 @@ class DeliveryController {
                 }
             }
             await delivery.save()
+            // Set Order Status
+            await Helper.setOrderStatus(req.order_uuid)
             // Add addition amount to report feeder tank
             const order = await Order.query().where('uuid', delivery.order_uuid).first()
             const reportFeederTank = await ReportFeederTank.query().where({
@@ -155,6 +158,8 @@ class DeliveryController {
                 }
             }
             await delivery.save()
+            // Set Order Status
+            await Helper.setOrderStatus(req.order_uuid)
             // Update addition amount from report feeder tank
             const order = await Order.query().where('uuid', delivery.order_uuid).first()
             const reportFeederTank = await ReportFeederTank.query().where({
@@ -185,7 +190,6 @@ class DeliveryController {
             uuid: 'required'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
-
         let delivery
         try {
             delivery = await Delivery.query()
@@ -220,8 +224,10 @@ class DeliveryController {
             reportFeederTank.addition_amount -= quantity
             await reportFeederTank.save()
         }
-
+        let order_uuid = delivery.order_uuid
         await delivery.delete()
+        // Set Order Status
+        await Helper.setOrderStatus(order_uuid)
 
         delivery = await transform.item(delivery, DeliveryTransformer)
 
