@@ -377,7 +377,7 @@ class Report extends Component {
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. { data.nozzle.reduce((prev, next) => prev + ((next.data.total_price)? next.data.total_price : 0), 0).toLocaleString() || 0 }</td>
+                                                        <td>Rp. { (data.nozzle.data != null)? data.nozzle.reduce((prev, next) => prev + next.data.total_price, 0).toLocaleString() || 0 : 0 }</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
@@ -414,7 +414,7 @@ class Report extends Component {
                                                     <tr>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. { data.payment.reduce((prev, next) => prev + next.data.amount, 0) || 0 }</td>
+                                                        <td>Rp. { (data.payment.data != null)? data.payment.reduce((prev, next) => prev + next.data.amount, 0) || 0 : 0 }</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
