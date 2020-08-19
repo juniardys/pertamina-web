@@ -359,7 +359,7 @@ class Report extends Component {
                                                                 <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
                                                                 <td>{report.data == null ? 0 : (report.data.last_meter - report.data.start_meter).toLocaleString()}</td>
                                                                 <td>Rp. {report.data == null ? 0 : report.data.price.toLocaleString() || 0}</td>
-                                                                <td>Rp. {report.data == null ? 0 : parseInt(report.data.total_price).toLocaleString() || 0}</td>
+                                                                <td>Rp. {report.data == null ? 0 : parseInt(report.data.total_price || 0).toLocaleString() || 0}</td>
                                                                 <td>
                                                                     <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', (report.data == null) ? 0 : report.data.uuid)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                                                     <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Detail Foto', 'foto', report.data.image)} data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
@@ -377,7 +377,7 @@ class Report extends Component {
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. { data.nozzle.reduce((prev, next) => prev + next.data.total_price, 0).toLocaleString() || 0 }</td>
+                                                        <td>Rp. { data.nozzle.reduce((prev, next) => prev + (next.data.total_price || 0), 0).toLocaleString() || 0 }</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
