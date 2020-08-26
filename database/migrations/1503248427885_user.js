@@ -10,7 +10,7 @@ class UserSchema extends Schema {
       table.uuid('uuid').unique().notNullable()
       table.uuid('spbu_uuid').references('uuid').inTable('spbu').nullable()
       table.uuid('role_uuid').references('uuid').inTable('roles').onDelete('cascade').notNullable()
-      table.string('email', 254).notNullable().unique()
+      table.string('email', 254).notNullable()
       table.string('password', 60).notNullable()
       table.string('name', 254).notNullable()
       table.string('phone').nullable()
