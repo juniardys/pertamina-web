@@ -189,8 +189,8 @@ class Report extends Component {
                                         this.state.dataItems.map((tank, i) => (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
-                                                <td>{tank.name}</td>
-                                                <td>{tank.product.name}</td>
+                                                <td>{tank.name == null ? '' : tank.name}</td>
+                                                <td>{tank.product == null ? '' : tank.product.name}</td>
                                                 <td>
                                                     <AccessList acl="spbu.manage.feeder-tank.update">
                                                         <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + tank.name, 'edit', tank)}><i className="icon-pencil7"></i></button>
