@@ -9,10 +9,9 @@ const Helpers = use('Helpers')
 
 class UserController {
     getRules() {
-        const empty = null
         return {
             name: 'required|max:254',
-            email: `required|email|unique:users,deleted_at,${empty}|max:254`,
+            email: `required|email|max:254`,
             password: 'required|min:8|max:254',
             role_uuid: 'required',
             phone: 'number',
@@ -35,7 +34,9 @@ class UserController {
         const req = request.all()
         const validation = await validate(req, this.getRules())
         if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
-
+        const checkEmail = await User.query().where('email', req.email).whereNot('uuid', req.uuid).whereNull('deleted_at').getCount()
+        if (checkEmail > 0) return response.status(400).json(baseResp(false, null, 'Email already used!'))
+        
         let user = new User()
         try {
             user.uuid = uuid()
@@ -80,7 +81,6 @@ class UserController {
     }
 
     async update({ request, response, transform }) {
-        const empty = null
         const req = request.all()
         let rules = {
             phone: 'number',
@@ -88,11 +88,12 @@ class UserController {
         }
         rules['uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
-        if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid},deleted_at,${empty}|max:254`
+        if (req.email) rules['email'] = `required|email|max:254`
         if (req.password) rules['password'] = 'required|min:8|max:254'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
-
+        const checkEmail = await User.query().where('email', req.email).whereNot('uuid', req.uuid).whereNull('deleted_at').getCount()
+        if (checkEmail > 0) return response.status(400).json(baseResp(false, null, 'Email already used!'))
         let user
         try {
             user = await User.query()
