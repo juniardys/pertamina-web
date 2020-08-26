@@ -34,7 +34,7 @@ class UserController {
         const req = request.all()
         const validation = await validate(req, this.getRules())
         if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
-        const checkEmail = await User.query().where('email', req.email).where('uuid', '!=', req.uuid).getCount()
+        const checkEmail = await User.query().where('email', req.email).getCount()
         if (checkEmail > 0) return response.status(400).json(baseResp(false, null, 'Email already used!'))
 
         let user = new User()
