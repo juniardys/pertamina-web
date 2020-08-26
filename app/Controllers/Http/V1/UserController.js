@@ -9,9 +9,10 @@ const Helpers = use('Helpers')
 
 class UserController {
     getRules() {
+        const empty = null
         return {
             name: 'required|max:254',
-            email: `required|email|unique:users,deleted_at,${NULL}|max:254`,
+            email: `required|email|unique:users,deleted_at,${empty}|max:254`,
             password: 'required|min:8|max:254',
             role_uuid: 'required',
             phone: 'number',
@@ -79,6 +80,7 @@ class UserController {
     }
 
     async update({ request, response, transform }) {
+        const empty = null
         const req = request.all()
         let rules = {
             phone: 'number',
@@ -86,7 +88,7 @@ class UserController {
         }
         rules['uuid'] = 'required'
         if (req.name) rules['name'] = 'required|max:254'
-        if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid},deleted_at,${NULL}|max:254`
+        if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid},deleted_at,${empty}|max:254`
         if (req.password) rules['password'] = 'required|min:8|max:254'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, null, validation.messages()[0].message))
