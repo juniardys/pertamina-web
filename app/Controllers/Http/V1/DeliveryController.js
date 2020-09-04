@@ -35,7 +35,8 @@ class DeliveryController {
             receipt_date: 'required|date',
             receipt_no: 'required',
             police_no: 'required',
-            driver: 'required'
+            driver: 'required',
+            feeder_tank_uuid: 'feeder_tank_uuid'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -51,6 +52,7 @@ class DeliveryController {
             delivery.police_no = req.police_no
             delivery.driver = req.driver
             delivery.receiver = req.receiver
+            delivery.feeder_tank_uuid = req.feeder_tank_uuid
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'delivery/')
                 if (upload) {
@@ -75,9 +77,8 @@ class DeliveryController {
             const reportFeederTank = await ReportFeederTank.query().where({
                 spbu_uuid: delivery.spbu_uuid,
                 shift_uuid: delivery.shift_uuid,
+                feeder_tank_uuid: delivery.feeder_tank_uuid,
                 date: moment(delivery.receipt_date).format('YYYY-MM-DD')
-            }).whereHas('feeder_tank', (builder) => {
-                builder.where('product_uuid', order.product_uuid)
             }).first()
             // Add addition amount
             if (reportFeederTank) {
@@ -118,6 +119,7 @@ class DeliveryController {
         if (req.receipt_no) rules['receipt_no'] = 'required'
         if (req.police_no) rules['police_no'] = 'required'
         if (req.driver) rules['driver'] = 'required'
+        if (req.feeder_tank_uuid) rules['feeder_tank_uuid'] = 'required'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -132,6 +134,7 @@ class DeliveryController {
 
         try {
             let qty_before = parseFloat(delivery.quantity) || 0
+            let feeder_tank_uuid_before = delivery.feeder_tank_uuid
             if (req.spbu_uuid) delivery.spbu_uuid = req.spbu_uuid
             if (req.shift_uuid) delivery.shift_uuid = req.shift_uuid
             if (req.order_uuid) delivery.order_uuid = req.order_uuid
@@ -141,6 +144,7 @@ class DeliveryController {
             if (req.police_no) delivery.police_no = req.police_no
             if (req.driver) delivery.driver = req.driver
             if (req.receiver) delivery.receiver = req.receiver
+            if (req.feeder_tank_uuid) delivery.feeder_tank_uuid = req.feeder_tank_uuid
             if (request.file('image')) {
                 const upload = await uploadImage(request, 'image', 'delivery/')
                 if (upload) {
@@ -162,16 +166,27 @@ class DeliveryController {
             await Helper.setOrderStatus(req.order_uuid)
             // Update addition amount from report feeder tank
             const order = await Order.query().where('uuid', delivery.order_uuid).first()
+            if (feeder_tank_uuid_before != delivery.feeder_tank_uuid) {
+                const reportFeederTankBefore = await ReportFeederTank.query().where({
+                    spbu_uuid: delivery.spbu_uuid,
+                    shift_uuid: delivery.shift_uuid,
+                    feeder_tank_uuid: feeder_tank_uuid_before,
+                    date: moment(delivery.receipt_date).format('YYYY-MM-DD')
+                }).first()
+                if (reportFeederTankBefore) {
+                    reportFeederTankBefore.addition_amount -= qty_before
+                }
+            }
             const reportFeederTank = await ReportFeederTank.query().where({
                 spbu_uuid: delivery.spbu_uuid,
                 shift_uuid: delivery.shift_uuid,
+                feeder_tank_uuid: delivery.feeder_tank_uuid,
                 date: moment(delivery.receipt_date).format('YYYY-MM-DD')
-            }).whereHas('feeder_tank', (builder) => {
-                builder.where('product_uuid', order.product_uuid)
             }).first()
-            // Subtract addition amount
+            // Update quantity
             if (reportFeederTank) {
-                let quantity = (parseFloat(delivery.quantity) || 0) - qty_before
+                let quantity = (parseFloat(delivery.quantity) || 0)
+                if (feeder_tank_uuid_before == delivery.feeder_tank_uuid) quantity -= qty_before
                 reportFeederTank.addition_amount += quantity
                 await reportFeederTank.save()
             }
@@ -214,9 +229,8 @@ class DeliveryController {
         const reportFeederTank = await ReportFeederTank.query().where({
             spbu_uuid: delivery.spbu_uuid,
             shift_uuid: delivery.shift_uuid,
+            feeder_tank_uuid: delivery.feeder_tank_uuid,
             date: moment(delivery.receipt_date).format('YYYY-MM-DD')
-        }).whereHas('feeder_tank', (builder) => {
-            builder.where('product_uuid', order.product_uuid)
         }).first()
         // Subtract addition amount
         if (reportFeederTank) {
