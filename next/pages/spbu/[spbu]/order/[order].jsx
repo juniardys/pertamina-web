@@ -22,13 +22,16 @@ class OrderDetail extends Component {
             preview_image: '',
             dataItems: [],
             spbu_name: '',
+            product_uuid: '',
             product_name: '',
             order_date: '',
             order_status: '',
             order_no: '',
             shift_uuid: '',
+            feeder_tank_uuid: '',
             order_quantity: '',
             shiftData: [],
+            feederTankData: [],
             title: 'Konfirmasi Pengiriman',
             modalType: "create",
         }
@@ -54,6 +57,7 @@ class OrderDetail extends Component {
             this.setState({
                 spbu_name: dataOrder.spbu.name,
                 spbu_uuid: this.props.query.spbu,
+                product_uuid: dataOrder.product.uuid,
                 product_name: dataOrder.product.name,
                 order_date: dataOrder.order_date,
                 order_no: dataOrder.order_no,
@@ -65,6 +69,7 @@ class OrderDetail extends Component {
             const delivery = await get('/delivery', {
                 filter_col: ['spbu_uuid', 'order_uuid'],
                 filter_val: [this.props.query.spbu, this.props.query.order],
+                with: ['feeder_tank']
             })
             if (delivery != undefined && delivery.success) {
                 this.setState({
@@ -78,7 +83,12 @@ class OrderDetail extends Component {
             filter_col: ['spbu_uuid'],
             filter_val: [this.state.spbu_uuid]
         })
-        if (shifts) this.setState({ shiftData: shifts.data.data })
+        const feeder_tanks = await get('/feeder-tank', {
+            filter_col: ['spbu_uuid', 'product_uuid'],
+            filter_val: [this.state.spbu_uuid, this.state.product_uuid]
+        })
+        if (shifts) await this.setState({ shiftData: shifts.data.data })
+        if (feeder_tanks) await this.setState({ feederTankData: feeder_tanks.data.data })
     }
 
     handleInputChange = async (e) => {
@@ -110,6 +120,7 @@ class OrderDetail extends Component {
             driver: item.driver || '',
             receiver: item.receiver || '',
             shift_uuid: item.shift_uuid || '',
+            feeder_tank_uuid: item.feeder_tank_uuid || '',
             image: '',
             preview_image: '',
         })
@@ -151,7 +162,8 @@ class OrderDetail extends Component {
                 driver: this.state.driver,
                 receiver: this.state.receiver,
                 shift_uuid: this.state.shift_uuid,
-                image: this.state.image
+                image: this.state.image,
+                feeder_tank_uuid: this.state.feeder_tank_uuid
             })
             if (response.success) {
                 const order = await get('/order', {
@@ -186,7 +198,8 @@ class OrderDetail extends Component {
                 driver: this.state.driver,
                 receiver: this.state.receiver,
                 shift_uuid: this.state.shift_uuid,
-                image: this.state.image
+                image: this.state.image,
+                feeder_tank_uuid: this.state.feeder_tank_uuid
             })
             if (response.success) {
                 const order = await get('/order', {
@@ -280,6 +293,19 @@ class OrderDetail extends Component {
                         </div>
                     </center>
                 ) : null}
+                <div className="form-group">
+                    <label className="control-label col-lg-2">Feeder Tank</label>
+                    <div className="col-lg-10">
+                        <select className="form-control" name="feeder_tank_uuid" defaultValue="" onChange={this.handleInputChange}>
+                            {(this.state.modalType == 'create') ? (<option value="">---- Pilih Feeder Tank ----</option>) : null}
+                            {
+                                this.state.feederTankData.map((item, i) => (
+                                    <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.feeder_tank_uuid}>{item.name}</option>
+                                ))
+                            }
+                        </select>
+                    </div>
+                </div>
             </form>
         )
     }
@@ -354,6 +380,7 @@ class OrderDetail extends Component {
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>Feeder Tank</th>
                                     <th>Kuantitas</th>
                                     <th>Tanggal Penerimaan</th>
                                     <th>Nomor Pengiriman</th>
@@ -367,12 +394,13 @@ class OrderDetail extends Component {
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="9"><center>Data Belum ada</center></td>
+                                        <td colSpan="10"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                         this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
+                                                <td>{item.feeder_tank.name}</td>
                                                 <td>{item.quantity}</td>
                                                 <td>{item.receipt_date}</td>
                                                 <td>{item.receipt_no}</td>

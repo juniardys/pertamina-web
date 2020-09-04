@@ -197,7 +197,7 @@ class Order extends Component {
                     <label className="control-label col-lg-2">SPBU</label>
                     <div className="col-lg-10">
                         <select className="form-control" name="spbu_uuid" defaultValue="" onChange={this.handleInputChange}>
-                            <option key={0} value="" selected={this.state.modalType == 'create'} disabled>Pilih SPBU</option>
+                            <option key={0} value="" selected={this.state.modalType == 'create' && this.state.spbu_uuid == ''} disabled>Pilih SPBU</option>
                             {
                                 this.state.SPBUData.map((item, i) => (
                                     <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.spbu_uuid}>{item.name}</option>
@@ -210,7 +210,7 @@ class Order extends Component {
                     <label className="control-label col-lg-2">Produk</label>
                     <div className="col-lg-10">
                         <select className="form-control" name="product_uuid" defaultValue="" onChange={this.handleInputChange}>
-                            <option key={0} value="" selected={this.state.modalType == 'create'} disabled>Pilih Produk</option>
+                            <option key={0} value="" selected={this.state.modalType == 'create' && this.state.product_uuid == ''} disabled>Pilih Produk</option>
                             {
                                 this.state.productData.map((item, i) => (
                                     <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>

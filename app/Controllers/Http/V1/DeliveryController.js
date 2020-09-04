@@ -36,7 +36,7 @@ class DeliveryController {
             receipt_no: 'required',
             police_no: 'required',
             driver: 'required',
-            feeder_tank_uuid: 'feeder_tank_uuid'
+            feeder_tank_uuid: 'required'
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -102,7 +102,7 @@ class DeliveryController {
             return response.status(400).json(baseResp(false, [], error.message))
         }
 
-        delivery = await transform.item(delivery, DeliveryTransformer)
+        delivery = await transform.include('feeder_tank').item(delivery, DeliveryTransformer)
 
         return response.status(200).json(baseResp(true, delivery, 'Membuat Pengiriman Baru'))
     }
@@ -194,7 +194,7 @@ class DeliveryController {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
 
-        delivery = await transform.item(delivery, DeliveryTransformer)
+        delivery = await transform.include('feeder_tank').item(delivery, DeliveryTransformer)
 
         return response.status(200).json(baseResp(true, delivery, 'Mengedit Pengiriman ' + delivery.receipt_no))
     }

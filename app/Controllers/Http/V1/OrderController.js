@@ -53,6 +53,7 @@ class OrderController {
             order.order_date = req.order_date
             order.order_no = req.order_no
             order.quantity = req.quantity
+            order.status = 'pending'
             await order.save()
         } catch (error) {
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))

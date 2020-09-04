@@ -4,6 +4,7 @@ const BumblebeeTransformer = use('Bumblebee/Transformer')
 const OrderTransformer = use('App/Transformers/V1/OrderTransformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 const ShiftTransformer = use('App/Transformers/V1/ShiftTransformer')
+const FeederTankTransformer = use('App/Transformers/V1/FeederTankTransformer')
 const moment = use('moment')
 const Env = use('Env')
 
@@ -15,7 +16,7 @@ const Env = use('Env')
  */
 class DeliveryTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['spbu', 'order', 'shift']
+    return ['spbu', 'order', 'shift', 'feeder_tank']
   }
 
   /**
@@ -36,6 +37,7 @@ class DeliveryTransformer extends BumblebeeTransformer {
       driver: model.driver,
       receiver: model.receiver,
       image: (model.image != null) ? `${Env.get('APP_URL')}/${model.image}` : null,
+      feeder_tank_uuid: model.feeder_tank_uuid,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
       updated_at: moment(model.updated_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
@@ -43,6 +45,10 @@ class DeliveryTransformer extends BumblebeeTransformer {
 
   includeOrder(model) {
     return this.item(model.getRelated('order'), OrderTransformer)
+  }
+
+  includeFeederTank(model) {
+    return this.item(model.getRelated('feeder_tank'), FeederTankTransformer)
   }
 
   includeSpbu(model) {
