@@ -14,6 +14,20 @@ class ProductController {
         return response.status(200).json(baseResp(true, data, 'Data Produk sukses diterima'))
     }
 
+    async getBySpbu({ request, response, transform }){
+        const req = request.all()
+        const builder = await queryBuilder(
+            Product.query().whereIn('uuid', (q) => {
+                q.from('nozzles')
+                    .select('product_uuid')
+                    .where('spbu_uuid', req.spbu_uuid || null)
+            }), request.all(), ['name', 'code', 'price'])
+            
+        const data = await transform.paginate(builder, ProductTransformer)
+
+        return response.status(200).json(baseResp(true, data, 'Data Produk sukses diterima'))
+    }
+
     async store({ request, response, transform }) {
         const req = request.all()
         const validation = await validate(req, {

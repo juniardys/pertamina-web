@@ -50,6 +50,7 @@ Route.group(() => {
 	Route.post('spbu/delete', 'SpbuController.delete')
 	// Product
 	Route.get('product', 'ProductController.get')
+	Route.get('product-spbu', 'ProductController.getBySpbu')
 	Route.post('product/store', 'ProductController.store')
 	Route.post('product/update', 'ProductController.update')
 	Route.post('product/delete', 'ProductController.delete')
