@@ -79,11 +79,11 @@ class Index extends Component {
                             </button>
                         </div>
 
-                        <div className="text-center">
+                        {/* <div className="text-center">
                             <Link href="/forgot" as="/forgot">
                                 <a href="#">Lupa Password?</a>
                             </Link>
-                        </div>
+                        </div> */}
                     </div>
                 </form>
             </Layout>
