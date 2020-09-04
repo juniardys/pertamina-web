@@ -19,6 +19,7 @@ class DeliverySchema extends Schema {
       table.string('receiver').nullable()
       table.string('image').nullable()
       table.timestamps()
+      table.uuid('feeder_tank_uuid').references('uuid').inTable('feeder_tanks').onDelete('cascade')
     })
   }
 
