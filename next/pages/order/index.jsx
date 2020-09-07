@@ -7,6 +7,7 @@ import { get, store, update, removeWithSwal } from '~/helpers/request'
 import moment from 'moment'
 import AccessList from '~/components/AccessList'
 import Datepicker from 'react-datepicker'
+import axios from 'axios'
 
 class Order extends Component {
     constructor(props) {
@@ -21,6 +22,7 @@ class Order extends Component {
             dataItems: [],
             SPBUData: [],
             productData: [],
+            modalProductData: [],
             filterSPBU: '',
             filterDate: '',
             filterProduct: '',
@@ -51,21 +53,51 @@ class Order extends Component {
         const spbu = await get('/spbu')
         if (spbu && spbu.success) this.setState({ SPBUData: spbu.data.data })
         const products = await get('/product')
-        if (products && products.success) this.setState({ productData: products.data.data })
+        if (products && products.success) this.setState({ productData: products.data.data, modalProductData: products.data.data })
     }
 
     handleInputChange = async (e) => {
+        let oldSpbu = this.state.spbu_uuid
+        console.log(oldSpbu)
+        let SPBUchanged = false
         await this.setState({
             [e.target.name]: e.target.value
         })
+        console.log(this.state.spbu_uuid)
+        if (oldSpbu != this.state.spbu_uuid) SPBUchanged = true
+        if (SPBUchanged) {
+            if (this.state.spbu_uuid == '') {
+                const products = await get('/product')
+                if (products && products.success) this.setState({ product_uuid: products.data.data[0].uuid || '', modalProductData: products.data.data })
+            } else {
+                const products = await axios.get('/api/v1/product-spbu', {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
+                    params: {
+                        api_key: process.env.APP_API_KEY,
+                        spbu_uuid: this.state.spbu_uuid
+                    }
+                })
+                    .then(response => {
+                        return response.data
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                    });
+                if (products && products.success) this.setState({ product_uuid: products.data.data[0].uuid || '', modalProductData: products.data.data })
+            }
+        }
+
     }
 
     handleSelectChange = async (e) => {
         let column = []
         let value = []
+        let oldSpbu = this.state.filterSPBU
+        let filterSPBUchanged = false
         await this.setState({
             [e.target.name]: e.target.value
         })
+        if (oldSpbu != this.state.filterSPBU) filterSPBUchanged = true
 
         if (this.state.filterProduct != '') {
             column.push('product_uuid')
@@ -81,6 +113,27 @@ class Order extends Component {
         value.push(moment(this.state.filterDate).format("YYYY-MM-DD"))
         column.push('spbu_uuid')
         value.push(this.state.filterSPBU)
+        if (filterSPBUchanged) {
+            if (this.state.filterSPBU == '') {
+                const products = await get('/product')
+                if (products && products.success) this.setState({ productData: products.data.data, filterProduct: '' })
+            } else {
+                const products = await axios.get('/api/v1/product-spbu', {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
+                    params: {
+                        api_key: process.env.APP_API_KEY,
+                        spbu_uuid: this.state.filterSPBU
+                    }
+                })
+                    .then(response => {
+                        return response.data
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                    });
+                if (products && products.success) this.setState({ productData: products.data.data, filterProduct: '' })
+            }
+        }
 
         helperBlock('.container-data')
         const data = await get('/order', {
@@ -196,7 +249,7 @@ class Order extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">SPBU</label>
                     <div className="col-lg-10">
-                        <select className="form-control" name="spbu_uuid" defaultValue="" onChange={this.handleInputChange}>
+                        <select className="form-control" name="spbu_uuid" defaultValue={this.state.spbu_uuid} onChange={this.handleInputChange}>
                             <option key={0} value="" selected={this.state.modalType == 'create' && this.state.spbu_uuid == ''} disabled>Pilih SPBU</option>
                             {
                                 this.state.SPBUData.map((item, i) => (
@@ -209,10 +262,10 @@ class Order extends Component {
                 <div className="form-group row">
                     <label className="control-label col-lg-2">Produk</label>
                     <div className="col-lg-10">
-                        <select className="form-control" name="product_uuid" defaultValue="" onChange={this.handleInputChange}>
+                        <select className="form-control" name="product_uuid" defaultValue={this.state.product_uuid} onChange={this.handleInputChange}>
                             <option key={0} value="" selected={this.state.modalType == 'create' && this.state.product_uuid == ''} disabled>Pilih Produk</option>
                             {
-                                this.state.productData.map((item, i) => (
+                                this.state.modalProductData.map((item, i) => (
                                     <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>
                                 ))
                             }

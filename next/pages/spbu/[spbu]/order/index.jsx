@@ -6,6 +6,7 @@ import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
 import Datepicker from 'react-datepicker'
+import axios from 'axios'
 
 class Order extends Component {
     static getInitialProps({ query }) {
@@ -49,7 +50,19 @@ class Order extends Component {
             helperUnblock('.container-data')
         }
 
-        const products = await get('/product')
+        const products = await axios.get('/api/v1/product-spbu', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
+            params: {
+                api_key: process.env.APP_API_KEY,
+                spbu_uuid: this.props.query.spbu
+            }
+        })
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                console.log(error.response);
+            });
         if (products && products.success) this.setState({ productData: products.data.data })
 
     }
