@@ -299,7 +299,7 @@ class OperatorReportController {
                 }
                 if (item.last_meter < start_meter) throw new Error('Meteran akhir Pompa ' + nozzle.code + ' kurang dari meteran awal')
                 volume = item.last_meter - start_meter
-                total_price = volume * price
+                total_price = Math.floor(volume * price)
                 // Insert Data
                 let data_nozzle = await ReportNozzle.create({
                     'uuid': uuid(),
