@@ -324,6 +324,7 @@ class Report extends Component {
                         {(this.state.dataReportIsland == '') ? null : (
                             this.state.dataReportIsland.map((data, i) => (
                                 <div className="panel panel-white">
+                                    { console.log(data) }
                                     <div className="panel-heading">
                                         <h6 className="panel-title">
                                             <a data-toggle="collapse" href={'#' + data.uuid} aria-expanded="false" className="collapsed">{data.name}</a>
@@ -377,7 +378,7 @@ class Report extends Component {
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. { (data.nozzle.data != null)? data.nozzle.reduce((prev, next) => prev + next.data.total_price, 0).toLocaleString() || 0 : 0 }</td>
+                                                        <td>Rp. { (data.nozzle != null)? data.nozzle.reduce((prev, next) => (next.data != null)? prev + parseInt(next.data.total_price) : prev, 0).toLocaleString() || 0 : 0 }</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
@@ -414,7 +415,7 @@ class Report extends Component {
                                                     <tr>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. { (data.payment.data != null)? data.payment.reduce((prev, next) => prev + next.data.amount, 0) || 0 : 0 }</td>
+                                                        <td>Rp. { (data.payment != null)? data.payment.reduce((prev, next) => (next.data != null)? prev + parseInt(next.data.amount) : prev, 0) || 0 : 0 }</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
