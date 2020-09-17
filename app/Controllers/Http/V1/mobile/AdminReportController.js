@@ -385,7 +385,7 @@ class AdminReportController {
                 }
                 if (item.last_meter < start_meter) throw new Error('Pompa (' + dataNozzle.code + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
                 volume = item.last_meter - start_meter
-                total_price = volume * price
+                total_price = Math.floor(volume * price)
                 // Update Data
                 nozzle.total_price = total_price
                 nozzle.last_meter = item.last_meter
@@ -406,7 +406,7 @@ class AdminReportController {
                         total_price = after.total_price || 0
                         // Calculation
                         volume = after.last_meter - start_meter
-                        total_price = volume * price
+                        total_price = Math.floor(volume * price)
                         // Update Data
                         after.start_meter = start_meter
                         after.total_price = total_price
@@ -473,7 +473,7 @@ class AdminReportController {
             }
             if (req.last_meter < start_meter) throw new Error('Pompa (' + dataNozzle.code + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
             volume = req.last_meter - start_meter
-            total_price = volume * price
+            total_price = Math.floor(volume * price)
             // Update Data
             nozzle.total_price = total_price
             nozzle.last_meter = req.last_meter
@@ -494,7 +494,7 @@ class AdminReportController {
                     total_price = after.total_price || 0
                     // Calculation
                     volume = after.last_meter - start_meter
-                    total_price = volume * price
+                    total_price = Math.floor(volume * price)
                     // Update Data
                     after.start_meter = start_meter
                     after.total_price = total_price
