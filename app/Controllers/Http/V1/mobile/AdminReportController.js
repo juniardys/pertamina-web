@@ -417,7 +417,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -504,7 +504,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -540,7 +540,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -572,7 +572,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -628,7 +628,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -668,7 +668,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -771,7 +771,7 @@ class AdminReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             await Database.table('report_feeder_tanks').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).delete()
             return response.status(400).json(baseResp(false, [], e.message))
         }

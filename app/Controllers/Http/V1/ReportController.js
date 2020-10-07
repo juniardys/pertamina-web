@@ -272,7 +272,7 @@ class ReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }
@@ -304,7 +304,7 @@ class ReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             return response.status(400).json(baseResp(false, [], e.message))
         }
     }

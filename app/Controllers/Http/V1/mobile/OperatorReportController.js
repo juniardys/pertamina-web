@@ -416,7 +416,7 @@ class OperatorReportController {
             return response.status(200).json(baseResp(true, [], 'Data Berhasil Disimpan'))
         } catch (e) {
             // Rollback
-            this.deleteImages(imagePath)
+            await this.deleteImages(imagePath)
             await Database.table('report_nozzles').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
             await Database.table('report_payments').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
             await Database.table('report_co_workers').where('date', moment(req.date).format('YYYY-MM-DD')).where('spbu_uuid', req.spbu_uuid).where('shift_uuid', req.shift_uuid).where('island_uuid', req.island_uuid).delete()
