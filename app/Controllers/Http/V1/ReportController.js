@@ -243,7 +243,7 @@ class ReportController {
             volume = req.last_meter - start_meter
             total_price = volume * price
             // Update Data
-            nozzle.total_price = total_price
+            nozzle.total_price = parseInt(total_price) || 0
             nozzle.last_meter = req.last_meter
             await nozzle.save()
             // Updating Shift After if exist
@@ -265,7 +265,7 @@ class ReportController {
                     total_price = volume * price
                     // Update Data
                     after.start_meter = start_meter
-                    after.total_price = total_price
+                    after.total_price = parseInt(total_price) || 0
                     await after.save()
                 }
             }
