@@ -1,6 +1,8 @@
 'use strict'
 
 const BumblebeeTransformer = use('Bumblebee/Transformer')
+const moment = use('moment')
+const Env = use('Env')
 
 /**
  * CompanyTransformer class

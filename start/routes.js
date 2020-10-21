@@ -118,6 +118,11 @@ Route.group(() => {
 	Route.get('notification/count-unread', 'NotificationController.countUnread')
 	Route.get('notification/create', 'NotificationController.create')
 
+	// Company
+	Route.get('company', 'CompanyController.get')
+	Route.post('company/store', 'CompanyController.store')
+	Route.post('company/delete', 'CompanyControllerController.delete')
+
 	// Report for mobile API
 	// Report Operator
 	Route.get('mobile/shift', 'mobile/OperatorReportController.getShift')

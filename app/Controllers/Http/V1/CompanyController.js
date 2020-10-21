@@ -15,6 +15,22 @@ const Helpers = use('Helpers')
  * Resourceful controller for interacting with companies
  */
 class CompanyController {
+  getRules() {
+    return {
+        name: 'required|max:254',
+        address: 'required|max:254',
+        email: `required|email|max:254`,
+        password: 'required|min:8|max:254',
+        phone: 'number',
+    }
+  }
+
+  async get({ request, response, transform }) {
+      const builder = await queryBuilder(Company.query(), ['name'])
+      const data = await transform.paginate(builder, CompanyTransformer)
+
+      return response.status(200).json(baseResp(true, data, 'Data Produk sukses diterima'))
+  }
   /**
    * Show a list of all companies.
    * GET companies
@@ -24,7 +40,11 @@ class CompanyController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index ({ request, response, transform }) {
+        const builder = await queryBuilder(Company.query(), request.all(), ['name', 'address', 'email', 'phone'])
+        const data = await transform.paginate(builder, CompanyTransformer)
+
+        return response.status(200).json(baseResp(true, data, 'Data Perusahaan sukses diterima'))
   }
 
   /**
