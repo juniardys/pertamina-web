@@ -529,6 +529,7 @@ class Report extends Component {
                             <thead>
                                 <tr>
                                     <th style={{ width: '10px' }}>#</th>
+                                    <th>Name</th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
                                     <th>Pembelian</th>
@@ -542,7 +543,8 @@ class Report extends Component {
                                     this.state.dataReportFeederTank.map((report, i) => (
                                         <tr>
                                             <td>{++i}</td>
-                                            <td>{report.product == null ? 0 : report.product.name || ''}</td>
+                                            <td>{report == null ? '-' : report.name || ''}</td>
+                                            <td>{report.product == null ? '-' : report.product.name || ''}</td>
                                             <td>{report.data == null ? 0 : report.data.start_meter.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : report.data.addition_amount.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
