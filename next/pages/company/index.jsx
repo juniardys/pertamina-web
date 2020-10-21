@@ -20,6 +20,7 @@ class Index extends Component {
             password: '',
             password_confirmation: '',
             balance: '',
+            dataItems: [],
             title: 'Buat Perusahaan',
             modalType: "create",
             isLoading: true,
@@ -38,6 +39,7 @@ class Index extends Component {
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const data = await get('/company')
         if (data) {
+            console.log(data)
             this.setState({
                 dataItems: data.data.data
             })
@@ -191,29 +193,41 @@ class Index extends Component {
                                 <tr>
                                     <th>#</th>
                                     <th>Nama</th>
+                                    <th>Email</th>
                                     <th>Alamat</th>
                                     <th>Saldo</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {spbu.map((item, i) => (
-                                    <tr key={i}>
-                                        <td>1</td>
-                                        <td>{item.name}</td>
-                                        <td>{item.address}</td>
-                                        <td>Rp. {item.balance}</td>
-                                        <td>
-                                            <Link href={'/company/' + item.uuid}>
-                                                <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                            </Link>
-
-                                            <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
-
-                                            <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteCompany(item.uuid)}><i className="icon-trash"></i></button>
-                                        </td>
+                                {(this.state.dataItems == '') ? (
+                                    <tr>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
-                                ))}
+                                ) : (
+                                        this.state.dataItems.map((item, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{item.name}</td>
+                                                <td>{item.email}</td>
+                                                <td>{item.address}</td>
+                                                <td>Rp. {item.balance}</td>
+                                                <td>
+                                                    {/* <Link href={'/company/' + item.uuid}>
+                                                        <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
+                                                    </Link> */}
+
+                                                    <AccessList acl="company.update">
+                                                        <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>
+                                                    </AccessList>
+
+                                                    <AccessList acl="company.delete">
+                                                        <button type="button" className="btn btn-danger btn-icon" data-popup="tooltip" data-original-title="Delete" onClick={() => this._deleteCompany(item.uuid)}><i className="icon-trash"></i></button>
+                                                    </AccessList>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                             </tbody>
                         </table>
                     </div>

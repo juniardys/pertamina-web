@@ -33,11 +33,17 @@ class CompanyController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, transform }) {
-        const builder = await queryBuilder(Company.query(), request.all(), ['name', 'address', 'email', 'phone'])
-        const data = await transform.paginate(builder, CompanyTransformer)
+  
+  
+  async get({ request, response, transform }) {
+    const builder = await queryBuilder(Company.query(), request.all(), ['name', 'address', 'phone', 'email', 'balance'])
+    const data = await transform.paginate(builder, CompanyTransformer)
 
-        return response.status(200).json(baseResp(true, data, 'Data Perusahaan sukses diterima'))
+    return response.status(200).json(baseResp(true, data, 'Data Perusahaan sukses diterima'))
+  }
+
+  async index ({ request, response, transform }) {
+    // 
   }
 
   /**
@@ -170,7 +176,7 @@ class CompanyController {
 
     let company
     try {
-      company = await company.query()
+      company = await Company.query()
             .where('uuid', req.uuid)
             .first()
     } catch (error) {

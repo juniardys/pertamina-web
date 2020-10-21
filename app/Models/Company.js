@@ -33,6 +33,10 @@ class Company extends Model {
         return ['password']
     }
     
+    // Setters
+    setDeletedAt(deleted_at) {
+        return new Date(deleted_at).toISOString()
+    }
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()
     }

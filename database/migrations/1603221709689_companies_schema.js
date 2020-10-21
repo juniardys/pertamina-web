@@ -14,6 +14,7 @@ class CompaniesSchema extends Schema {
       table.text('address').notNullable()
       table.string('phone').nullable()
       table.integer('balance').unsigned().notNullable().defaultTo(0)
+      table.timestamp('deleted_at').nullable()
       table.timestamps()
     })
   }
