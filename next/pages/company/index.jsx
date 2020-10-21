@@ -60,20 +60,11 @@ class Index extends Component {
     }
 
     _deleteCompany = async (uuid) => {
-        Swal.fire({
-            title: 'Apakah anda yakin?',
-            text: "Anda tidak akan dapat mengembalikan ini!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.value) {
-                Swal.fire('Berhasil!','Perusahaan berhasil dihapus.','success')
-            }
-        })
+        const response = await removeWithSwal('/company/delete', uuid)
+        if (response != null) {
+            const dataItems = this.state.dataItems.filter(item => item.uuid !== response.uuid)
+            this.setState({ dataItems: dataItems })
+        }
     }
 
     _submit = async () => {
@@ -102,10 +93,12 @@ class Index extends Component {
                 this.btnModal.stop()
             }
         } else {
-            const response = await update('/product/update', this.state.uuid, {
+            const response = await update('/company/update', this.state.uuid, {
                 name: this.state.name,
-                code: this.state.code,
-                price: this.state.price
+                email: this.state.email,
+                phone: this.state.phone,
+                address: this.state.address,
+                password: this.state.password,
             })
             if (response.success) {
                 const dataItems = this.state.dataItems.map((item) => (item.uuid === this.state.uuid ? response.res.data : item))
@@ -113,7 +106,7 @@ class Index extends Component {
 
                 this.btnModal.stop()
                 helperModalHide()
-                toast.fire({ icon: 'success', title: 'Berhasil mengubah data Produk' })
+                toast.fire({ icon: 'success', title: 'Berhasil mengubah data perusahaan' })
             } else {
                 this.btnModal.stop()
             }

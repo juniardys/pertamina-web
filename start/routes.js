@@ -121,7 +121,8 @@ Route.group(() => {
 	// Company
 	Route.get('company', 'CompanyController.get')
 	Route.post('company/store', 'CompanyController.store')
-	Route.post('company/delete', 'CompanyControllerController.delete')
+	Route.post('company/update', 'CompanyController.update')
+	Route.post('company/delete', 'CompanyController.delete')
 
 	// Report for mobile API
 	// Report Operator
