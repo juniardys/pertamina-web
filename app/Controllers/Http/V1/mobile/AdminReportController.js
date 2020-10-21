@@ -739,7 +739,7 @@ class AdminReportController {
                 }
                 let getAddition = await Delivery.query().whereHas('order', (builder) => {
                     builder.where('spbu_uuid', req.spbu_uuid).where('product_uuid', feeder_tank.product.uuid)
-                }).where({ spbu_uuid: req.spbu_uuid, shift_uuid: req.shift_uuid, receipt_date: moment(req.date).format('YYYY-MM-DD') }).fetch()
+                }).where({ spbu_uuid: req.spbu_uuid, shift_uuid: req.shift_uuid, receipt_date: moment(req.date).format('YYYY-MM-DD'), feeder_tank_uuid: feeder_tank.uuid }).fetch()
                 let addition = _.sumBy(getAddition.toJSON(), 'quantity') || 0
                 // Insert Data
                 let data_feeder_tank = await ReportFeederTank.create({

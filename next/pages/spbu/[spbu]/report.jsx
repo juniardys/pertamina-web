@@ -116,7 +116,7 @@ class Report extends Component {
                     spbu_uuid: this.state.spbu_uuid,
                     date: this.state.filterDate,
                     shift_uuid: this.state.filterShift,
-                    uuid: this.state.modalItem,
+                    uuid: this.state.modalItem.uuid,
                     last_meter: this.state.feederEndMeter
                 }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
                 .then((resp) => {
@@ -139,7 +139,7 @@ class Report extends Component {
                 formData.append('spbu_uuid', this.state.spbu_uuid)
                 formData.append('date', this.state.filterDate)
                 formData.append('shift_uuid', this.state.filterShift)
-                formData.append('uuid', this.state.modalItem)
+                formData.append('uuid', this.state.modalItem.uuid)
                 formData.append('last_meter', this.state.nozzleEndMeter)
                 formData.append('file', this.state.file)
                 await axios.post('/api/v1/report/nozzle/update', formData, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
@@ -163,7 +163,7 @@ class Report extends Component {
                     spbu_uuid: this.state.spbu_uuid,
                     date: this.state.filterDate,
                     shift_uuid: this.state.filterShift,
-                    uuid: this.state.modalItem,
+                    uuid: this.state.modalItem.uuid,
                     amount: this.state.paymentAmount
                 }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
                 .then((resp) => {
@@ -193,11 +193,24 @@ class Report extends Component {
     }
 
     _setModalState = async (title, modalType, item) => {
-        console.log(item)
+        var nozzleEndMeter = this.state.nozzleEndMeter
+        var paymentAmount = this.state.paymentAmount
+        var feederEndMeter = this.state.feederEndMeter
+        if (modalType.includes('nozzle')) {
+            nozzleEndMeter = item.last_meter || nozzleEndMeter || 0
+        } else if (this.state.modalType.includes('payment')) {
+            paymentAmount = item.amount || paymentAmount || 0
+        } else if (this.state.modalType.includes('feeder')) {
+            feederEndMeter = item.last_meter || feederEndMeter || 0
+        }
+
         await this.setState({
             title: title,
             modalType: modalType,
-            modalItem: item
+            modalItem: item,
+            nozzleEndMeter: nozzleEndMeter,
+            paymentAmount: paymentAmount,
+            feederEndMeter: feederEndMeter
         })
     }
 
@@ -324,7 +337,6 @@ class Report extends Component {
                         {(this.state.dataReportIsland == '') ? null : (
                             this.state.dataReportIsland.map((data, i) => (
                                 <div className="panel panel-white">
-                                    { console.log(data) }
                                     <div className="panel-heading">
                                         <h6 className="panel-title">
                                             <a data-toggle="collapse" href={'#' + data.uuid} aria-expanded="false" className="collapsed">{data.name}</a>
@@ -362,7 +374,7 @@ class Report extends Component {
                                                                 <td>Rp. {report.data == null ? 0 : report.data.price.toLocaleString() || 0}</td>
                                                                 <td>Rp. {report.data == null ? 0 : parseInt(report.data.total_price).toLocaleString() || 0}</td>
                                                                 <td>
-                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', (report.data == null) ? 0 : report.data.uuid)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Pompa', 'update-report-nozzle', (report.data == null) ? 0 : report.data)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                                                     <button type="button" className="btn btn-brand btn-icon" style={{ margin: '4px' }} data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Detail Foto', 'foto', report.data.image)} data-original-title="Lihat Foto"><i className="icon-eye"></i></button>
                                                                 </td>
                                                             </tr>
@@ -402,9 +414,9 @@ class Report extends Component {
                                                             <tr>
                                                                 <td>{i + 1}</td>
                                                                 <td>{report.name}</td>
-                                                                <td>Rp. {report.data == null ? 0 : report.data.amount}</td>
+                                                                <td>Rp. {report.data == null ? 0 : parseInt(report.data.amount).toLocaleString()}</td>
                                                                 <td>
-                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', [])} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                                    <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Keuangan', 'update-report-payment', (report.data == null) ? 0 : report.data)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                                                 </td>
                                                             </tr>
                                                         ))
@@ -415,7 +427,7 @@ class Report extends Component {
                                                     <tr>
                                                         <td></td>
                                                         <td></td>
-                                                        <td>Rp. { (data.payment != null)? data.payment.reduce((prev, next) => (next.data != null)? prev + parseInt(next.data.amount) : prev, 0) || 0 : 0 }</td>
+                                                        <td>Rp. { (data.payment != null)? data.payment.reduce((prev, next) => (next.data != null)? prev + parseInt(next.data.amount) : prev, 0).toLocaleString() || 0 : 0 }</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
@@ -536,7 +548,7 @@ class Report extends Component {
                                             <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : (report.data.start_meter + report.data.addition_amount - report.data.last_meter).toLocaleString()}</td>
                                             <td style={{ padding: '0px' }}>
-                                                <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', (report.data == null) ? null : report.data.uuid)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
+                                                <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', (report.data == null) ? null : report.data)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                             </td>
                                         </tr>
                                     ))
