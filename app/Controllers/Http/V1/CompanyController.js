@@ -24,13 +24,6 @@ class CompanyController {
         phone: 'number',
     }
   }
-
-  async get({ request, response, transform }) {
-      const builder = await queryBuilder(Company.query(), ['name'])
-      const data = await transform.paginate(builder, CompanyTransformer)
-
-      return response.status(200).json(baseResp(true, data, 'Data Produk sukses diterima'))
-  }
   /**
    * Show a list of all companies.
    * GET companies
