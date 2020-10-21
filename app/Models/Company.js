@@ -1,14 +1,10 @@
 'use strict'
 
+const Hash = use('Hash')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
 class Company extends Model {
-
-    static get table() {
-        return 'companies'
-    }
-
     static boot() {
         super.boot()
 
@@ -25,6 +21,10 @@ class Company extends Model {
         this.addTrait('@provider:Lucid/SoftDeletes')
     }
 
+    static get table() {
+        return 'companies'
+    }
+
     tokens() {
         return this.hasMany('App/Models/Token')
     }
@@ -33,10 +33,6 @@ class Company extends Model {
         return ['password']
     }
     
-
-    setDeletedAt(deleted_at) {
-        return new Date(deleted_at).toISOString()
-      }
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()
     }
