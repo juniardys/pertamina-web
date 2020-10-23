@@ -108,8 +108,24 @@ const SubSidebar = () => {
 				title: 'Dashboard',
 				icon: 'icon-home',
 				url: `/company/${company}`,
-				path: '/spbu/[company]/'
-			}
+				path: '/company/[company]/'
+			},
+			{
+				access: 'company.read',
+				type: 'menu',
+				title: 'Detail Perusahaan',
+				icon: 'icon-office',
+				url: `/company/${company}`,
+				path: '/company/[company]/'
+			},
+			{
+				access: 'company.read',
+				type: 'menu',
+				title: 'Riwayat Saldo Perusahaan',
+				icon: 'icon-balance',
+				url: `/company/${company}/history`,
+				path: '/company/[company]/history'
+			},
 		]
 	}
 

@@ -213,9 +213,9 @@ class Index extends Component {
                                                 <td>{item.address}</td>
                                                 <td>Rp. {item.balance}</td>
                                                 <td>
-                                                    {/* <Link href={'/company/' + item.uuid}>
+                                                    <Link href={'/company/' + item.uuid}>
                                                         <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                                    </Link> */}
+                                                    </Link>
 
                                                     <AccessList acl="company.update">
                                                         <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + item.name, 'edit', item)}><i className="icon-pencil7"></i></button>

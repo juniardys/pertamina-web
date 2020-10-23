@@ -1,14 +1,18 @@
 'use strict'
 
+const { parseInt } = require('lodash')
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const Company = use('App/Models/Company')
+const History = use('App/Models/HistoryCompanyBalance')
 const { validate } = use('Validator')
 const { queryBuilder, slugify, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
 const CompanyTransformer = use('App/Transformers/V1/CompanyTransformer')
+const HistoryTransformer = use('App/Transformers/V1/HistoryCompanyBalanceTransformer')
 const Helpers = use('Helpers')
 
 /**
@@ -37,9 +41,24 @@ class CompanyController {
   
   async get({ request, response, transform }) {
     const builder = await queryBuilder(Company.query(), request.all(), ['name', 'address', 'phone', 'email', 'balance'])
-    const data = await transform.paginate(builder, CompanyTransformer)
+    let data = transform
+    if (request.get().with) {
+        data = data.include(request.get().with)
+    }
+    data = await data.paginate(builder, CompanyTransformer)
 
     return response.status(200).json(baseResp(true, data, 'Data Perusahaan sukses diterima'))
+  }
+
+  async history({ request, response, transform }) {
+    const builder = await queryBuilder(History.query(), request.all(), ['created_at', 'current_balance', 'added_balance', 'final_balance'])
+    let data = transform
+    if (request.get().with) {
+        data = data.include(request.get().with)
+    }
+    data = await data.paginate(builder, HistoryTransformer)
+
+    return response.status(200).json(baseResp(true, data, 'Data History sukses diterima'))
   }
 
   async index ({ request, response, transform }) {
@@ -128,7 +147,7 @@ class CompanyController {
     }
     rules['uuid'] = 'required'
     if (req.name) rules['name'] = 'required|max:254'
-    if (req.email) rules['email'] = `required|email|unique:users,email,uuid,${req.uuid}|max:254`
+    if (req.email) rules['email'] = `required|email|unique:companies,email,uuid,${req.uuid}|max:254`
     if (req.password) rules['password'] = 'required|min:8|max:254'
     const validation = await validate(req, rules)
     if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
@@ -142,16 +161,49 @@ class CompanyController {
         return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
     }
 
-    try {
-        if (req.name) company.name = req.name
-        if (req.email && company.email != req.email) company.email = req.email
-        if (req.password) company.password = req.password
-        company.phone = req.phone
-        company.address = req.address
-        await company.save()
-    } catch (error) {
-        console.log(error);
-        return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+    var sumBalance
+
+    if (req.balance != null) {
+
+      sumBalance = parseInt(company.balance) + parseInt(req.balance)
+
+      let history = new History()
+
+      try {
+        history.uuid = company.uuid
+        history.current_balance = company.balance
+        history.added_balance = req.balance
+        history.final_balance = sumBalance
+        await history.save()
+
+        try {
+          company.balance = sumBalance
+          await company.save()
+        } catch (error) {
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+        }
+
+      } catch (error) {
+          console.log(error)
+          return response.status(400).json(baseResp(false, [], 'Kesalahan pada history data'))
+      }
+
+      history = await transform.item(history, HistoryTransformer)
+
+    } else {
+
+        try {
+          if (req.name) company.name = req.name
+          if (req.email && company.email != req.email) company.email = req.email
+          if (req.password) company.password = req.password
+          company.phone = req.phone
+          company.address = req.address
+          company.balance = sumBalance
+          await company.save()
+        } catch (error) {
+            console.log(error);
+            return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
+        }
     }
 
     company = await transform.item(company, CompanyTransformer)

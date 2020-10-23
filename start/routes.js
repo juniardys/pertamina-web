@@ -120,6 +120,7 @@ Route.group(() => {
 
 	// Company
 	Route.get('company', 'CompanyController.get')
+	Route.get('company/history', 'CompanyController.history')
 	Route.post('company/store', 'CompanyController.store')
 	Route.post('company/update', 'CompanyController.update')
 	Route.post('company/delete', 'CompanyController.destroy')
