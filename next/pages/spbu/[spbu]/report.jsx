@@ -119,11 +119,12 @@ class Report extends Component {
                     uuid: this.state.modalItem.uuid,
                     last_meter: this.state.feederEndMeter
                 }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
-                .then((resp) => {
+                .then(async (resp) => {
                     if (!resp.data.success) {
                         toast.fire({ icon: 'error', title: resp.data.message })
                     } else {
                         toast.fire({ icon: 'success', title: resp.data.message })
+                        await this.getReport()
                     }
                 })
                 .catch((err) => {
@@ -143,11 +144,12 @@ class Report extends Component {
                 formData.append('last_meter', this.state.nozzleEndMeter)
                 formData.append('file', this.state.file)
                 await axios.post('/api/v1/report/nozzle/update', formData, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
-                .then((resp) => {
+                .then(async (resp) => {
                     if (!resp.data.success) {
                         toast.fire({ icon: 'error', title: resp.data.message })
                     } else {
                         toast.fire({ icon: 'success', title: resp.data.message })
+                        await this.getReport()
                     }
                 })
                 .catch((err) => {
@@ -166,11 +168,12 @@ class Report extends Component {
                     uuid: this.state.modalItem.uuid,
                     amount: this.state.paymentAmount
                 }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
-                .then((resp) => {
+                .then(async (resp) => {
                     if (!resp.data.success) {
                         toast.fire({ icon: 'error', title: resp.data.message })
                     } else {
                         toast.fire({ icon: 'success', title: resp.data.message })
+                        await this.getReport()
                     }
                 })
                 .catch((err) => {
