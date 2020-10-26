@@ -88,9 +88,9 @@ class History extends Component {
                                                 <td>
                                                     <center>{item.created_at}</center>
                                                 </td>
-                                                <td>Rp. {item.current_balance}</td>
-                                                <td>Rp. {item.added_balance}</td>
-                                                <td>Rp. {item.final_balance}</td>
+                                                <td>Rp. {item.current_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
+                                                <td>Rp. {item.added_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
+                                                <td>Rp. {item.final_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
                                             </tr>
                                         ))
                                     )}

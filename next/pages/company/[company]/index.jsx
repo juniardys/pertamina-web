@@ -41,13 +41,14 @@ class Company extends Component {
         })
         if (data != undefined && data.data.data.length > 0) {
             const company = data.data.data[0]
+            const balanceToShow = company.balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
             this.setState({
                 uuid: company.uuid,
                 name: company.name,
                 email: company.email,
                 phone: company.phone,
                 address: company.address,
-                balance: company.balance,
+                balance: balanceToShow,
             })
 
             this.props.setCompany({
@@ -55,7 +56,7 @@ class Company extends Component {
                 email: company.email,
                 phone: company.phone,
                 address: company.address,
-                balance: company.balance,
+                balance: balanceToShow,
             })
             helperUnblock('.container-data')
         } else {
@@ -71,12 +72,13 @@ class Company extends Component {
         })
         if (response.success) {
             const company = response.res.data
+            const balanceToShow = company.balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
             this.setState({
-                balance: company.balance,
+                balance: balanceToShow,
             })
 
             this.props.setCompany({
-                balance: company.balance
+                balance: balanceToShow
             })
 
             helperUnblock('.container-data')
@@ -149,7 +151,7 @@ class Company extends Component {
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label className="control-label">Saldo</label>
-                                    <input type="text" className="form-control" name="balance" value={this.state.balance} readOnly={true}/>
+                                    <input type="text" className="form-control" name="balance" value={"Rp. " + this.state.balance} readOnly={true}/>
                                 </div>
                             </div>
 
