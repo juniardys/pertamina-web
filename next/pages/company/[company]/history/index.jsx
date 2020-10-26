@@ -88,9 +88,9 @@ class History extends Component {
                                                 <td>
                                                     <center>{item.created_at}</center>
                                                 </td>
-                                                <td>{item.current_balance}</td>
-                                                <td>{item.added_balance}</td>
-                                                <td>{item.final_balance}</td>
+                                                <td>Rp. {item.current_balance}</td>
+                                                <td>Rp. {item.added_balance}</td>
+                                                <td>Rp. {item.final_balance}</td>
                                             </tr>
                                         ))
                                     )}
