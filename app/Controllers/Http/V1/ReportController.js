@@ -163,8 +163,8 @@ class ReportController {
                     .fetch()
                 const volume = _.sumBy(reportNozzle.toJSON(), 'volume')
                 const total_price = _.sumBy(reportNozzle.toJSON(), 'total_price')
-                sales.volume += volume
-                sales.total_price += total_price
+                sales.volume += parseFloat(volume) || 0
+                sales.total_price += parseFloat(total_price) || 0
             }
             data.total_sales.push(sales)
         }
@@ -183,7 +183,7 @@ class ReportController {
                 .where('date', moment(req.date).format('YYYY-MM-DD'))
                 .fetch()
             const amount = _.sumBy(reportPayment.toJSON(), 'amount')
-            finance.amount += amount
+            finance.amount += parseInt(amount)
             data.total_finance.push(finance)
         }
         // Total Finance
