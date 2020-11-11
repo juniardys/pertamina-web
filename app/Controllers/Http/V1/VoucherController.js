@@ -8,6 +8,7 @@ const { validate } = use('Validator')
 const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
 const db = use('Database')
+const moment = use('moment')
 
 class VoucherController {
 
