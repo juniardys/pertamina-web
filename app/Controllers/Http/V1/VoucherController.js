@@ -28,7 +28,7 @@ class VoucherController {
                     var voucher = await Voucher.query().where('qr_code', req.qr_code).first()
                     if (!voucher) throw new Error('Voucher tidak ditemukan');
                     if (voucher.isUsed) throw new Error('Voucher sudah digunakan');
-                    var product = Product.query().where('uuid', voucher.product_uuid)
+                    var product = Product.query().where('uuid', voucher.product_uuid).first()
                     var vHist = VoucherHistory.query().whereHas('vouchers', (q) => {
                         q.uuid = voucher.uuid
                     }).first()
