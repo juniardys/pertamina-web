@@ -10,6 +10,7 @@ class VoucherGenerateHistorySchema extends Schema {
       table.uuid('uuid').unique().notNullable()
       table.date('date')
       table.enu('type', ['generate', 'regenerate']).defaultTo('generate')
+      table.uuid('company_uuid').unsigned().nullable().references('uuid').inTable('companies')
       table.uuid('product_uuid').unsigned().nullable().references('uuid').inTable('products')
       table.integer('amount')
       table.bigInteger('total_price').unsigned().defaultTo(0)
