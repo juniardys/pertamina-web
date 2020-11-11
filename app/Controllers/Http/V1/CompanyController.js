@@ -8,11 +8,15 @@ const { parseInt } = require('lodash')
 
 const Company = use('App/Models/Company')
 const History = use('App/Models/HistoryCompanyBalance')
+const VoucherHistory = use('App/Models/VoucherGenerateHistory')
+const Voucher = use('App/Models/Voucher')
 const { validate } = use('Validator')
 const { queryBuilder, slugify, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
 const CompanyTransformer = use('App/Transformers/V1/CompanyTransformer')
 const HistoryTransformer = use('App/Transformers/V1/HistoryCompanyBalanceTransformer')
+const VoucherHistoryTransformer = use('App/Transformers/V1/VoucherHistoryTransformer')
+const VoucherTransformer = use('App/Transformers/V1/VoucherTransformer')
 const Helpers = use('Helpers')
 
 /**
@@ -59,6 +63,28 @@ class CompanyController {
     data = await data.paginate(builder, HistoryTransformer)
 
     return response.status(200).json(baseResp(true, data, 'Data History sukses diterima'))
+  }
+
+  async UnusedVoucher({ request, response, transform }) {
+    const builder = await queryBuilder(Voucher.query().where('isUsed', false).with('product', 'generate_history'), request.all(), ['uuid', 'company_uuid', 'product_uuid', 'qr_code', 'amount', 'price', 'total_price', 'isUsed'])
+    let data = transform
+    if (request.get().with) {
+        data = data.include(request.get().with)
+    }
+    data = await data.paginate(builder, VoucherTransformer)
+
+    return response.status(200).json(baseResp(true, data, 'Data Voucher sukses diterima'))
+  }
+
+  async voucher({ request, response, transform }) {
+    const builder = await queryBuilder(VoucherHistory.query(), request.all(), ['uuid', 'date', 'type', 'product_uuid', 'amount', 'total_price', 'created_at'])
+    let data = transform
+    if (request.get().with) {
+        data = data.include(request.get().with)
+    }
+    data = await data.paginate(builder, VoucherHistoryTransformer)
+
+    return response.status(200).json(baseResp(true, data, 'Data Voucher History sukses diterima'))
   }
 
   async index ({ request, response, transform }) {

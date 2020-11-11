@@ -121,11 +121,27 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
+				title: 'List Voucher Perusahaan',
+				icon: 'icon-inbox',
+				url: `/company/${company}/voucher`,
+				path: '/company/[company]/voucher'
+			},
+			{
+				access: 'company.read',
+				type: 'menu',
+				title: 'List Voucher Belum Terpakai Perusahaan',
+				icon: 'icon-inbox',
+				url: `/company/${company}/voucher/unused`,
+				path: '/company/[company]/voucher/unused'
+			},
+			{
+				access: 'company.read',
+				type: 'menu',
 				title: 'Riwayat Saldo Perusahaan',
 				icon: 'icon-balance',
 				url: `/company/${company}/history`,
 				path: '/company/[company]/history'
-			},
+			}
 		]
 	}
 
