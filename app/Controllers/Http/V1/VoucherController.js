@@ -19,15 +19,7 @@ class VoucherController {
         });
 
         if (validation.fails()) {
-            session.flash({
-                sweetalert: {
-                    type: 'info',
-                    title: 'Info',
-                    message: validation.messages()[0].message
-                }
-            });
-            session.flashAll()
-            return response.redirect('back')
+            return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
         } else {
             const post = await db.transaction(async trx => {
                 try {
