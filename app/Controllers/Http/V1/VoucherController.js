@@ -28,7 +28,7 @@ class VoucherController {
                     if (!voucher) throw new Error('Voucher tidak ditemukan');
                     if (voucher.isUsed) throw new Error('Voucher sudah digunakan');
                     var product = Product.query().where('uuid', voucher.product_uuid)
-                    var vHist = VoucherHistory.query().whereHas('voucher', (q) => {
+                    var vHist = VoucherHistory.query().whereHas('vouchers', (q) => {
                         q.uuid = voucher.uuid
                     }).first()
                     // Voucher Beda Harga
