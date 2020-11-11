@@ -10,6 +10,10 @@ class VoucherGenerateHistory extends Model {
         this.addTrait("@provider:Lucid/UpdateOrCreate")
     }
 
+    company() {
+        return this.belongsTo('App/Models/Company', 'company_uuid', 'uuid')
+    }
+
     product() {
         return this.belongsTo('App/Models/Product', 'product_uuid', 'uuid')
     }
