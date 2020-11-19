@@ -7,6 +7,7 @@ export const get = async (url, queryBuilder = [], ver = null) => {
     query = query + url
     query = query + `?api_key=${process.env.APP_API_KEY}`
     if (queryBuilder['search']) query = query + '&search=' + queryBuilder.search
+    if (queryBuilder['company_uuid']) query = query + '&company_uuid=' + queryBuilder.company_uuid
     if (queryBuilder['page']) query = query + '&page=' + queryBuilder.page
     if (queryBuilder['paginate']) query = query + '&paginate=' + queryBuilder.paginate
     if (queryBuilder['order_col']) query = query + '&order_col=' + queryBuilder.order_col

@@ -31,6 +31,8 @@ class Voucher extends Component {
     async componentDidMount() {
         const data = await get('/company/voucher/unused', {
             search: this.props.query.company,
+            company_uuid: [this.props.query.company],
+            with: ['product', 'generate_history']
         })
         if (data) {
             console.log(data)

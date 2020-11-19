@@ -30,6 +30,8 @@ class Voucher extends Component {
     async componentDidMount() {
         const data = await get('/company/voucher', {
             search: this.props.query.company,
+            company_uuid: [this.props.query.company],
+            with: ['product']
         })
         if (data) {
             console.log(data)
