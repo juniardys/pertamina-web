@@ -5,7 +5,8 @@ import Modal from '~/components/Modal'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
-import Datepicker from 'react-datepicker'
+import DateRangePicker from 'react-bootstrap-daterangepicker';
+import 'bootstrap-daterangepicker/daterangepicker.css'
 
 class Losis extends Component {
     static getInitialProps({ query }) {
@@ -85,6 +86,13 @@ class Losis extends Component {
         this.setState({ filterDate: moment(date).format("YYYY-MM-DD") });
     };
 
+    handleEvent(event, picker) {
+        console.log(picker.startDate);
+    }
+    handleCallback(start, end, label) {
+        console.log(start, end, label);
+    }
+
     render() {
         const breadcrumb = [
             {
@@ -102,7 +110,7 @@ class Losis extends Component {
             {
                 product: 'Pertamax Racing',
                 tank: 'tank',
-                date: '11/11/2020',
+                date: 11/11/2020,
                 start: 10747,
                 enter: 0,
                 sold: '512,43',
@@ -129,9 +137,9 @@ class Losis extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Bulan</label>
-                            <div>
-                                <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
-                            </div>
+                            <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback}>
+                                <input className="form-control"/>
+                            </DateRangePicker>
                         </div>
                     </div>
                     <div className="col-md-3">
