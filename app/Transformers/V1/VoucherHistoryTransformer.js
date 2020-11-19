@@ -18,9 +18,10 @@ class VoucherHistoryTransformer extends BumblebeeTransformer {
 
     return {
       uuid: model.uuid,
-      date: model.date,
+      date: moment(model.date, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),
       type: model.type,
       product_uuid: model.product_uuid,
+      company_uuid: model.company_uuid,
       amount: model.amount,
       total_price: model.total_price,
       created_at: moment(model.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY'),

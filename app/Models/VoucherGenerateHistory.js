@@ -4,6 +4,21 @@
 const Model = use('Model')
 
 class VoucherGenerateHistory extends Model {
+    static get table() {
+        return 'voucher_generate_histories'
+    }
+
+    // Setters
+    setDeletedAt(deleted_at) {
+        return new Date(deleted_at).toISOString()
+    }
+    setCreatedAt(created_at) {
+        return new Date(created_at).toISOString()
+    }
+    setUpdatedAt(updated_at) {
+        return new Date(updated_at).toISOString()
+    }
+    
     static boot() {
         super.boot()
      

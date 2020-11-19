@@ -29,7 +29,7 @@ class Voucher extends Component {
     }
 
     async componentDidMount() {
-        const data = await get('/company/voucher', {
+        const data = await get('/company/voucher/unused', {
             search: this.props.query.company,
         })
         if (data) {

@@ -66,7 +66,8 @@ class CompanyController {
   }
 
   async UnusedVoucher({ request, response, transform }) {
-    const builder = await queryBuilder(Voucher.query().where('isUsed', false).with('product', 'generate_history'), request.all(), ['uuid', 'company_uuid', 'product_uuid', 'qr_code', 'amount', 'price', 'total_price', 'isUsed'])
+    const req = request.all()
+    const builder = await queryBuilder(Voucher.query().where('company_uuid', req.search ).where('isUsed', false).with('product', 'generate_history'), request.all(), ['uuid', 'company_uuid', 'product_uuid', 'qr_code', 'amount', 'price', 'total_price', 'isUsed'])
     let data = transform
     if (request.get().with) {
         data = data.include(request.get().with)
@@ -77,14 +78,11 @@ class CompanyController {
   }
 
   async voucher({ request, response, transform }) {
-    const builder = await queryBuilder(VoucherHistory.query(), request.all(), ['uuid', 'date', 'type', 'product_uuid', 'amount', 'total_price', 'created_at'])
-    let data = transform
-    if (request.get().with) {
-        data = data.include(request.get().with)
-    }
-    data = await data.paginate(builder, VoucherHistoryTransformer)
+    const req = request.all()
+    let query = await VoucherHistory.query().where('company_uuid', req.search).with('product').fetch()
+    const data = await transform.paginate(query, VoucherHistoryTransformer)
 
-    return response.status(200).json(baseResp(true, data, 'Data Voucher History sukses diterima'))
+    return response.status(200).json(baseResp(true, query, 'Data Voucher History sukses diterima'))
   }
 
   async index ({ request, response, transform }) {
