@@ -15,6 +15,7 @@ class NozzleSchema extends Schema {
       table.string('code').notNullable()
       table.double('start_meter').notNullable()
       table.timestamps()
+      table.uuid('feeder_tank_uuid').references('uuid').inTable('feeder_tanks').onDelete('cascade')
     })
   }
 

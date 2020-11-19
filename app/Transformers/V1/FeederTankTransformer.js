@@ -3,6 +3,7 @@
 const BumblebeeTransformer = use('Bumblebee/Transformer')
 const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
+const NozzleTransformer = use('App/Transformers/V1/NozzleTransformer')
 const moment = use('moment')
 
 /**
@@ -13,7 +14,7 @@ const moment = use('moment')
  */
 class FeederTankTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['product', 'spbu']
+    return ['product', 'spbu', 'nozzle']
   }
 
   /**
@@ -37,6 +38,10 @@ class FeederTankTransformer extends BumblebeeTransformer {
 
   includeSpbu(model) {
     return this.item(model.getRelated('spbu'), SpbuTransformer)
+  }
+
+  includeNozzle(model) {
+    return this.collection(model.getRelated('nozzle'), NozzleTransformer)
   }
 }
 

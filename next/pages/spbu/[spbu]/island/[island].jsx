@@ -21,8 +21,11 @@ class Index extends Component {
             code: '',
             product_uuid: '',
             product_name: '',
+            feeder_tank_uuid: '',
+            feeder_tank_name: '',
             start_meter: '',
             productData: [],
+            feederTankData: [],
             dataItems: [],
             island: {},
             title: 'Buat Pompa',
@@ -48,6 +51,9 @@ class Index extends Component {
         const products = await get('/product')
         if (products) this.setState({ productData: products.data.data })
 
+        const feederTank = await get('/feeder-tank')
+        if (feederTank) this.setState({ feederTankData: feederTank.data.data })
+
         const island = await get('/island', {
             filter_col: ['spbu_uuid', 'uuid'],
             filter_val: [this.props.query.spbu, this.props.query.island],
@@ -69,8 +75,10 @@ class Index extends Component {
             uuid: item.uuid || '',
             name: item.name || '',
             code: item.code || '',
-            product_uuid: (modalType == 'create') ? this.state.productData[0].uuid : ((item.product) ? item.product.uuid : ''),
+            product_uuid: (modalType == 'create') ? this.state.productData[0].uuid : ((item.product) ? item.product.uuid : this.state.productData[0].uuid),
             product_name: (item.product) ? item.product.name : '',
+            feeder_tank_uuid: (modalType == 'create') ? this.state.feederTankData[0].uuid : ((item.feeder_tank) ? item.feeder_tank.uuid : this.state.feederTankData[0].uuid),
+            feeder_tank_name: (item.feeder_tank) ? item.feeder_tank.name : '',
             start_meter: item.start_meter || '',
         })
     }
@@ -90,6 +98,7 @@ class Index extends Component {
                 spbu_uuid: this.props.query.spbu,
                 island_uuid: this.props.query.island,
                 product_uuid: this.state.product_uuid,
+                feeder_tank_uuid: this.state.feeder_tank_uuid,
                 name: this.state.name,
                 code: this.state.code,
                 start_meter: this.state.start_meter,
@@ -109,6 +118,7 @@ class Index extends Component {
                 spbu_uuid: this.props.query.spbu,
                 island_uuid: this.props.query.island,
                 product_uuid: this.state.product_uuid,
+                feeder_tank_uuid: this.state.feeder_tank_uuid,
                 name: this.state.name,
                 code: this.state.code,
                 start_meter: this.state.start_meter,
@@ -149,6 +159,18 @@ class Index extends Component {
                             {
                                 this.state.productData.map((item, i) => (
                                     <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>
+                                ))
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div className="form-group row">
+                    <label className="control-label col-lg-2">Feeder Tank</label>
+                    <div className="col-lg-10">
+                        <select className="form-control col-lg-10" defaultValue="" name="feeder_tank_uuid" onChange={this.handleInputChange}>
+                            {
+                                this.state.feederTankData.map((item, i) => (
+                                    <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.feeder_tank_uuid}>{item.name}</option>
                                 ))
                             }
                         </select>
@@ -205,6 +227,7 @@ class Index extends Component {
                                     <th>Name</th>
                                     <th>Kode</th>
                                     <th>Produk</th>
+                                    <th>Feeder Tank</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -219,6 +242,7 @@ class Index extends Component {
                                         <td>{nozzle.name}</td>
                                         <td>{nozzle.code}</td>
                                         <td>{nozzle.product.name}</td>
+                                        <td>{(nozzle.feeder_tank) ? nozzle.feeder_tank.name : '-'}</td>
                                         <td>
                                             <AccessList acl="spbu.manage.island.nozzle.update">
                                                 <button type="button" className="btn btn-primary btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Edit" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit ' + nozzle.name, 'edit', nozzle)}><i className="icon-pencil7"></i></button>

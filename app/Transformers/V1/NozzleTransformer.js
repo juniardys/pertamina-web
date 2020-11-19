@@ -1,9 +1,12 @@
 'use strict'
 
+const FeederTank = require("../../Models/FeederTank")
+
 const BumblebeeTransformer = use('Bumblebee/Transformer')
 const ProductTransformer = use('App/Transformers/V1/ProductTransformer')
 const SpbuTransformer = use('App/Transformers/V1/SpbuTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
+const FeederTankTransformer = use('App/Transformers/V1/FeederTankTransformer')
 const moment = use('moment')
 
 /**
@@ -14,7 +17,7 @@ const moment = use('moment')
  */
 class NozzleTransformer extends BumblebeeTransformer {
   static get defaultInclude() {
-    return ['product']
+    return ['product', 'feeder_tank']
   }
 
   static get availableInclude() {
@@ -47,6 +50,10 @@ class NozzleTransformer extends BumblebeeTransformer {
 
   includeIsland(model) {
     return this.item(model.getRelated('island'), IslandTransformer)
+  }
+
+  includeFeederTank(model) {
+    return this.item(model.getRelated('feeder_tank'), FeederTankTransformer)
   }
 }
 

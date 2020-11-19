@@ -7,6 +7,8 @@ const Voucher = use('App/Models/Voucher')
 const { validate } = use('Validator')
 const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
+const db = use('Database')
+const moment = use('moment')
 
 class VoucherController {
 
@@ -19,23 +21,15 @@ class VoucherController {
         });
 
         if (validation.fails()) {
-            session.flash({
-                sweetalert: {
-                    type: 'info',
-                    title: 'Info',
-                    message: validation.messages()[0].message
-                }
-            });
-            session.flashAll()
-            return response.redirect('back')
+            return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
         } else {
             const post = await db.transaction(async trx => {
                 try {
                     var voucher = await Voucher.query().where('qr_code', req.qr_code).first()
                     if (!voucher) throw new Error('Voucher tidak ditemukan');
                     if (voucher.isUsed) throw new Error('Voucher sudah digunakan');
-                    var product = Product.query().where('uuid', voucher.product_uuid)
-                    var vHist = VoucherHistory.query().whereHas('voucher', (q) => {
+                    var product = await Product.query().where('uuid', voucher.product_uuid).first()
+                    var vHist = VoucherHistory.query().whereHas('vouchers', (q) => {
                         q.uuid = voucher.uuid
                     }).first()
                     // Voucher Beda Harga

@@ -25,6 +25,10 @@ class Nozzle extends Model {
     product() {
         return this.belongsTo('App/Models/Product', 'product_uuid', 'uuid')
     }
+    
+    feeder_tank() {
+        return this.belongsTo('App/Models/FeederTank', 'feeder_tank_uuid', 'uuid')
+    }
 
     // Setters
     setCreatedAt(created_at) {

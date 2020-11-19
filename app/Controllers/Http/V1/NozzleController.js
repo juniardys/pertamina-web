@@ -24,6 +24,7 @@ class NozzleController {
             spbu_uuid: 'required',
             island_uuid: 'required',
             product_uuid: 'required',
+            feeder_tank_uuid: 'required',
             name: 'required|max:254',
             code: 'required|max:254',
             start_meter: 'required|number',
@@ -36,6 +37,7 @@ class NozzleController {
             nozzle.spbu_uuid = req.spbu_uuid
             nozzle.island_uuid = req.island_uuid
             nozzle.product_uuid = req.product_uuid
+            nozzle.feeder_tank_uuid = req.feeder_tank_uuid
             nozzle.name = req.name
             nozzle.code = req.code
             nozzle.start_meter = req.start_meter
@@ -54,10 +56,11 @@ class NozzleController {
         const req = request.all()
         let rules = []
         rules['uuid'] = 'required'
-        if (req.product_uuid) rules['product_uuid'] = 'required'
-        if (req.name) rules['name'] = 'required|max:254'
-        if (req.code) rules['code'] = `required|max:254`
-        if (req.start_meter) rules['start_meter'] = 'required|number'
+        rules['product_uuid'] = 'required'
+        rules['feeder_tank_uuid'] = 'required'
+        rules['name'] = 'required|max:254'
+        rules['code'] = `required|max:254`
+        rules['start_meter'] = 'required|number'
         const validation = await validate(req, rules)
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
 
@@ -72,6 +75,7 @@ class NozzleController {
 
         try {
             if (req.product_uuid) nozzle.product_uuid = req.product_uuid
+            if (req.feeder_tank_uuid) nozzle.feeder_tank_uuid = req.feeder_tank_uuid
             if (req.name) nozzle.name = req.name
             if (req.code) nozzle.code = req.code
             if (req.start_meter) nozzle.start_meter = req.start_meter
