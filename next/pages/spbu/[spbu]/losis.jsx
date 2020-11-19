@@ -100,7 +100,9 @@ class Losis extends Component {
 
         const dataItems = [
             {
-                date: 1,
+                product: 'Pertamax Racing',
+                tank: 'tank',
+                date: '11/11/2020',
                 start: 10747,
                 enter: 0,
                 sold: '512,43',
@@ -112,7 +114,7 @@ class Losis extends Component {
         return (
             <Layout title={'Losis ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="row">
-                    <div className="col-md-3">
+                    {/* <div className="col-md-3">
                         <div className="form-group">
                             <label>Produk</label>
                             <select className="form-control" name="filterProduct" defaultValue={(this.state.productData.length > 0) ? this.state.productData[0].name : ''} onChange={this.handleSelectChange}>
@@ -123,7 +125,7 @@ class Losis extends Component {
                                 }
                             </select>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Bulan</label>
@@ -155,10 +157,13 @@ class Losis extends Component {
                                     <th>
                                         <center>Tanggal</center>
                                     </th>
-                                    <th>Awal</th>
-                                    <th>Masuk</th>
+                                    <th>Name</th>
+                                    <th>Produk</th>
+                                    <th>Meteran Awal</th>
+                                    <th>Pembelian</th>
+                                    <th>Meteran Akhir</th>
+                                    <th>Volume</th>
                                     <th>Penjualan</th>
-                                    <th>Akhir</th>
                                     <th>Losis</th>
                                 </tr>
                             </thead>
@@ -173,10 +178,12 @@ class Losis extends Component {
                                                 <td>
                                                     <center>{item.date}</center>
                                                 </td>
+                                                <td>{item.tank}</td>
+                                                <td>{item.product}</td>
                                                 <td>{item.start}</td>
                                                 <td>{item.enter}</td>
-                                                <td>{item.sold}</td>
                                                 <td>{item.end}</td>
+                                                <td>{item.sold}</td>
                                                 <td>{item.losis}</td>
                                             </tr>
                                         ))
