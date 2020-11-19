@@ -18,6 +18,10 @@ class FeederTank extends Model {
         return this.belongsTo('App/Models/Product', 'product_uuid', 'uuid')
     }
 
+    nozzle() {
+        return this.hasMany('App/Models/Nozzle', 'uuid', 'feeder_tank_uuid')
+    }
+
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()
