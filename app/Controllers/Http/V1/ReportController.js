@@ -61,6 +61,15 @@ class ReportController {
             } else {
                 feeder['data'] = reportFeederTank.toJSON()
                 feeder['data']['date'] = moment(reportFeederTank.toJSON()['date']).format('YYYY-MM-DD HH:mm:ss')
+                const reportNozzle = await ReportNozzle.query()
+                    .where('spbu_uuid', req.spbu_uuid)
+                    .where('shift_uuid', req.shift_uuid)
+                    .where('date', moment(req.date).format('YYYY-MM-DD'))
+                    .whereHas('nozzle', (q) => {
+                        q.where('feeder_tank_uuid', feeder.uuid)
+                    })
+                    .fetch()
+                feeder['data']['sales'] = _.sumBy(reportNozzle.toJSON(), item => Number(item.volume)) || 0
             }
             data.feeder_tank.push(feeder)
         }

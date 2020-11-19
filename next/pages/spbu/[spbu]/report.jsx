@@ -538,6 +538,8 @@ class Report extends Component {
                                     <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
+                                    <th>Penjualan</th>
+                                    <th>Losis</th>
                                     <th style={{ width: '172px', padding: '0px' }}>Aksi</th>
                                 </tr>
                             </thead>
@@ -552,6 +554,8 @@ class Report extends Component {
                                             <td>{report.data == null ? 0 : report.data.addition_amount.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : report.data.last_meter.toLocaleString()}</td>
                                             <td>{report.data == null ? 0 : (report.data.start_meter + report.data.addition_amount - report.data.last_meter).toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : (report.data.sales).toLocaleString()}</td>
+                                            <td>{report.data == null ? 0 : (report.data.sales - (report.data.start_meter + report.data.addition_amount - report.data.last_meter)).toLocaleString()}</td>
                                             <td style={{ padding: '0px' }}>
                                                 <button type="button" className="btn btn-primary btn-icon" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Edit Laporan Feeder Tank', 'update-report-feeder', (report.data == null) ? null : report.data)} style={{ margin: '4px' }} data-popup="tooltip" data-original-title="Edit" ><i className="icon-pencil7"></i></button>
                                             </td>
