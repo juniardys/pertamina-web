@@ -112,6 +112,8 @@ Route.group(() => {
 	Route.post('report/nozzle/update', 'ReportController.updateNozzle')
 	Route.post('report/payment/update', 'ReportController.updatePayment')
 	Route.post('report/feeder-tank/update', 'ReportController.updateFeederTank')
+	// Losis
+	Route.get('losis', 'ReportController.getReportLosis')
 
 	// Notification
 	Route.get('notification', 'NotificationController.get')

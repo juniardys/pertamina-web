@@ -7,6 +7,7 @@ import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import 'bootstrap-daterangepicker/daterangepicker.css'
+import moment from 'moment'
 
 class Losis extends Component {
     static getInitialProps({ query }) {
@@ -17,13 +18,9 @@ class Losis extends Component {
         super(props)
         this.state = {
             uuid: '',
-            product_uuid: '',
-            order_date: '',
-            order_no: '',
-            quantity: '',
             dataItems: [],
-            productData: [],
-            filterProduct: '',
+            feederTankData: [],
+            filterFeederTank: '',
             filterDate: '',
             title: 'Buat Pemesanan',
             modalType: "create",
@@ -48,8 +45,10 @@ class Losis extends Component {
         //     helperUnblock('.container-data')
         // }
 
-        const products = await get('/product')
-        if (products && products.success) this.setState({ productData: products.data.data })
+        const feeder_tanks = await get('/feeder-tank', { filter_col: ['spbu_uuid'], filter_val: [ spbu.data.data[0].uuid ], order_col: ['name:asc'] })
+        if (feeder_tanks && feeder_tanks.success) {
+            await this.setState({ feederTankData: feeder_tanks.data.data })
+        }
     }
 
     handleSelectChange = async (e) => {
@@ -110,11 +109,12 @@ class Losis extends Component {
             {
                 product: 'Pertamax Racing',
                 tank: 'tank',
-                date: 11/11/2020,
+                date: moment('11/11/2020').format('YYYY-MM-DD'),
                 start: 10747,
                 enter: 0,
-                sold: '512,43',
                 end: 10188,
+                volume: 10747 - 10188,
+                sold: '512,43',
                 losis: 47
             }
         ]
@@ -122,18 +122,18 @@ class Losis extends Component {
         return (
             <Layout title={'Losis ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="row">
-                    {/* <div className="col-md-3">
+                    <div className="col-md-3">
                         <div className="form-group">
-                            <label>Produk</label>
-                            <select className="form-control" name="filterProduct" defaultValue={(this.state.productData.length > 0) ? this.state.productData[0].name : ''} onChange={this.handleSelectChange}>
+                            <label>Feeder Tank</label>
+                            <select className="form-control" name="filterFeederTank" defaultValue={(this.state.feederTankData.length > 0) ? this.state.feederTankData[0].name : ''} onChange={this.handleSelectChange}>
                                 {
-                                    this.state.productData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.product_uuid}>{item.name}</option>
+                                    this.state.feederTankData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterFeederTank}>{item.name}</option>
                                     ))
                                 }
                             </select>
                         </div>
-                    </div> */}
+                    </div>
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Bulan</label>
@@ -150,7 +150,7 @@ class Losis extends Component {
 
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Laporan Losis {(this.state.productData.length > 0) ? this.state.productData[0].name : null}<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Laporan Losis {(this.state.feederTankData.length > 0) ? this.state.feederTankData[0].name : null}<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
                             <AccessList acl="spbu.manage.losis.export">
                                 <button type="button" className="btn btn-primary">Ekspor</button>
@@ -191,6 +191,7 @@ class Losis extends Component {
                                                 <td>{item.start}</td>
                                                 <td>{item.enter}</td>
                                                 <td>{item.end}</td>
+                                                <td>{item.volume}</td>
                                                 <td>{item.sold}</td>
                                                 <td>{item.losis}</td>
                                             </tr>

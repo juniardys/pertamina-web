@@ -80,7 +80,6 @@ class CompanyController {
 
   async voucher({ request, response, transform }) {
     const req = request.all()
-    console.log(req)
     const builder = await queryBuilder(VoucherHistory.query().where('company_uuid', req.company_uuid), req, [], ['product'])
     let data = transform
     if (request.get().with) {

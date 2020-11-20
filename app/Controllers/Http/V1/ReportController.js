@@ -1,6 +1,7 @@
 'use strict'
 
 const Island = use('App/Models/Island')
+const Shift = use('App/Models/Shift')
 const SpbuPayment = use('App/Models/SpbuPayment')
 const FeederTank = use('App/Models/FeederTank')
 const Nozzle = use('App/Models/Nozzle')
@@ -46,7 +47,7 @@ class ReportController {
             total_finance: [],
         }
         // Feeder Tank
-        const feeder_tank = await FeederTank.query().where('spbu_uuid', req.spbu_uuid).with('product').fetch()
+        const feeder_tank = await FeederTank.query().where('spbu_uuid', req.spbu_uuid).with('product').orderBy('name', 'asc').fetch()
         for (let i = 0; i < feeder_tank.toJSON().length; i++) {
             const feeder = feeder_tank.toJSON()[i];
             const reportFeederTank = await ReportFeederTank.query()
@@ -380,6 +381,60 @@ class ReportController {
             // Rollback
             return response.status(400).json(baseResp(false, [], e.message))
         }
+    }
+
+    async getReportLosis({ response, request, transform }){
+        const req = request.all()
+        const validation = await validate(req, {
+            spbu_uuid: 'required',
+            feeder_tank_uuid: 'required',
+            startDate: 'required',
+            endDate: 'required',
+        })
+        if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
+        const data = []
+        const shifts = await Shift.query().where('spbu_uuid', req.spbu_uuid).orderBy('no_order', 'asc').fetch()
+
+        var startDate = moment(req.startDate, 'YYYY-MM-DD');
+        var endDate = moment(req.endDate, 'YYYY-MM-DD');
+        for (var date = moment(startDate); date.diff(endDate, 'days') <= 0; date.add(1, 'days')) {
+            var item = {}
+            item.date = date.format('YYYY-MM-DD')
+            item.feeder_tank = await FeederTank.query().where('spbu_uuid', req.spbu_uuid).where('uuid', req.feeder_tank_uuid).with('product').first()
+            item.report = {
+                start_meter: 0,
+                last_meter: 0,
+                addition_amount: 0,
+                volume: 0,
+                sales: 0
+            }
+            for (let index = 0; index < shifts.toJSON().length; index++) {
+                const shift = shifts.toJSON()[index];
+                const reportFeederTank = await ReportFeederTank.query()
+                    .where('spbu_uuid', req.spbu_uuid)
+                    .where('shift_uuid', shift.uuid)
+                    .where('feeder_tank_uuid', req.feeder_tank_uuid)
+                    .where('date', date.format('YYYY-MM-DD'))
+                    .first()
+                if (reportFeederTank) {
+                    if (index == 0) item.report.start_meter = reportFeederTank.start_meter
+                    item.report.last_meter = reportFeederTank.last_meter
+                    item.report.addition_amount += reportFeederTank.addition_amount
+                }
+            }
+            item.report.volume = (item.report.start_meter + item.report.addition_amount) - item.report.last_meter
+            const reportNozzle = await ReportNozzle.query()
+                .where('spbu_uuid', req.spbu_uuid)
+                .where('date', moment(date).format('YYYY-MM-DD'))
+                .whereHas('nozzle', (q) => {
+                    q.where('feeder_tank_uuid', req.feeder_tank_uuid)
+                })
+                .fetch()
+            item.report.sales = _.sumBy(reportNozzle.toJSON(), item => Number(item.volume)) || 0
+            data.push(item)
+        }
+
+        return response.status(200).json(baseResp(true, data, 'Data laporan sukses diterima'))
     }
 
 }
