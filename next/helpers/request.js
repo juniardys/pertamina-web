@@ -8,6 +8,10 @@ export const get = async (url, queryBuilder = [], ver = null) => {
     query = query + `?api_key=${process.env.APP_API_KEY}`
     if (queryBuilder['search']) query = query + '&search=' + queryBuilder.search
     if (queryBuilder['company_uuid']) query = query + '&company_uuid=' + queryBuilder.company_uuid
+    if (queryBuilder['spbu_uuid']) query = query + '&spbu_uuid=' + queryBuilder.spbu_uuid
+    if (queryBuilder['feeder_tank_uuid']) query = query + '&feeder_tank_uuid=' + queryBuilder.feeder_tank_uuid
+    if (queryBuilder['startDate']) query = query + '&startDate=' + queryBuilder.startDate
+    if (queryBuilder['endDate']) query = query + '&endDate=' + queryBuilder.endDate
     if (queryBuilder['page']) query = query + '&page=' + queryBuilder.page
     if (queryBuilder['paginate']) query = query + '&paginate=' + queryBuilder.paginate
     if (queryBuilder['order_col']) query = query + '&order_col=' + queryBuilder.order_col

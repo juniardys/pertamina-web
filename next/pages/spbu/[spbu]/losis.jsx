@@ -33,21 +33,28 @@ class Losis extends Component {
         checkAclPage('spbu.manage.losis.read')
         // helperBlock('.container-data')
         await this.setState({ filterDate: moment().toDate() })
-        // const data = await get('/order', {
-        //     with: ['spbu', 'product'],
-        //     filter_col: ['spbu_uuid', 'order_date'],
-        //     filter_val: [this.props.query.spbu, this.state.filterDate],
-        // })
-        // if (data != undefined && data.success) {
-        //     this.setState({
-        //         dataItems: data.data.data
-        //     })
-        //     helperUnblock('.container-data')
-        // }
 
         const feeder_tanks = await get('/feeder-tank', { filter_col: ['spbu_uuid'], filter_val: [ spbu.data.data[0].uuid ], order_col: ['name:asc'] })
         if (feeder_tanks && feeder_tanks.success) {
-            await this.setState({ feederTankData: feeder_tanks.data.data })
+            await this.setState({ 
+                feederTankData: feeder_tanks.data.data,
+                filterFeederTank: feeder_tanks.data.data[0].uuid
+            })
+        }
+
+        const data = await get('/losis', {
+            search: this.props.query.spbu,
+            spbu_uuid: this.props.query.spbu,
+            feeder_tank_uuid: this.state.filterFeederTank,
+            startDate: this.state.filterDate,
+            endDate: this.state.filterDate
+        })
+        console.log(data.data)
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data,
+            })
+            helperUnblock('.container-data')
         }
     }
 
@@ -105,20 +112,6 @@ class Losis extends Component {
             }
         ]
 
-        const dataItems = [
-            {
-                product: 'Pertamax Racing',
-                tank: 'tank',
-                date: moment('11/11/2020').format('YYYY-MM-DD'),
-                start: 10747,
-                enter: 0,
-                end: 10188,
-                volume: 10747 - 10188,
-                sold: '512,43',
-                losis: 47
-            }
-        ]
-
         return (
             <Layout title={'Losis ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="row">
@@ -165,10 +158,8 @@ class Losis extends Component {
                                     <th>
                                         <center>Tanggal</center>
                                     </th>
-                                    <th>Name</th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
-                                    <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
                                     <th>Penjualan</th>
@@ -176,24 +167,20 @@ class Losis extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(dataItems == '') ? (
+                                {(this.state.dataItems == '') ? (
                                     <tr>
                                         <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
-                                        dataItems.map((item, i) => (
+                                    this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
-                                                <td>
-                                                    <center>{item.date}</center>
-                                                </td>
-                                                <td>{item.tank}</td>
-                                                <td>{item.product}</td>
-                                                <td>{item.start}</td>
-                                                <td>{item.enter}</td>
-                                                <td>{item.end}</td>
-                                                <td>{item.volume}</td>
-                                                <td>{item.sold}</td>
-                                                <td>{item.losis}</td>
+                                                <td><center>{item.date}</center></td>
+                                                <td>{item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || ''}</td>
+                                                <td>{item.report == null ? 0 : item.report.start_meter.toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : item.report.last_meter.toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : item.report.addition_amount.toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : item.report.sales.toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : (item.report.sales - item.report.addition_amount).toLocaleString()}</td>
                                             </tr>
                                         ))
                                     )}
