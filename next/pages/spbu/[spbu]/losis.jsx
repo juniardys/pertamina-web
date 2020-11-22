@@ -7,6 +7,7 @@ import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import 'bootstrap-daterangepicker/daterangepicker.css'
+import axios from 'axios'
 import moment from 'moment'
 
 class Losis extends Component {
@@ -22,6 +23,8 @@ class Losis extends Component {
             feederTankData: [],
             filterFeederTank: '',
             filterDate: '',
+            startDate: '',
+            endDate: '',
             title: 'Buat Pemesanan',
             modalType: "create",
         }
@@ -32,7 +35,9 @@ class Losis extends Component {
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
         checkAclPage('spbu.manage.losis.read')
         // helperBlock('.container-data')
-        await this.setState({ filterDate: moment().toDate() })
+        await this.setState({ filterDate: moment().format("YYYY-MM-DD") })
+        await this.setState({ startDate: moment().format("YYYY-MM-DD") })
+        await this.setState({ endDate: moment().format("YYYY-MM-DD") })
 
         const feeder_tanks = await get('/feeder-tank', { filter_col: ['spbu_uuid'], filter_val: [ spbu.data.data[0].uuid ], order_col: ['name:asc'] })
         if (feeder_tanks && feeder_tanks.success) {
@@ -41,7 +46,7 @@ class Losis extends Component {
                 filterFeederTank: feeder_tanks.data.data[0].uuid
             })
         }
-
+        console.log(this.state.filterFeederTank)
         const data = await get('/losis', {
             search: this.props.query.spbu,
             spbu_uuid: this.props.query.spbu,
@@ -49,7 +54,6 @@ class Losis extends Component {
             startDate: this.state.filterDate,
             endDate: this.state.filterDate
         })
-        console.log(data.data)
         if (data != undefined && data.success) {
             this.setState({
                 dataItems: data.data,
@@ -58,45 +62,52 @@ class Losis extends Component {
         }
     }
 
+    getLosis = async () => {
+        console.log(this.state.filterFeederTank)
+        console.log(this.state.startDate)
+        console.log(this.state.endDate)
+        await axios.get(`/api/v1/losis?api_key=${process.env.APP_API_KEY}&spbu_uuid=${this.props.query.spbu}&feeder_tank_uuid=${this.state.filterFeederTank}&startDate=${this.state.startDate}&endDate=${this.state.endDate}`,
+            { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
+            .then(response => {
+                console.log(response.data.data)
+                this.setState({
+                    dataItems: response.data.data,
+                })
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
     handleSelectChange = async (e) => {
-        // let column = []
-        // let value = []
-        // await this.setState({
-        //     [e.target.name]: e.target.value
-        // })
+        let column = []
+        let value = []
+        const elem = e;
+        await this.setState({
+            [e.target.name]: e.target.value
+        })
 
-        // if (this.state.filterProduct != '') {
-        //     column.push('product_uuid')
-        //     value.push(this.state.filterProduct)
-        // }
-        // if (this.state.filterDate != '') {
-        //     column.push('order_date')
-        //     value.push(this.state.filterDate)
-        // }
+        if (this.state.filterFeederTank != '') {
 
-        // helperBlock('.container-data')
-        // const data = await get('/order', {
-        //     with: ['spbu', 'product'],
-        //     filter_col: column,
-        //     filter_val: value,
-        // })
-        // if (data != undefined && data.success) {
-        //     this.setState({
-        //         dataItems: data.data.data
-        //     })
-        //     helperUnblock('.container-data')
-        // }
+            this.setState({ filterFeederTank: this.state.filterFeederTank });
+
+            await this.getLosis()
+        }
     }
 
     handleCalendarChange = date => {
         this.setState({ filterDate: moment(date).format("YYYY-MM-DD") });
     };
 
-    handleEvent(event, picker) {
-        console.log(picker.startDate);
+    handleEvent = async (event, picker) => {
+        this.setState({ startDate: moment(picker.startDate).format("YYYY-MM-DD") });
+        this.setState({ endDate: moment(picker.endDate).format("YYYY-MM-DD") });
+        await this.getLosis()
     }
-    handleCallback(start, end, label) {
-        console.log(start, end, label);
+    handleCallback = async (start, end, label) => {
+        this.setState({ startDate: start });
+        this.setState({ endDate: end });
+        await this.getLosis()
     }
 
     render() {
@@ -118,7 +129,7 @@ class Losis extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Feeder Tank</label>
-                            <select className="form-control" name="filterFeederTank" defaultValue={(this.state.feederTankData.length > 0) ? this.state.feederTankData[0].name : ''} onChange={this.handleSelectChange}>
+                            <select id="filterFeederTank" className="form-control" name="filterFeederTank" defaultValue={(this.state.feederTankData.length > 0) ? this.state.feederTankData[0].name : ''} onChange={this.handleSelectChange}>
                                 {
                                     this.state.feederTankData.map((item, i) => (
                                         <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterFeederTank}>{item.name}</option>
@@ -130,7 +141,7 @@ class Losis extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Bulan</label>
-                            <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback}>
+                            <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback} onChange={this.handleSelectChange} name="filterDate">
                                 <input className="form-control"/>
                             </DateRangePicker>
                         </div>
