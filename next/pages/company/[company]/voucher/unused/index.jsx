@@ -35,9 +35,9 @@ class Voucher extends Component {
             with: ['product', 'generate_history']
         })
         if (data) {
-            console.log(data)
+            console.log(data.data)
             this.setState({
-                dataItems: data.data.data
+                dataItems: data.data
             })
             helperUnblock('.container-data')
         }
@@ -92,7 +92,7 @@ class Voucher extends Component {
                                                 <td>
                                                     <center>{item.created_at}</center>
                                                 </td>
-                                                <td>{item.product.name}</td>
+                                                <td>{item.name}</td>
                                                 <td>{item.amount}</td>
                                                 <td>{item.qr_code}</td>
                                                 <td>{item.price}</td>

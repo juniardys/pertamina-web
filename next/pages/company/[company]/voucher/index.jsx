@@ -34,9 +34,9 @@ class Voucher extends Component {
             with: ['product']
         })
         if (data) {
-            console.log(data)
+            console.log(data.data)
             this.setState({
-                dataItems: data.data.data
+                dataItems: data.data
             })
             helperUnblock('.container-data')
         }
@@ -72,11 +72,10 @@ class Voucher extends Component {
                         <table className="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center"><center>Waktu Pembuatan</center></th>
-                                    <th class="text-center">Produk</th>
-                                    <th class="text-center">Liter</th>
-                                    <th class="text-center">Total Voucher</th>
-                                    <th class="text-center">Aksi</th>
+                                    <th>Waktu Pembuatan</th>
+                                    <th>Produk</th>
+                                    <th>Liter</th>
+                                    <th>Total Voucher</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,16 +87,11 @@ class Voucher extends Component {
                                     this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>
-                                                    <center>{item.created_at}</center>
+                                                   {moment(item.voucher[i].created_at).format('DD-MM-YYYY')}
                                                 </td>
-                                                <td>{item.product.name}</td>
-                                                <td>{item.amount}</td>
+                                                <td>{item.voucher[i].name}</td>
+                                                <td>{item.voucher[i].amount}</td>
                                                 <td>{item.total_voucher}</td>
-                                                <td>
-                                                    <Link href={'/company/' + item.uuid}>
-                                                        <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                                    </Link>
-                                                </td>
                                             </tr>
                                         ))
                                     )}
