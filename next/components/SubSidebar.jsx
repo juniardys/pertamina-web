@@ -121,7 +121,7 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
-				title: 'List Voucher Perusahaan',
+				title: 'Data Generate Voucher',
 				icon: 'icon-inbox',
 				url: `/company/${company}/voucher`,
 				path: '/company/[company]/voucher'
@@ -129,7 +129,7 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
-				title: 'List Voucher Belum Terpakai Perusahaan',
+				title: 'Data Voucher Belum Terpakai',
 				icon: 'icon-inbox',
 				url: `/company/${company}/voucher/unused`,
 				path: '/company/[company]/voucher/unused'
@@ -137,7 +137,7 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
-				title: 'List Voucher Sudah Terpakai Perusahaan',
+				title: 'Data Voucher Sudah Terpakai',
 				icon: 'icon-inbox',
 				url: `/company/${company}/voucher/used`,
 				path: '/company/[company]/voucher/used'
