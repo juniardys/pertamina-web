@@ -171,6 +171,7 @@ class Losis extends Component {
                                     </th>
                                     <th>Produk</th>
                                     <th>Meteran Awal</th>
+                                    <th>Pembelian</th>
                                     <th>Meteran Akhir</th>
                                     <th>Volume</th>
                                     <th>Penjualan</th>
@@ -188,10 +189,11 @@ class Losis extends Component {
                                                 <td><center>{item.date}</center></td>
                                                 <td>{item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || ''}</td>
                                                 <td>{item.report == null ? 0 : item.report.start_meter.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : item.report.last_meter.toLocaleString()}</td>
                                                 <td>{item.report == null ? 0 : item.report.addition_amount.toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : item.report.last_meter.toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : item.report.volume.toLocaleString()}</td>
                                                 <td>{item.report == null ? 0 : item.report.sales.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : (item.report.sales - item.report.addition_amount).toLocaleString()}</td>
+                                                <td>{item.report == null ? 0 : (item.report.sales + item.report.volume).toLocaleString()}</td>
                                             </tr>
                                         ))
                                     )}
