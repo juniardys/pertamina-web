@@ -422,7 +422,7 @@ class ReportController {
                     item.report.addition_amount += reportFeederTank.addition_amount
                 }
             }
-            item.report.volume = (item.report.start_meter + item.report.addition_amount) - item.report.last_meter
+            item.report.volume = item.report.last_meter - (item.report.start_meter + item.report.addition_amount)
             const reportNozzle = await ReportNozzle.query()
                 .where('spbu_uuid', req.spbu_uuid)
                 .where('date', moment(date).format('YYYY-MM-DD'))
