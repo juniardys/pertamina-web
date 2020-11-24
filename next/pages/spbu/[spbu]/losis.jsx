@@ -141,7 +141,7 @@ class Losis extends Component {
                     </div>
                     <div className="col-md-3">
                         <div className="form-group">
-                            <label>Bulan</label>
+                            <label>Pilih Tanggal</label>
                             <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback} onChange={this.handleSelectChange} name="filterDate">
                                 <input className="form-control"/>
                             </DateRangePicker>
