@@ -19,7 +19,7 @@ class Voucher extends Model {
     }
 
     operator() {
-        return this.belongsTo('App/Models/User', 'operator_uuid', 'uuid')
+        return this.hasOne('App/Models/User', 'operator_uuid', 'uuid')
     }
 
     generate_history() {
