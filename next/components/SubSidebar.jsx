@@ -6,7 +6,7 @@ import { checkAcl } from '~/helpers'
 const SubSidebar = () => {
 	const router = useRouter()
 
-	const { spbu, company } = router.query
+	const { spbu, company, voucher } = router.query
 	let datas = []
 	
 
@@ -133,6 +133,14 @@ const SubSidebar = () => {
 				icon: 'icon-inbox',
 				url: `/company/${company}/voucher/unused`,
 				path: '/company/[company]/voucher/unused'
+			},
+			{
+				access: 'company.read',
+				type: 'menu',
+				title: 'List Voucher Sudah Terpakai Perusahaan',
+				icon: 'icon-inbox',
+				url: `/company/${company}/voucher/used`,
+				path: '/company/[company]/voucher/used'
 			},
 			{
 				access: 'company.read',

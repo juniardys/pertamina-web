@@ -77,6 +77,26 @@ class CompanyController {
     return response.status(200).json(baseResp(true, builder, 'Data Voucher sukses diterima'))
   }
 
+  async UsedVoucher({ request, response, transform }) {
+    const req = request.all()
+    const builder = await Voucher.query().where('company_uuid', req.company_uuid)
+    .where('isUsed', true)
+    .join('products as p', 'product_uuid', 'p.uuid')
+    .select('vouchers.*', 'p.name')
+    .fetch()
+
+    return response.status(200).json(baseResp(true, builder, 'Data Voucher Terpakai sukses diterima'))
+  }
+
+  async ShowVoucher({ request, response, transform }) {
+    const req = request.all()
+    const builder = await Voucher.query().where('company_uuid', req.company_uuid).where('uuid', req.search)
+    .with('operator')
+    .fetch()
+
+    return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Voucher Terpakai sukses diterima'))
+  }
+
   // async voucher({ request, response, transform }) {
   //   const req = request.all()
   //   const builder = await queryBuilder(VoucherHistory.query().where('company_uuid', req.company_uuid), req, [], ['product'])
