@@ -9,6 +9,7 @@ import DateRangePicker from 'react-bootstrap-daterangepicker';
 import 'bootstrap-daterangepicker/daterangepicker.css'
 import axios from 'axios'
 import moment from 'moment'
+import _ from 'lodash'
 
 class Losis extends Component {
     static getInitialProps({ query }) {
@@ -185,19 +186,29 @@ class Losis extends Component {
                                     </tr>
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
-                                            <tr key={i}>
-                                                <td><center>{item.date}</center></td>
-                                                <td>{item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || ''}</td>
-                                                <td>{item.report == null ? 0 : item.report.start_meter.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : item.report.addition_amount.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : item.report.last_meter.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : item.report.volume.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : item.report.sales.toLocaleString()}</td>
-                                                <td>{item.report == null ? 0 : (item.report.sales + item.report.volume).toLocaleString()}</td>
-                                            </tr>
-                                        ))
-                                    )}
+                                        <tr key={i}>
+                                            <td><center>{item.date}</center></td>
+                                            <td>{item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || ''}</td>
+                                            <td>{item.report == null ? 0 : item.report.start_meter.toLocaleString()}</td>
+                                            <td>{item.report == null ? 0 : item.report.addition_amount.toLocaleString()}</td>
+                                            <td>{item.report == null ? 0 : item.report.last_meter.toLocaleString()}</td>
+                                            <td>{item.report == null ? 0 : item.report.volume.toLocaleString()}</td>
+                                            <td>{item.report == null ? 0 : item.report.sales.toLocaleString()}</td>
+                                            <td>{item.report == null ? 0 : (item.report.sales + item.report.volume).toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
+                            <tfoot>
+                                {(this.state.dataItems == '') ? '' : (
+                                    <tr>
+                                        <td colspan="5" className="text-right">Total</td>
+                                        <td>{ _.sumBy(this.state.dataItems, item => Number(item.report.volume)).toLocaleString() }</td>
+                                        <td>{ _.sumBy(this.state.dataItems, item => Number(item.report.sales)).toLocaleString() }</td>
+                                        <td>{ _.sumBy(this.state.dataItems, item => Number((item.report.sales + item.report.volume))).toLocaleString() }</td>
+                                    </tr>
+                                )}
+                            </tfoot>
                         </table>
                     </div>
                 </div>
