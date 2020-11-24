@@ -72,6 +72,7 @@ class Voucher extends Component {
                         <table className="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Waktu Pembuatan</th>
                                     <th>Produk</th>
                                     <th>Liter</th>
@@ -86,6 +87,7 @@ class Voucher extends Component {
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
+                                                <td>{i + 1}</td>
                                                 <td>
                                                    {moment(item.voucher[i].created_at).format('DD-MM-YYYY')}
                                                 </td>

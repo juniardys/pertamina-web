@@ -211,7 +211,7 @@ class Index extends Component {
                                                 <td>{item.name}</td>
                                                 <td>{item.email}</td>
                                                 <td>{item.address}</td>
-                                                <td>Rp. {item.balance}</td>
+                                                <td>Rp. {item.balance.toLocaleString()}</td>
                                                 <td>
                                                     <Link href={'/company/' + item.uuid}>
                                                         <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
