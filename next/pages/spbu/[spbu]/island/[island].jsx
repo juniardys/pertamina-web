@@ -51,7 +51,11 @@ class Index extends Component {
         const products = await get('/product')
         if (products) this.setState({ productData: products.data.data })
 
-        const feederTank = await get('/feeder-tank')
+        const feederTank = await get('/feeder-tank', {
+            filter_col: ['spbu_uuid'],
+            filter_val: [this.props.query.spbu],
+            order_col: 'name:asc'
+        })
         if (feederTank) this.setState({ feederTankData: feederTank.data.data })
 
         const island = await get('/island', {
