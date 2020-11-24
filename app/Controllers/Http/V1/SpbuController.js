@@ -47,6 +47,7 @@ class SpbuController {
     }
 
     async update({ request, response, transform }) {
+        console.log(request.all())
         const req = request.all()
         let rules = []
         rules['uuid'] = 'required'

@@ -84,7 +84,6 @@ class Index extends Component {
             }
         } else {
             const response = await update('/spbu/update', this.state.uuid, {
-                uuid: this.state.uuid,
                 name: this.state.name,
                 address: this.state.address,
                 phone: this.state.phone,
