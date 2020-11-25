@@ -10,6 +10,7 @@ class VoucherSchema extends Schema {
       table.uuid('uuid').unique().notNullable()
       table.uuid('company_uuid').unsigned().references('uuid').inTable('companies')
       table.uuid('product_uuid').unsigned().references('uuid').inTable('products')
+      table.uuid('spbu_uuid').unsigned().references('uuid').inTable('spbu')
       table.string('qr_code').notNullable()
       table.integer('amount').unsigned().defaultTo(0)
       table.integer('price').unsigned().defaultTo(0)

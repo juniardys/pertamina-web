@@ -22,6 +22,10 @@ class Voucher extends Model {
         return this.hasOne('App/Models/User', 'operator_uuid', 'uuid')
     }
 
+    spbu() {
+        return this.hasOne('App/Models/Spbu', 'spbu_uuid', 'uuid')
+    }
+
     generate_history() {
         return this.belongsToMany(
             'App/Models/VoucherGenerateHistory',

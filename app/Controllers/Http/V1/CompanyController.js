@@ -11,7 +11,7 @@ const History = use('App/Models/HistoryCompanyBalance')
 const VoucherHistory = use('App/Models/VoucherGenerateHistory')
 const Voucher = use('App/Models/Voucher')
 const { validate } = use('Validator')
-const { queryBuilder, slugify, baseResp } = use('App/Helpers')
+const { queryBuilder, slugify, baseResp, rndmChr } = use('App/Helpers')
 const uuid = use('uuid-random')
 const CompanyTransformer = use('App/Transformers/V1/CompanyTransformer')
 const HistoryTransformer = use('App/Transformers/V1/HistoryCompanyBalanceTransformer')
@@ -165,6 +165,7 @@ class CompanyController {
         company.password = req.password
         company.phone = req.phone
         company.address = req.address
+        company.balance = 0
         await company.save()
     } catch (error) {
         return response.status(400).json(baseResp(false, [], 'Kesalahan pada insert data'))
@@ -228,9 +229,8 @@ class CompanyController {
         return response.status(400).json(baseResp(false, [], 'Data tidak ditemukan'))
     }
 
-    var sumBalance
-
     if (req.balance != null) {
+      var sumBalance
 
       sumBalance = parseInt(company.balance) + parseInt(req.balance)
 
@@ -265,14 +265,13 @@ class CompanyController {
           if (req.password) company.password = req.password
           company.phone = req.phone
           company.address = req.address
-          company.balance = sumBalance
           await company.save()
         } catch (error) {
             console.log(error);
             return response.status(400).json(baseResp(false, [], 'Kesalahan pada update data'))
         }
     }
-
+    
     company = await transform.item(company, CompanyTransformer)
 
     return response.status(200).json(baseResp(true, company, 'Mengedit Pengguna ' + company.name))
@@ -303,6 +302,9 @@ class CompanyController {
     }
 
     if (!company) return response.status(400).json(baseResp(false, [], 'Perusahaan tidak ditemukan'))
+
+    company.email = await rndmChr(40, 'companies', 'email')
+    await company.save()
 
     await company.delete()
 
