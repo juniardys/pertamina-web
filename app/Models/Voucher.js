@@ -14,16 +14,16 @@ class Voucher extends Model {
         return this.belongsTo('App/Models/Company', 'company_uuid', 'uuid')
     }
 
+    spbu() {
+        return this.hasOne('App/Models/Spbu', 'spbu_uuid', 'uuid')
+    }
+
     product() {
         return this.belongsTo('App/Models/Product', 'product_uuid', 'uuid')
     }
 
     operator() {
         return this.hasOne('App/Models/User', 'operator_uuid', 'uuid')
-    }
-
-    spbu() {
-        return this.hasOne('App/Models/Spbu', 'spbu_uuid', 'uuid')
     }
 
     generate_history() {
