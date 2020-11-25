@@ -30,6 +30,7 @@ class History extends Component {
     async componentDidMount() {
         const data = await get('/company/history', {
             search: this.props.query.company,
+            order_col: 'id:desc'
         })
         if (data) {
             console.log(data)
@@ -56,7 +57,6 @@ class History extends Component {
                 as: `/company/${this.props.query.company}/history`
             }
         ]
-
         return (
             <Layout title={'Riwayat Saldo Perusahaan'} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-data">
@@ -71,7 +71,7 @@ class History extends Component {
                             <thead>
                                 <tr>
                                     <th>
-                                        <center>Waktu Topup</center>
+                                        <center>Tanggal</center>
                                     </th>
                                     <th>Saldo Awal</th>
                                     <th>Saldo Masuk</th>
@@ -87,7 +87,7 @@ class History extends Component {
                                     this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>
-                                                    <center>{moment(item.created_at).format('DD MMM YYYY HH:mm:ss')}</center>
+                                                    <center>{moment(item.created_at, 'DD/MM/YYYY').format('DD MMM YYYY')}</center>
                                                 </td>
                                                 <td>Rp. {item.current_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
                                                 <td>Rp. {item.added_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
