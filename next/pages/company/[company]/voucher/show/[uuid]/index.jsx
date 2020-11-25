@@ -7,6 +7,7 @@ import ChangeUserImage from '~/components/ChangeUserImage'
 import Router from 'next/router'
 import { connect } from 'react-redux';
 import * as actions from '~/redux/actions/companyAction';
+import moment from 'moment'
 
 class Company extends Component {
 
@@ -17,14 +18,18 @@ class Company extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            company_name: '',
             qr_code: '',
+            created_at: '',
+            spbu_name: '',
+            product_name: '',
             amount: '',
-            is_used: '',
-            person_name: '',
-            person_plate: '',
             price: '',
             total_price: '',
+            is_used: '',
             used_date: '',
+            person_name: '',
+            person_plate: '',
             operator: '',
         }
     }
@@ -39,40 +44,30 @@ class Company extends Component {
         checkAclPage('company.read')
         helperBlock('.container-data')
         const data = await get('/company/voucher/show', {
-            search: this.props.query.uuid,
-            company_uuid: [this.props.query.company],
+            uuid: this.props.query.uuid,
+            company_uuid: this.props.query.company,
         })
-        console.log(data.data)
         if (data != undefined && data.data.length > 0) {
-            const company = data.data[0]
-            this.setState({
-                qr_code: company.qr_code,
-                amount: company.amount,
-                is_used: company.isUsed,
-                person_name: company.person_name,
-                person_plate: company.person_plate,
-                price: company.price,
-                total_price: company.total_price,
-                used_date: company.used_date,
-                operator: company.operator.name
-            })
-
-            this.props.setCompany({
-                qr_code: company.qr_code,
-                amount: company.amount,
-                is_used: company.isUsed,
-                person_name: company.person_name,
-                person_plate: company.person_plate,
-                price: company.price,
-                total_price: company.total_price,
-                used_date: company.used_date,
-                operator: company.operator.name
-            })
+            const voucher = data.data[0]
             helperUnblock('.container-data')
+            this.setState({
+                company_name: voucher.company_name,
+                qr_code: voucher.qr_code,
+                created_at: voucher.created_at,
+                spbu_name: voucher.spbu.name,
+                product_name: voucher.product.name,
+                amount: voucher.amount,
+                price: voucher.price,
+                total_price: voucher.total_price,
+                is_used: voucher.isUsed,
+                used_at: voucher.used_at,
+                person_name: voucher.person_name,
+                person_plate: voucher.person_plate,
+                operator: voucher.operator.name,
+            })
         } else {
             Router.push('/company')
         }
-
     }
 
     renderModal = () => {
@@ -96,77 +91,97 @@ class Company extends Component {
                 url: '/company'
             },
             {
-                title: this.state.name,
+                title: this.state.company_name,
                 url: '/company/' + this.props.query.company
             }
         ]
 
         return (
-            <Layout title={"Detail Perusahaan " + this.state.qr_code} breadcrumb={breadcrumb}>
+            <Layout title={"Detail Voucher " + this.state.qr_code} breadcrumb={breadcrumb}>
                 <div className="col-lg-12">
-                    <div className="panel panel-flat container-data">
-                        <div className="panel-heading">
-                            <h6 className="panel-title">Detail Voucher<a className="heading-elements-toggle"><i className="icon-more"></i></a></h6>
-                        </div>
-
+                    <div className="panel panel-flat">
                         <div className="panel-body">
-                            <div className="row">
-                                <div className="form-group col-md-6">
-                                    <label className="control-label">QR Code</label>
-                                    <input type="text" className="form-control" name="name" value={this.state.qr_code} readOnly={true}/>
-                                </div>
-                                <div className="form-group col-md-6">
-                                    <label className="control-label">Price</label>
-                                    <input type="text" className="form-control" name="email" value={this.state.price} readOnly={true}/>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="form-group col-md-6">
-                                    <label className="control-label">Amount</label>
-                                    <input type="text" className="form-control" name="phone" value={"Rp. " + this.state.amount} readOnly={true}/>
-                                </div>
-                                <div className="form-group col-md-6">
-                                    <label className="control-label">Total Price</label>
-                                    <input type="text" className="form-control" name="balance" value={"Rp. " + this.state.total_price} readOnly={true}/>
-                                </div>
-                            </div>
-                            {(this.state.is_used == false) ? (
-                                    <div>
-                                    </div>
-                                ) : (
-                                    <div className="row">
-                                        <div className="form-group col-md-6">
-                                            <label className="control-label">Driver</label>
-                                            <input type="text" className="form-control" name="name" value={this.state.person_name} readOnly={true}/>
-                                        </div>
-                                        <div className="form-group col-md-6">
-                                            <label className="control-label">Plate</label>
-                                            <input type="text" className="form-control" name="email" value={this.state.person_plate} readOnly={true}/>
-                                        </div>
-                                        <div className="form-group col-md-6">
-                                            <label className="control-label">Use Date</label>
-                                            <input type="text" className="form-control" name="name" value={moment(this.state.used_date).format('DD-MM-YYYY HH:MM')} readOnly={true}/>
-                                        </div>
-                                        <div className="form-group col-md-6">
-                                            <label className="control-label">Operator</label>
-                                            <input type="text" className="form-control" name="email" value={this.state.operator} readOnly={true}/>
+                            <form className="form-horizontal" action="#">
+                                <fieldset className="content-group">
+                                    <legend className="text-bold">Data Voucher</legend>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Code</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.qr_code } />
                                         </div>
                                     </div>
-                                    )}
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Waktu Pembuatan</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ moment(this.state.created_at).format('DD MMM YYYY HH:mm') } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">SPBU</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.spbu_name } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Produk</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.product_name } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Jumlah</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.amount + " Liter" } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Harga</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ 'Rp ' + this.state.price.toLocaleString() } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Total Harga</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ 'Rp ' + this.state.total_price.toLocaleString() } />
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset className="content-group">
+                                    <legend className="text-bold">Data Penggunaan</legend>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Waktu Digunakan</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ moment(this.state.used_at).format('DD MMM YYYY HH:mm') } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Nama Pengemudi</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.person_name } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Plat Kendaraan</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.person_plate } />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="control-label col-lg-2 text-right">Petugas</label>
+                                        <div className="col-lg-8">
+                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.operator } />
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
                         </div>
                     </div>
+
                 </div>
             </Layout>
         )
     }
 }
 
-const mapStateToProps = state => ({
-    company: state.company
-})
-
-const mapDispatchToProps = dispatch => ({
-    setCompany: (value) => dispatch(actions.setCompany(value))
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(Company);
+export default Company;

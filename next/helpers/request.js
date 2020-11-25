@@ -7,6 +7,7 @@ export const get = async (url, queryBuilder = [], ver = null) => {
     query = query + url
     query = query + `?api_key=${process.env.APP_API_KEY}`
     if (queryBuilder['search']) query = query + '&search=' + queryBuilder.search
+    if (queryBuilder['uuid']) query = query + '&uuid=' + queryBuilder.uuid
     if (queryBuilder['company_uuid']) query = query + '&company_uuid=' + queryBuilder.company_uuid
     if (queryBuilder['spbu_uuid']) query = query + '&spbu_uuid=' + queryBuilder.spbu_uuid
     if (queryBuilder['feeder_tank_uuid']) query = query + '&feeder_tank_uuid=' + queryBuilder.feeder_tank_uuid

@@ -90,10 +90,12 @@ class CompanyController {
 
   async ShowVoucher({ request, response, transform }) {
     const req = request.all()
-    const builder = await Voucher.query().where('company_uuid', req.company_uuid).where('uuid', req.search)
-    .with('operator')
-    .fetch()
-
+    const builder = await Voucher.query().where('company_uuid', req.company_uuid).where('uuid', req.uuid)
+      .with('company')
+      .with('spbu')
+      .with('operator')
+      .with('product')
+      .fetch()
     return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Voucher Terpakai sukses diterima'))
   }
 
