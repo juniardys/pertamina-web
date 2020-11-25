@@ -6,6 +6,7 @@ import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
 import AccessList from '~/components/AccessList'
 import Datepicker from 'react-datepicker'
+import moment from 'moment'
 
 class History extends Component {
     static getInitialProps({ query }) {
@@ -60,7 +61,7 @@ class History extends Component {
             <Layout title={'Riwayat Saldo Perusahaan'} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Riwayat Saldo Perusahaan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Riwayat Topup Perusahaan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
                         </div>
                     </div>
@@ -70,7 +71,7 @@ class History extends Component {
                             <thead>
                                 <tr>
                                     <th>
-                                        <center>Tanggal</center>
+                                        <center>Waktu Topup</center>
                                     </th>
                                     <th>Saldo Awal</th>
                                     <th>Saldo Masuk</th>
@@ -86,7 +87,7 @@ class History extends Component {
                                     this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
                                                 <td>
-                                                    <center>{item.created_at}</center>
+                                                    <center>{moment(item.created_at).format('DD MMM YYYY HH:mm:ss')}</center>
                                                 </td>
                                                 <td>Rp. {item.current_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
                                                 <td>Rp. {item.added_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>

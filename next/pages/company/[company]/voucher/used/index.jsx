@@ -9,6 +9,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css'
 import AccessList from '~/components/AccessList'
 import Datepicker from 'react-datepicker'
 import axios from 'axios'
+import numeral from 'numeral'
 
 class Voucher extends Component {
     static getInitialProps({ query }) {
@@ -189,7 +190,7 @@ class Voucher extends Component {
                                     <th className="text-center">Produk</th>
                                     <th className="text-center">Liter</th>
                                     <th className="text-center">Code</th>
-                                    <th className="text-center">Harga</th>
+                                    <th className="text-center">Harga/Liter</th>
                                     <th className="text-center">Total Harga</th>
                                     <th className="text-center">Driver</th>
                                     <th className="text-center">Aksi</th>
@@ -206,7 +207,7 @@ class Voucher extends Component {
                                                 <td className="text-center">{ i + 1 }</td>
                                                 <td className="text-center">
                                                     <center>
-                                                    {moment(item.used_date).format('DD-MM-YYYY HH:MM')}
+                                                    {moment(item.used_date).format('DD MMM YYYY HH:mm:ss')}
                                                     </center>
                                                 </td>
                                                 <td className="text-center">{ item.spbu.name }</td>
@@ -214,7 +215,7 @@ class Voucher extends Component {
                                                 <td className="text-center">{ item.amount.toLocaleString() } Liter</td>
                                                 <td className="text-center">{ item.qr_code }</td>
                                                 <td className="text-center">Rp { item.price.toLocaleString() }</td>
-                                                <td className="text-center">Rp { item.total_price.toLocaleString() }</td>
+                                                <td className="text-center">Rp { numeral(item.total_price).format('0,0') }</td>
                                                 <td className="text-center">{ item.person_name }</td>
                                                 <td className="text-center">
                                                     <Link href={'/company/' + this.props.query.company + '/voucher/show/' + item.uuid}>

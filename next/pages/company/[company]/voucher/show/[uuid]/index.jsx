@@ -8,6 +8,7 @@ import Router from 'next/router'
 import { connect } from 'react-redux';
 import * as actions from '~/redux/actions/companyAction';
 import moment from 'moment'
+import numeral from 'numeral'
 
 class Company extends Component {
 
@@ -34,12 +35,6 @@ class Company extends Component {
         }
     }
 
-    handleInputChange = async (e) => {
-        await this.setState({
-            [e.target.name]: e.target.value
-        })
-    }
-
     async componentDidMount() {
         checkAclPage('company.read')
         helperBlock('.container-data')
@@ -60,28 +55,18 @@ class Company extends Component {
                 price: voucher.price,
                 total_price: voucher.total_price,
                 is_used: voucher.isUsed,
-                used_at: voucher.used_at,
-                person_name: voucher.person_name,
-                person_plate: voucher.person_plate,
-                operator: voucher.operator.name,
             })
+            if (voucher.isUsed) {
+                this.setState({
+                    used_at: voucher.used_at,
+                    person_name: voucher.person_name,
+                    person_plate: voucher.person_plate,
+                    operator: voucher.operator.name,
+                })
+            }
         } else {
             Router.push('/company')
         }
-    }
-
-    renderModal = () => {
-        return (
-            <form className="form-horizontal" action="#">
-                <input type="hidden" name="uuid" value={this.state.uuid} />
-                <div className="form-group row">
-                    <label className="control-label col-lg-2">Saldo</label>
-                    <div className="col-lg-10">
-                        <input type="number" className="form-control" name="balance1" onChange={this.handleInputChange} />
-                    </div>
-                </div>
-            </form>
-        )
     }
 
     render() {
@@ -91,8 +76,13 @@ class Company extends Component {
                 url: '/company'
             },
             {
-                title: this.state.company_name,
-                url: '/company/' + this.props.query.company
+                title: 'Voucher',
+                url: '/company/[company]',
+                as: `/company/${this.props.query.company}`
+            },
+            {
+                title: 'Detail Voucher',
+                url: 'javascript:;',
             }
         ]
 
@@ -107,73 +97,80 @@ class Company extends Component {
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">Code</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.qr_code } />
+                                            <input type="text" className="form-control" disabled="disabled" value={this.state.qr_code} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">Waktu Pembuatan</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ moment(this.state.created_at).format('DD MMM YYYY HH:mm') } />
+                                            <input type="text" className="form-control" disabled="disabled" value={moment(this.state.created_at).format('DD MMM YYYY HH:mm:ss')} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">SPBU</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.spbu_name } />
+                                            <input type="text" className="form-control" disabled="disabled" value={this.state.spbu_name} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">Produk</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.product_name } />
+                                            <input type="text" className="form-control" disabled="disabled" value={this.state.product_name} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">Jumlah</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.amount + " Liter" } />
+                                            <input type="text" className="form-control" disabled="disabled" value={this.state.amount + " Liter"} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">Harga</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ 'Rp ' + this.state.price.toLocaleString() } />
+                                            <input type="text" className="form-control" disabled="disabled" value={'Rp ' + this.state.price.toLocaleString()} />
                                         </div>
                                     </div>
                                     <div className="form-group">
                                         <label className="control-label col-lg-2 text-right">Total Harga</label>
                                         <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ 'Rp ' + this.state.total_price.toLocaleString() } />
+                                            <input type="text" className="form-control" disabled="disabled" value={'Rp ' + numeral(this.state.total_price).format('0,0')} />
                                         </div>
                                     </div>
                                 </fieldset>
-                                <fieldset className="content-group">
-                                    <legend className="text-bold">Data Penggunaan</legend>
-                                    <div className="form-group">
-                                        <label className="control-label col-lg-2 text-right">Waktu Digunakan</label>
-                                        <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ moment(this.state.used_at).format('DD MMM YYYY HH:mm') } />
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="control-label col-lg-2 text-right">Nama Pengemudi</label>
-                                        <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.person_name } />
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="control-label col-lg-2 text-right">Plat Kendaraan</label>
-                                        <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.person_plate } />
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="control-label col-lg-2 text-right">Petugas</label>
-                                        <div className="col-lg-8">
-                                            <input type="text" className="form-control" disabled="disabled" value={ this.state.operator } />
-                                        </div>
-                                    </div>
-                                </fieldset>
+                                {
+                                    (this.state.is_used) ?
+                                        (
+                                            <fieldset className="content-group">
+                                                <legend className="text-bold">Data Penggunaan</legend>
+                                                <div className="form-group">
+                                                    <label className="control-label col-lg-2 text-right">Waktu Digunakan</label>
+                                                    <div className="col-lg-8">
+                                                        <input type="text" className="form-control" disabled="disabled" value={moment(this.state.used_at).format('DD MMM YYYY HH:mm:ss')} />
+                                                    </div>
+                                                </div>
+                                                <div className="form-group">
+                                                    <label className="control-label col-lg-2 text-right">Nama Pengemudi</label>
+                                                    <div className="col-lg-8">
+                                                        <input type="text" className="form-control" disabled="disabled" value={this.state.person_name} />
+                                                    </div>
+                                                </div>
+                                                <div className="form-group">
+                                                    <label className="control-label col-lg-2 text-right">Plat Kendaraan</label>
+                                                    <div className="col-lg-8">
+                                                        <input type="text" className="form-control" disabled="disabled" value={this.state.person_plate} />
+                                                    </div>
+                                                </div>
+                                                <div className="form-group">
+                                                    <label className="control-label col-lg-2 text-right">Petugas</label>
+                                                    <div className="col-lg-8">
+                                                        <input type="text" className="form-control" disabled="disabled" value={this.state.operator} />
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        )
+                                        :
+                                        ''
+                                }
                             </form>
                         </div>
                     </div>

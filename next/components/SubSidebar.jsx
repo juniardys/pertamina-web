@@ -121,7 +121,7 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
-				title: 'Data Generate Voucher',
+				title: 'Riwayat Generate Voucher',
 				icon: 'icon-inbox',
 				url: `/company/${company}/voucher`,
 				path: '/company/[company]/voucher'
@@ -145,7 +145,7 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
-				title: 'Riwayat Saldo Perusahaan',
+				title: 'Riwayat Topup Perusahaan',
 				icon: 'icon-balance',
 				url: `/company/${company}/history`,
 				path: '/company/[company]/history'

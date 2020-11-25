@@ -69,13 +69,39 @@ class CompanyController {
 
 	async UnusedVoucher({ request, response, transform }) {
 		const req = request.all()
-		const builder = await Voucher.query().where('company_uuid', req.company_uuid)
+		var builder = Voucher.query().where('company_uuid', req.company_uuid)
 			.where('isUsed', false)
-			.join('products as p', 'product_uuid', 'p.uuid')
-			.select('vouchers.*', 'p.name')
-			.fetch()
+			.with('product')
+			.with('spbu')
+			.orderBy('id', 'desc')
 
-		return response.status(200).json(baseResp(true, builder, 'Data Voucher sukses diterima'))
+		if (req.filterSpbu) {
+			builder = builder.whereHas('spbu', (query) => {
+				query.where('uuid', req.filterSpbu)
+			})
+		}
+
+		if (req.filterProduct) {
+			builder = builder.whereHas('product', (query) => {
+				query.where('uuid', req.filterProduct)
+			})
+		}
+
+		if (req.filterAmount) {
+			builder = builder.where('amount', req.filterAmount)
+		}
+
+		if (req.filterDate) {
+			var [startDate, endDate] = req.filterDate.split(' - ')
+			builder = builder.where((query) => {
+				query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+					.where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+			})
+		}
+
+		builder = await builder.fetch()
+
+		return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Voucher Belum Terpakai sukses diterima'))
 	}
 
 	async UsedVoucher({ request, response, transform }) {
@@ -105,8 +131,8 @@ class CompanyController {
 		if (req.filterDate) {
 			var [startDate, endDate] = req.filterDate.split(' - ')
 			builder = builder.where((query) => {
-				query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
-					.where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+				query.where('used_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+					.where('used_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
 			})
 		}
 
@@ -123,7 +149,7 @@ class CompanyController {
 			.with('operator')
 			.with('product')
 			.fetch()
-		return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Voucher Terpakai sukses diterima'))
+		return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Detail Voucher sukses diterima'))
 	}
 
 	// async voucher({ request, response, transform }) {
@@ -140,20 +166,44 @@ class CompanyController {
 
 	async voucher({ request, response, transform }) {
 		const req = request.all()
-		const datas = []
-		const query = await db.table('voucher_generate_histories as a').where('company_uuid', req.company_uuid)
-			.join('products as b', 'product_uuid', 'b.uuid')
-			.select('a.*', 'b.name')
-		for (let index = 0; index < query.length; index++) {
-			var item = {}
-			item.total_voucher = await db.table('voucher_generate_history_items').where('voucher_generate_history_uuid', query[index].uuid).getCount()
-			item.voucher = query
+		var builder = VoucherHistory.query().where('company_uuid', req.company_uuid)
+			.with('product')
+			.with('spbu')
+			.orderBy('id', 'desc')
 
-			datas.push(item)
-
+		if (req.filterSpbu) {
+			builder = builder.whereHas('spbu', (query) => {
+				query.where('uuid', req.filterSpbu)
+			})
 		}
 
-		return response.status(200).json(baseResp(true, datas, 'Data Voucher History sukses diterima'))
+		if (req.filterProduct) {
+			builder = builder.whereHas('product', (query) => {
+				query.where('uuid', req.filterProduct)
+			})
+		}
+
+		if (req.filterAmount) {
+			builder = builder.where('amount', req.filterAmount)
+		}
+
+		if (req.filterDate) {
+			var [startDate, endDate] = req.filterDate.split(' - ')
+			builder = builder.where((query) => {
+                query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+                    .where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+			})
+		}
+
+		builder = await builder.fetch()
+
+        var vhistory = builder.toJSON()
+        for (let index = 0; index < vhistory.length; index++) {
+            const vhist = vhistory[index];
+            vhistory[index].total_voucher = await db.table('voucher_generate_history_items').where('voucher_generate_history_uuid', vhist.uuid).getCount() || 0
+        }
+
+		return response.status(200).json(baseResp(true, vhistory, 'Data History Generate Voucher sukses diterima'))
 	}
 
 
