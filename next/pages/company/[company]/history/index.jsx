@@ -58,7 +58,7 @@ class History extends Component {
             <Layout title={'Riwayat Saldo Perusahaan'} breadcrumb={breadcrumb}>
                 <div className="panel panel-flat container-data">
                     <div className="panel-heading">
-                        <h5 className="panel-title">Riwayat Topup Perusahaan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
+                        <h5 className="panel-title">Riwayat Saldo Perusahaan <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
                         </div>
                     </div>

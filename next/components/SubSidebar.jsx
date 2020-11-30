@@ -145,7 +145,7 @@ const SubSidebar = () => {
 			{
 				access: 'company.read',
 				type: 'menu',
-				title: 'Riwayat Topup Perusahaan',
+				title: 'Riwayat Saldo Perusahaan',
 				icon: 'icon-balance',
 				url: `/company/${company}/history`,
 				path: '/company/[company]/history'
