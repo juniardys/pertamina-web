@@ -17,9 +17,6 @@ class History extends Component {
         super(props)
         this.state = {
             uuid: '',
-            current_balance: '',
-            added_balance: '',
-            final_balance: '',
             created_at: '',
             dataItems: [],
             title: 'Buat Pemesanan',
@@ -29,7 +26,7 @@ class History extends Component {
 
     async componentDidMount() {
         const data = await get('/company/history', {
-            search: this.props.query.company,
+            company_uuid: this.props.query.company,
             order_col: 'id:desc'
         })
         if (data) {
@@ -70,12 +67,12 @@ class History extends Component {
                         <table className="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>
-                                        <center>Tanggal</center>
-                                    </th>
-                                    <th>Saldo Awal</th>
-                                    <th>Saldo Masuk</th>
-                                    <th>Saldo Akhir</th>
+                                    <th className="text-center">Tanggal</th>
+                                    <th className="text-center">Deskripsi</th>
+                                    <th className="text-center">Saldo Awal</th>
+                                    <th className="text-center">Saldo Masuk</th>
+                                    <th className="text-center">Saldo Keluar</th>
+                                    <th className="text-center">Saldo Akhir</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -86,12 +83,12 @@ class History extends Component {
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
                                             <tr key={i}>
-                                                <td>
-                                                    <center>{moment(item.created_at, 'DD/MM/YYYY').format('DD MMM YYYY')}</center>
-                                                </td>
-                                                <td>Rp. {item.current_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
-                                                <td>Rp. {item.added_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
-                                                <td>Rp. {item.final_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
+                                                <td className="text-center">{moment(item.created_at, 'YYYY-MM-DD HH:mm:ss').format('DD MMM YYYY HH:mm:ss')}</td>
+                                                <td className="text-center">{ item.description || '-' }</td>
+                                                <td className="text-center">Rp. {item.current_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
+                                                <td className="text-center">{(item.added_balance > 0)? 'Rp. ' + item.added_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') : '-'}</td>
+                                                <td className="text-center">{(item.removed_balance > 0)? 'Rp. ' + item.removed_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') : '-'}</td>
+                                                <td className="text-center">Rp. {item.final_balance.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</td>
                                             </tr>
                                         ))
                                     )}

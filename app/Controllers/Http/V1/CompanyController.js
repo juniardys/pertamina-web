@@ -57,7 +57,8 @@ class CompanyController {
 	}
 
 	async history({ request, response, transform }) {
-		const builder = await queryBuilder(History.query(), request.all(), ['created_at', 'current_balance', 'added_balance', 'final_balance'])
+		const req = request.all()
+		const builder = await queryBuilder(History.query().where('company_uuid', req.company_uuid), request.all())
 		let data = transform
 		if (request.get().with) {
 			data = data.include(request.get().with)
@@ -316,10 +317,11 @@ class CompanyController {
 			let history = new History()
 
 			try {
-				history.uuid = company.uuid
+				history.company_uuid = company.uuid
 				history.current_balance = company.balance
 				history.added_balance = req.balance
 				history.final_balance = sumBalance
+				history.description = 'Topup Saldo'
 				await history.save()
 
 				try {
