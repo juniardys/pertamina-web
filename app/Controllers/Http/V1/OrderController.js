@@ -6,30 +6,50 @@ const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
 const OrderTransformer = use('App/Transformers/V1/OrderTransformer')
 const Database = use('Database')
+const moment = use('moment')
 
 class OrderController {
     async get({ request, response, transform }) {
         const req = request.all()
-        var query = Order.query()
-        if (req.status == 'ongoing') {
-            query = query.where('quantity', '>', (builder) => {
-                builder.from('deliveries')
-                    .select(Database.raw("coalesce(sum(quantity), 0) as quantity"))
-                    .whereRaw('order_uuid = orders.uuid')
-            })
-        } else if (req.status == 'done') {
-            query = query.where('quantity', '<=', (builder) => {
-                builder.from('deliveries')
-                    .select(Database.raw("coalesce(sum(quantity), 0) as quantity"))
-                    .whereRaw('order_uuid = orders.uuid')
+        var query = Order.query().with('spbu').with('product')
+
+        if (req.spbu_uuid) {
+            query = query.whereHas('spbu', (query) => {
+                query.where('uuid', req.spbu_uuid)
             })
         }
-        const builder = await queryBuilder(query, request.all(), ['spbu_uuid', 'product_uuid', 'order_date', 'order_no', 'quantity'])
+
+        if (req.filterOrderNumber) {
+            query = query.where('order_no', 'ILIKE', `${req.filterOrderNumber}%`)
+        } else {
+            if (req.filterSPBU) {
+                query = query.whereHas('spbu', (query) => {
+                    query.where('uuid', req.filterSPBU)
+                })
+            }
+    
+            if (req.filterProduct) {
+                query = query.whereHas('product', (query) => {
+                    query.where('uuid', req.filterProduct)
+                })
+            }
+    
+            if (req.filterStatus) {
+                query = query.where('status', req.filterStatus)
+            }
+
+            if (req.filterDate) {
+                var [startDate, endDate] = req.filterDate.split(' - ')
+                query = query.where((query) => {
+                    query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+                        .where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+                })
+            }
+        }
+
+        const builder = await query.paginate(request.page || 1, request.paginate || 20)
         let data = transform
-        if (request.get().with) {
-            data = data.include(request.get().with)
-        }
-        data = await data.paginate(builder, OrderTransformer)
+        data = await data.include(['spbu', 'product']).paginate(builder, OrderTransformer)
 
         return response.status(200).json(baseResp(true, data, 'Data Pemesanan sukses diterima'))
     }

@@ -4,9 +4,14 @@ import Link from 'next/link'
 import Modal from '~/components/Modal'
 import { toast, checkAclPage } from '~/helpers'
 import { get, store, update, removeWithSwal } from '~/helpers/request'
+import DateRangePicker from 'react-bootstrap-daterangepicker';
+import 'bootstrap-daterangepicker/daterangepicker.css'
 import AccessList from '~/components/AccessList'
 import Datepicker from 'react-datepicker'
 import axios from 'axios'
+
+var cancel;
+var CancelToken = axios.CancelToken;
 
 class Order extends Component {
     static getInitialProps({ query }) {
@@ -26,6 +31,7 @@ class Order extends Component {
             filterProduct: '',
             filterStatus: '',
             filterDate: '',
+            filterOrderNumber: '',
             title: 'Buat Pemesanan',
             modalType: "create",
         }
@@ -35,20 +41,11 @@ class Order extends Component {
         const spbu = await get('/spbu', { search: this.props.query.spbu })
         if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
         checkAclPage('spbu.manage.order.read')
-        helperBlock('.container-data')
-        await this.setState({ filterDate: moment().toDate() })
+
+        await this.setState({ filterDate: moment().format("MM/DD/YYYY - MM/DD/YYYY") })
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
-        const data = await get('/order', {
-            with: ['spbu', 'product'],
-            filter_col: ['spbu_uuid', 'order_date'],
-            filter_val: [this.props.query.spbu, moment(this.state.filterDate).format('YYYY-MM-DD')],
-        })
-        if (data != undefined && data.success) {
-            this.setState({
-                dataItems: data.data.data
-            })
-            helperUnblock('.container-data')
-        }
+
+        await this.getOrder()
 
         const products = await axios.get('/api/v1/product-spbu', {
             headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
@@ -67,6 +64,42 @@ class Order extends Component {
 
     }
 
+    async getOrder() {
+        helperBlock('.container-data')
+
+        if (cancel != undefined) {
+            cancel();
+        }
+
+        const data = await axios.get('/api/v1/order', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
+            params: {
+                api_key: process.env.APP_API_KEY,
+                spbu_uuid: this.props.query.spbu,
+                filterProduct: this.state.filterProduct,
+                filterStatus: this.state.filterStatus,
+                filterDate: this.state.filterDate,
+                filterOrderNumber: this.state.filterOrderNumber
+            },
+            cancelToken: new CancelToken(function executor(c) {
+              cancel = c;
+            }),
+        })
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                console.log(error.response);
+            });
+
+        if (data != undefined && data.success) {
+            this.setState({
+                dataItems: data.data.data
+            })
+            helperUnblock('.container-data')
+        }
+    }
+
     handleInputChange = async (e) => {
         await this.setState({
             [e.target.name]: e.target.value
@@ -74,69 +107,34 @@ class Order extends Component {
     }
 
     handleSelectChange = async (e) => {
-        let column = []
-        let value = []
         await this.setState({
             [e.target.name]: e.target.value
         })
 
-        if (this.state.filterProduct != '') {
-            column.push('product_uuid')
-            value.push(this.state.filterProduct)
-        }
-
-        if (this.state.filterStatus != '') {
-            column.push('status')
-            value.push(this.state.filterStatus)
-        }
-
-        column.push('order_date')
-        value.push(moment(this.state.filterDate).format("YYYY-MM-DD"))
-        column.push('spbu_uuid')
-        value.push(this.props.query.spbu)
-
-        helperBlock('.container-data')
-        const data = await get('/order', {
-            with: ['spbu', 'product'],
-            filter_col: column,
-            filter_val: value,
-        })
-        if (data != undefined && data.success) {
-            this.setState({
-                dataItems: data.data.data
-            })
-            helperUnblock('.container-data')
-        }
+        await this.getOrder()
     }
 
-    handleCalendarChange = async (date) => {
-        let column = []
-        let value = []
-        await this.setState({ filterDate: date });
-
-        column.push('order_date')
-        value.push(moment(date).format("YYYY-MM-DD"))
-        column.push('spbu_uuid')
-        value.push(this.props.query.spbu)
-
-        if (this.state.filterProduct != '') {
-            column.push('product_uuid')
-            value.push(this.state.filterProduct)
-        }
-
-        helperBlock('.container-data')
-        const data = await get('/order', {
-            with: ['spbu', 'product'],
-            filter_col: column,
-            filter_val: value,
+    handleFilterChange = async (e) => {
+        console.log(e.target.value)
+        await this.setState({
+            [e.target.name]: e.target.value
         })
-        if (data != undefined && data.success) {
-            this.setState({
-                dataItems: data.data.data
-            })
-            helperUnblock('.container-data')
-        }
+        await this.getOrder()
+    }
+
+    handleCalendarChange = date => {
+        this.setState({ filterDate: date });
     };
+
+    handleEvent = async (event, picker) => {
+        await this.setState({ filterDate: moment(picker.startDate).format("MM/DD/YYYY") + ' - ' + moment(picker.endDate).format("MM/DD/YYYY") });
+        await this.getOrder()
+    }
+
+    handleCallback = async (start, end, label) => {
+        await this.setState({ filterDate: moment(start).format("MM/DD/YYYY") + ' - ' + moment(end).format("MM/DD/YYYY") });
+        await this.getOrder()
+    }
 
     handleInputDateChange = async (name, date) => {
         await this.setState({ [name]: date });
@@ -148,7 +146,7 @@ class Order extends Component {
             modalType: modalType,
             uuid: item.uuid || '',
             product_uuid: item.product_uuid || '',
-            order_date: moment(item.order_date).toDate() || moment().toDate(),
+            order_date: moment().toDate(),
             order_no: item.order_no || '',
             quantity: item.quantity || '',
         })
@@ -284,11 +282,19 @@ class Order extends Component {
                         <div className="form-group">
                             <label>Tanggal Pemesanan</label>
                             <div>
-                                <Datepicker className="form-control" selected={this.state.filterDate} onChange={this.handleCalendarChange} dateFormat="dd/MM/yyyy"></Datepicker>
+                                <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback} onChange={this.handleSelectChange} name="filterDate">
+                                    <input className="form-control"/>
+                                </DateRangePicker>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-3">
+                        <div className="form-group">
+                            <label>No Pemesanan</label>
+                            <div>
+                                <input type="text" className="form-control" name="filterOrderNumber" defaultValue={this.state.filterOrderNumber} onKeyUp={this.handleFilterChange} />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
