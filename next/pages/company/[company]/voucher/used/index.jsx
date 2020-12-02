@@ -225,7 +225,7 @@ class Voucher extends Component {
                                     <th className="text-center">Harga/Liter</th>
                                     <th className="text-center">Total Harga</th>
                                     <th className="text-center">Driver</th>
-                                    <th className="text-center">Plat No</th>
+                                    <th className="text-center">No Plat</th>
                                     <th className="text-center">Aksi</th>
                                 </tr>
                             </thead>

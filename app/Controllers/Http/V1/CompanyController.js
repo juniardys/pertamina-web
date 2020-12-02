@@ -262,7 +262,7 @@ class CompanyController {
 		headers.push('Total Harga')
 		if (params.status == 'used') {
 			headers.push('Driver')
-			headers.push('Plat No')
+			headers.push('No Plat')
 		}
 
 		data.push(headers)
