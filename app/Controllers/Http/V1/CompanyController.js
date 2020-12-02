@@ -253,7 +253,7 @@ class CompanyController {
 
 		var headers = []
 		headers.push('No')
-		headers.push('Waktu ' + (params.status == 'used')? 'Penggunaan' : 'Pembuatan')
+		headers.push('Waktu ' + ((params.status == 'used')? 'Penggunaan' : 'Pembuatan'))
 		headers.push('SPBU')
 		headers.push('Produk')
 		headers.push('Liter')

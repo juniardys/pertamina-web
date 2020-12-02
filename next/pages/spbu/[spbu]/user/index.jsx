@@ -173,7 +173,7 @@ class User extends Component {
                     this.btnModal.stop()
                     return;
                 }
-                const response = await update('/user/update', this.state.uuid, {
+                const response = await update('/user/update/password', this.state.uuid, {
                     password: this.state.password,
                     custom_response: 'role,spbu'
                 })
@@ -233,7 +233,6 @@ class User extends Component {
     }
 
     renderModal = () => {
-        console.log(this.props)
         if (this.state.modalType === 'edit-password') {
             return (
                 <form className="form-horizontal" action="#">
