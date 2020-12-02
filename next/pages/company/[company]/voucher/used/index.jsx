@@ -111,6 +111,37 @@ class Voucher extends Component {
         });
     }
 
+    async exportExcel () {
+        let excelName = 'Data Voucher.xlsx';
+        axios({
+            url: '/api/v1/company/voucher/export/used', // Interface name
+            method: 'get',
+            headers: { 
+                Authorization: `Bearer ${localStorage.getItem('auth')}` 
+            },
+            params: {
+                api_key: process.env.APP_API_KEY,
+                company_uuid: this.props.query.company,
+                filterSpbu: this.state.filterSPBU,
+                filterProduct: this.state.filterProduct,
+                filterAmount: this.state.filterAmount,
+                filterDate: this.state.filterDate,
+            },
+            responseType:"blob" 
+        }).then(function (response) {
+            const blob = new Blob(
+            [response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' })
+            const aElem = document.createElement('a');     // Create a label
+            const href = window.URL.createObjectURL(blob);       // Create downloaded link
+            aElem.href = href;
+            aElem.download = excelName;  // File name after download
+            document.body.appendChild(aElem);
+            aElem.click();     // Click to download
+            document.body.removeChild(aElem); // Download complete remove element
+            window.URL.revokeObjectURL(href) // Release blob object
+        })
+    }
+
     render() {
         const breadcrumb = [
             {
@@ -177,6 +208,7 @@ class Voucher extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Voucher Sudah Terpakai <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
+                            <button className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-export"></i> Export Excel</button>
                         </div>
                     </div>
 
@@ -193,13 +225,14 @@ class Voucher extends Component {
                                     <th className="text-center">Harga/Liter</th>
                                     <th className="text-center">Total Harga</th>
                                     <th className="text-center">Driver</th>
+                                    <th className="text-center">Plat No</th>
                                     <th className="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="10"><center>Data Belum ada</center></td>
+                                        <td colSpan="11"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
@@ -217,6 +250,7 @@ class Voucher extends Component {
                                                 <td className="text-center">Rp { item.price.toLocaleString() }</td>
                                                 <td className="text-center">Rp { numeral(item.total_price).format('0,0') }</td>
                                                 <td className="text-center">{ item.person_name }</td>
+                                                <td className="text-center">{ item.person_plate }</td>
                                                 <td className="text-center">
                                                     <Link href={'/company/' + this.props.query.company + '/voucher/show/' + item.uuid}>
                                                         <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>

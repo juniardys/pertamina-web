@@ -35,6 +35,7 @@
     "adonis-bumblebee": "^2.2.0",
     "adonis-lucid-update-or-create": "^1.0.2",
     "adonis-nextjs": "^3.1.1",
+    "adonis-spreadsheet": "^1.0.1",
     "axios": "^0.19.2",
     "babel-plugin-root-import": "^6.4.1",
     "babel-preset-env": "^1.7.0",

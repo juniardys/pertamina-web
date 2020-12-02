@@ -24,7 +24,8 @@ const providers = [
   '@adonisjs/validator/providers/ValidatorProvider',
   'adonis-bumblebee/providers/BumblebeeProvider',
   'adonis-lucid-update-or-create/providers/UpdateOrCreateProvider',
-  '@adonisjs/mail/providers/MailProvider'
+  '@adonisjs/mail/providers/MailProvider',
+  'adonis-spreadsheet/providers/SpreadSheetProvider'
 ]
 
 /*

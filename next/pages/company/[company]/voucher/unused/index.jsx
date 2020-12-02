@@ -111,6 +111,34 @@ class Voucher extends Component {
         });
     }
 
+    exportExcel = async (e) => {
+        let excelName = 'Data Voucher.xlsx';
+        axios.get('/api/v1/company/voucher/export/unused', {
+            headers: { 
+                Authorization: `Bearer ${localStorage.getItem('auth')}` 
+            },
+            params: {
+                api_key: process.env.APP_API_KEY,
+                company_uuid: this.props.query.company,
+                filterSpbu: this.state.filterSPBU,
+                filterProduct: this.state.filterProduct,
+                filterAmount: this.state.filterAmount,
+                filterDate: this.state.filterDate,
+            },
+            responseType:"blob" 
+        }).then(function (response) {
+            const blob = new Blob(
+            [response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' })
+            const aElem = document.createElement('a');     // Create a label
+            const href = window.URL.createObjectURL(blob);       // Create downloaded link
+            aElem.href = href;
+            aElem.download = excelName;  // File name after download
+            document.body.appendChild(aElem);
+            aElem.click();     // Click to download
+            document.body.removeChild(aElem); // Download complete remove element
+            window.URL.revokeObjectURL(href) // Release blob object
+        })
+    }
 
     render() {
         const breadcrumb = [
@@ -178,6 +206,7 @@ class Voucher extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Voucher Belum Terpakai <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
+                            <button className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-export"></i> Export Excel</button>
                         </div>
                     </div>
 

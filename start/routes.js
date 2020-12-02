@@ -127,6 +127,7 @@ Route.group(() => {
 	Route.get('company/voucher/show', 'CompanyController.ShowVoucher')
 	Route.get('company/voucher/unused', 'CompanyController.UnusedVoucher')
 	Route.get('company/voucher/used', 'CompanyController.UsedVoucher')
+	Route.get('company/voucher/export/:status', 'CompanyController.exportExcel')
 	Route.post('company/store', 'CompanyController.store')
 	Route.post('company/update', 'CompanyController.update')
 	Route.post('company/delete', 'CompanyController.destroy')
