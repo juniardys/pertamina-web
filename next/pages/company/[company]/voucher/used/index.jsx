@@ -208,7 +208,7 @@ class Voucher extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Voucher Sudah Terpakai <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-export"></i> Export Excel</button>
+                            <button className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-file-excel-o"></i> Export Excel</button>
                         </div>
                     </div>
 
