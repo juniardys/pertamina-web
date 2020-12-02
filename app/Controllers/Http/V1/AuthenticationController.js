@@ -27,7 +27,7 @@ class AuthenticationController {
 
             const authenticated = await auth.generate(getUser)
             if (req.imei) {
-                const user = await User.query().where('email', req.email).with('role').first()
+                const user = await User.query().where('id', getUser.id).with('role').first()
 
                 if (req.fcm) {
                     user.FCM_TOKEN = req.fcm
