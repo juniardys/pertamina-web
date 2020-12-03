@@ -112,7 +112,7 @@ class Voucher extends Component {
     }
 
     exportExcel = async (e) => {
-        let excelName = 'Data Voucher.xlsx';
+        let excelName = 'Data Voucher Belum Digunakan.xlsx';
         axios.get('/api/v1/company/voucher/export/unused', {
             headers: { 
                 Authorization: `Bearer ${localStorage.getItem('auth')}` 

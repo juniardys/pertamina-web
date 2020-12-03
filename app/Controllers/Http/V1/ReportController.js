@@ -17,6 +17,8 @@ const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const moment = use('moment')
 const _ = use('lodash')
 const Helpers = use('Helpers')
+const SpreadSheet = use('SpreadSheet')
+const numeral = use('numeral')
 
 class ReportController {
 
@@ -436,6 +438,93 @@ class ReportController {
 
         return response.status(200).json(baseResp(true, data, 'Data laporan sukses diterima'))
     }
+
+	async losisExportExcel({ request, view, response, auth }){
+		const req = request.all()
+		const excel = new SpreadSheet(response, 'xlsx')
+        var dataExcel = []
+        
+        const data = []
+        const shifts = await Shift.query().where('spbu_uuid', req.spbu_uuid).orderBy('no_order', 'asc').fetch()
+
+        var startDate = moment(req.startDate, 'YYYY-MM-DD');
+        var endDate = moment(req.endDate, 'YYYY-MM-DD');
+        for (var date = moment(startDate); date.diff(endDate, 'days') <= 0; date.add(1, 'days')) {
+            var item = {}
+            item.date = date.format('YYYY-MM-DD')
+            item.feeder_tank = await FeederTank.query().where('spbu_uuid', req.spbu_uuid).where('uuid', req.feeder_tank_uuid).with('product').first()
+            item.report = {
+                start_meter: 0,
+                last_meter: 0,
+                addition_amount: 0,
+                volume: 0,
+                sales: 0
+            }
+            for (let index = 0; index < shifts.toJSON().length; index++) {
+                const shift = shifts.toJSON()[index];
+                const reportFeederTank = await ReportFeederTank.query()
+                    .where('spbu_uuid', req.spbu_uuid)
+                    .where('shift_uuid', shift.uuid)
+                    .where('feeder_tank_uuid', req.feeder_tank_uuid)
+                    .where('date', date.format('YYYY-MM-DD'))
+                    .first()
+                if (reportFeederTank) {
+                    if (index == 0) item.report.start_meter = reportFeederTank.start_meter
+                    item.report.last_meter = reportFeederTank.last_meter
+                    item.report.addition_amount += reportFeederTank.addition_amount
+                }
+            }
+            item.report.volume = item.report.last_meter - (item.report.start_meter + item.report.addition_amount)
+            const reportNozzle = await ReportNozzle.query()
+                .where('spbu_uuid', req.spbu_uuid)
+                .where('date', moment(date).format('YYYY-MM-DD'))
+                .whereHas('nozzle', (q) => {
+                    q.where('feeder_tank_uuid', req.feeder_tank_uuid)
+                })
+                .fetch()
+            item.report.sales = _.sumBy(reportNozzle.toJSON(), item => Number(item.volume)) || 0
+            data.push(item)
+        }
+
+		var headers = []
+		headers.push('Tanggal')
+		headers.push('Produk')
+		headers.push('Meteran Awal')
+		headers.push('Pembelian')
+		headers.push('Meteran Akhir')
+		headers.push('Volume')
+		headers.push('Penjualan')
+		headers.push('Losis')
+
+        dataExcel.push(headers)
+        
+        data.forEach((item, i) => {
+            var items = []
+            items.push(item.date)
+            items.push(item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || '-')
+            items.push((item.report == null ? 0 : numeral(item.report.start_meter).format('0,0')))
+            items.push((item.report == null ? 0 : numeral(item.report.addition_amount).format('0,0')))
+            items.push((item.report == null ? 0 : numeral(item.report.last_meter).format('0,0')))
+            items.push((item.report == null ? 0 : numeral(item.report.volume).format('0,0')))
+            items.push((item.report == null ? 0 : numeral(item.report.sales).format('0,0')))
+            items.push((item.report == null ? 0 : numeral(item.report.sales + item.report.volume).format('0,0')))
+            dataExcel.push(items)
+        })
+
+        dataExcel.push([
+            '',
+            '',
+            '',
+            '',
+            'Total',
+            numeral(_.sumBy(data, item => Number(item.report.volume))).format('0,0'),
+            numeral(_.sumBy(data, item => Number(item.report.sales))).format('0,0'),
+            numeral(_.sumBy(data, item => Number((item.report.sales + item.report.volume)))).format('0,0'),
+        ])
+
+		excel.addSheet('Losis', dataExcel)
+		excel.download('Data Losis')
+	}
 
 }
 

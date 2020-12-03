@@ -114,6 +114,7 @@ Route.group(() => {
 	Route.post('report/feeder-tank/update', 'ReportController.updateFeederTank')
 	// Losis
 	Route.get('losis', 'ReportController.getReportLosis')
+	Route.get('losis/export', 'ReportController.losisExportExcel')
 
 	// Notification
 	Route.get('notification', 'NotificationController.get')

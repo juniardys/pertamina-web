@@ -47,7 +47,6 @@ class Losis extends Component {
                 filterFeederTank: feeder_tanks.data.data[0].uuid
             })
         }
-        console.log(this.state.filterFeederTank)
         const data = await get('/losis', {
             search: this.props.query.spbu,
             spbu_uuid: this.props.query.spbu,
@@ -111,6 +110,34 @@ class Losis extends Component {
         await this.getLosis()
     }
 
+    exportExcel = async (e) => {
+        let excelName = 'Data Losis.xlsx';
+        axios.get('/api/v1/losis/export', {
+            headers: { 
+                Authorization: `Bearer ${localStorage.getItem('auth')}` 
+            },
+            params: {
+                api_key: process.env.APP_API_KEY,
+                spbu_uuid: this.props.query.spbu,
+                feeder_tank_uuid: this.state.filterFeederTank,
+                startDate: this.state.startDate,
+                endDate: this.state.endDate
+            },
+            responseType:"blob" 
+        }).then(function (response) {
+            const blob = new Blob(
+            [response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' })
+            const aElem = document.createElement('a');     // Create a label
+            const href = window.URL.createObjectURL(blob);       // Create downloaded link
+            aElem.href = href;
+            aElem.download = excelName;  // File name after download
+            document.body.appendChild(aElem);
+            aElem.click();     // Click to download
+            document.body.removeChild(aElem); // Download complete remove element
+            window.URL.revokeObjectURL(href) // Release blob object
+        })
+    }
+
     render() {
         const breadcrumb = [
             {
@@ -158,7 +185,7 @@ class Losis extends Component {
                         <h5 className="panel-title">Laporan Losis {(this.state.feederTankData.length > 0) ? this.state.feederTankData[0].name : null}<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
                             <AccessList acl="spbu.manage.losis.export">
-                                <button type="button" className="btn btn-primary">Ekspor</button>
+                                <button type="button" className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-file-excel-o"></i> Ekspor</button>
                             </AccessList>
                         </div>
                     </div>
