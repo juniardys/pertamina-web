@@ -111,7 +111,7 @@ class Voucher extends Component {
         });
     }
 
-    async exportExcel () {
+    exportExcel = async (e) => {
         let excelName = 'Data Voucher.xlsx';
         axios({
             url: '/api/v1/company/voucher/export/used', // Interface name
