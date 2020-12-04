@@ -121,6 +121,11 @@ Route.group(() => {
 	Route.get('notification/count-unread', 'NotificationController.countUnread')
 	Route.get('notification/create', 'NotificationController.create')
 
+	// Voucher SPBU
+	Route.get('spbu/voucher/unused', 'VoucherController.UnusedVoucher')
+	Route.get('spbu/voucher/used', 'VoucherController.UsedVoucher')
+	Route.get('spbu/voucher/export/:status', 'VoucherController.exportExcel')
+
 	// Company
 	Route.get('company', 'CompanyController.get')
 	Route.get('company/history', 'CompanyController.history')

@@ -9,6 +9,8 @@ const { queryBuilder, baseResp } = use('App/Helpers')
 const uuid = use('uuid-random')
 const db = use('Database')
 const moment = use('moment')
+const SpreadSheet = use('SpreadSheet')
+const numeral = use('numeral')
 
 class VoucherController {
 
@@ -80,6 +82,166 @@ class VoucherController {
             return post;
         }
     }
+
+	async UnusedVoucher({ request, response, transform }) {
+		const req = request.all()
+		var builder = Voucher.query().where('spbu_uuid', req.spbu_uuid)
+			.where('isUsed', false)
+			.with('product')
+			.with('spbu')
+			.with('company')
+			.orderBy('id', 'desc')
+
+		if (req.filterCompany) {
+			builder = builder.whereHas('company', (query) => {
+				query.where('uuid', req.filterCompany)
+			})
+		}
+
+		if (req.filterProduct) {
+			builder = builder.whereHas('product', (query) => {
+				query.where('uuid', req.filterProduct)
+			})
+		}
+
+		if (req.filterAmount) {
+			builder = builder.where('amount', req.filterAmount)
+		}
+
+		if (req.filterDate) {
+			var [startDate, endDate] = req.filterDate.split(' - ')
+			builder = builder.where((query) => {
+				query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+					.where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+			})
+		}
+
+		builder = await builder.fetch()
+
+		return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Voucher Belum Terpakai sukses diterima'))
+	}
+
+	async UsedVoucher({ request, response, transform }) {
+		const req = request.all()
+		var builder = Voucher.query().where('spbu_uuid', req.spbu_uuid)
+			.where('isUsed', true)
+			.with('product')
+			.with('spbu')
+			.with('company')
+			.orderBy('id', 'desc')
+
+		if (req.filterCompany) {
+			builder = builder.whereHas('company', (query) => {
+				query.where('uuid', req.filterCompany)
+			})
+		}
+
+		if (req.filterProduct) {
+			builder = builder.whereHas('product', (query) => {
+				query.where('uuid', req.filterProduct)
+			})
+		}
+
+		if (req.filterAmount) {
+			builder = builder.where('amount', req.filterAmount)
+		}
+
+		if (req.filterDate) {
+			var [startDate, endDate] = req.filterDate.split(' - ')
+			builder = builder.where((query) => {
+				query.where('used_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+					.where('used_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+			})
+		}
+
+		builder = await builder.fetch()
+
+		return response.status(200).json(baseResp(true, builder.toJSON(), 'Data Voucher Terpakai sukses diterima'))
+	}
+
+	async exportExcel({ request, view, response, auth, params }){
+		const req = request.all()
+		const excel = new SpreadSheet(response, 'xlsx')
+		var data = []
+
+		var builder = Voucher.query().where('spbu_uuid', req.spbu_uuid)
+			.where('isUsed', (params.status == 'used') ? true : false)
+			.with('product')
+            .with('spbu')
+            .with('company')
+			.orderBy('id', 'asc')
+
+		if (req.filterCompany) {
+			builder = builder.whereHas('company', (query) => {
+				query.where('uuid', req.filterCompany)
+			})
+		}
+
+		if (req.filterProduct) {
+			builder = builder.whereHas('product', (query) => {
+				query.where('uuid', req.filterProduct)
+			})
+		}
+
+		if (req.filterAmount) {
+			builder = builder.where('amount', req.filterAmount)
+		}
+
+		if (req.filterDate) {
+			var [startDate, endDate] = req.filterDate.split(' - ')
+			builder = builder.where((query) => {
+				if (params.status == 'used') {
+					query.where('used_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+						.where('used_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+				} else {
+					query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+						.where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+				}
+			})
+		}
+
+		builder = await builder.fetch()
+
+		var headers = []
+		headers.push('No')
+		headers.push('Waktu ' + ((params.status == 'used')? 'Penggunaan' : 'Pembuatan'))
+		headers.push('Perusahaan')
+		headers.push('Produk')
+		headers.push('Liter')
+		headers.push('Code')
+		headers.push('Harga/Liter')
+		headers.push('Total Harga')
+		if (params.status == 'used') {
+			headers.push('Driver')
+			headers.push('No Plat')
+		}
+
+		data.push(headers)
+
+		builder.toJSON().forEach((voucher, i) => {
+			var vouchers = []
+			vouchers.push(i + 1)
+			if (params.status == 'used') {
+				vouchers.push(moment(voucher.used_at).format('DD MMM YYYY HH:mm:ss'))
+			} else {
+				vouchers.push(moment(voucher.created_at).format('DD MMM YYYY HH:mm:ss'))
+			}
+			vouchers.push(voucher.company.name)
+			vouchers.push(voucher.product.name)
+			vouchers.push(numeral(voucher.amount).format('0,0') + ' Liter')
+			vouchers.push(voucher.qr_code)
+			vouchers.push('Rp ' + numeral(voucher.price).format('0,0'))
+			vouchers.push('Rp ' + numeral(voucher.total_price).format('0,0'))
+			if (params.status == 'used') {
+				vouchers.push(voucher.person_name)
+				vouchers.push(voucher.person_plate)
+			}
+			data.push(vouchers)
+		})
+
+		excel.addSheet('Voucher', data)
+		excel.download('List Voucher')
+	}
 
 }
 

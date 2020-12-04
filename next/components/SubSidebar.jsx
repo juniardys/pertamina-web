@@ -69,6 +69,22 @@ const SubSidebar = () => {
 				path: '/spbu/[spbu]/order'
 			},
 			{
+				access: 'spbu.manage.voucher.unused.read',
+				type: 'menu',
+				title: 'Voucher Belum Digunakan',
+				icon: 'icon-ticket',
+				url: `/spbu/${spbu}/voucher/unused`,
+				path: '/spbu/[spbu]/voucher/unused'
+			},
+			{
+				access: 'spbu.manage.voucher.used.read',
+				type: 'menu',
+				title: 'Voucher Sudah Digunakan',
+				icon: 'icon-ticket',
+				url: `/spbu/${spbu}/voucher/used`,
+				path: '/spbu/[spbu]/voucher/used'
+			},
+			{
 				access: 'spbu.manage.setting',
 				type: 'menu',
 				title: 'Pengaturan',

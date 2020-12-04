@@ -128,7 +128,6 @@ class Order extends Component {
 
     handleEvent = async (event, picker) => {
         await this.setState({ filterDate: moment(picker.startDate).format("MM/DD/YYYY") + ' - ' + moment(picker.endDate).format("MM/DD/YYYY") });
-        await this.getOrder()
     }
 
     handleCallback = async (start, end, label) => {

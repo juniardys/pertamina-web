@@ -11,7 +11,7 @@ import Datepicker from 'react-datepicker'
 import axios from 'axios'
 import numeral from 'numeral'
 
-class Voucher extends Component {
+class Used extends Component {
     static getInitialProps({ query }) {
         return { query }
     }
@@ -19,57 +19,49 @@ class Voucher extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            filterSPBU: '',
+            spbu_name: '',
+            filterCompany: '',
             filterProduct: '',
             filterAmount: '',
             filterDate: '',
-            spbuData: [],
+            companyData: [],
             productData: [],
             dataItems: [],
         }
     }
 
     async componentDidMount() {
+        const spbu = await get('/spbu', { search: this.props.query.spbu })
+        if (spbu && spbu.success) this.setState({ spbu_name: spbu.data.data[0].name })
+        checkAclPage('spbu.manage.voucher.used.read')
+
         await this.setState({ filterDate: moment().format("MM/DD/YYYY - MM/DD/YYYY") })
 
         await this.getVoucher()
 
-        const spbu = await get('/spbu')
-        if (spbu && spbu.success) this.setState({ spbuData: spbu.data.data })
-        const products = await get('/product')
-        if (products && products.success) this.setState({ productData: products.data.data, modalProductData: products.data.data })
+        const company = await get('/company')
+        if (company && company.success) this.setState({ companyData: company.data.data })
+
+        const products = await axios.get('/api/v1/product-spbu', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
+            params: {
+                api_key: process.env.APP_API_KEY,
+                spbu_uuid: this.props.query.spbu
+            }
+        })
+            .then(response => {
+                return response.data
+            })
+            .catch(error => {
+                console.log(error.response);
+            });
+        if (products && products.success) this.setState({ productData: products.data.data })
     }
 
     handleSelectChange = async (e) => {
-        let oldSpbu = this.state.filterSPBU
-        let filterSPBUchanged = false
         await this.setState({
             [e.target.name]: e.target.value
         })
-        if (oldSpbu != this.state.filterSPBU) filterSPBUchanged = true
-
-        if (filterSPBUchanged) {
-            if (this.state.filterSPBU == '') {
-                const products = await get('/product')
-                if (products && products.success) this.setState({ productData: products.data.data, filterProduct: '' })
-            } else {
-                const products = await axios.get('/api/v1/product-spbu', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` },
-                    params: {
-                        api_key: process.env.APP_API_KEY,
-                        spbu_uuid: this.state.filterSPBU
-                    }
-                })
-                    .then(response => {
-                        return response.data
-                    })
-                    .catch(error => {
-                        console.log(error.response);
-                    });
-                if (products && products.success) this.setState({ productData: products.data.data, filterProduct: '' })
-            }
-        }
-
         await this.getVoucher()
     }
 
@@ -88,14 +80,14 @@ class Voucher extends Component {
 
     async getVoucher() {
         helperBlock('.container-data')
-        await axios.get('/api/v1/company/voucher/used', { 
+        await axios.get('/api/v1/spbu/voucher/used', { 
             headers: { 
                 Authorization: `Bearer ${localStorage.getItem('auth')}` 
             },
             params: {
                 api_key: process.env.APP_API_KEY,
-                company_uuid: this.props.query.company,
-                filterSpbu: this.state.filterSPBU,
+                spbu_uuid: this.props.query.spbu,
+                filterCompany: this.state.filterCompany,
                 filterProduct: this.state.filterProduct,
                 filterAmount: this.state.filterAmount,
                 filterDate: this.state.filterDate,
@@ -112,16 +104,14 @@ class Voucher extends Component {
 
     exportExcel = async (e) => {
         let excelName = 'Data Voucher Sudah Digunakan.xlsx';
-        axios({
-            url: '/api/v1/company/voucher/export/used', // Interface name
-            method: 'get',
+        axios.get('/api/v1/spbu/voucher/export/used', {
             headers: { 
                 Authorization: `Bearer ${localStorage.getItem('auth')}` 
             },
             params: {
                 api_key: process.env.APP_API_KEY,
-                company_uuid: this.props.query.company,
-                filterSpbu: this.state.filterSPBU,
+                spbu_uuid: this.props.query.spbu,
+                filterCompany: this.state.filterCompany,
                 filterProduct: this.state.filterProduct,
                 filterAmount: this.state.filterAmount,
                 filterDate: this.state.filterDate,
@@ -144,27 +134,27 @@ class Voucher extends Component {
     render() {
         const breadcrumb = [
             {
-                title: 'Perusahaan',
-                url: '/company'
+                title: 'SPBU',
+                url: '/spbu'
             },
             {
-                title: 'Voucher',
-                url: '/company/[company]/voucher',
-                as: `/company/${this.props.query.company}/voucher`
+                title: 'Voucher Sudah Digunakan',
+                url: '/spbu/[spbu]/voucher/used',
+                as: `/spbu/${this.props.query.spbu}/voucher/used`
             }
         ]
 
         return (
-            <Layout title={'Voucher Perusahaan'} breadcrumb={breadcrumb}>
+            <Layout title={'Voucher ' + this.state.spbu_name} breadcrumb={breadcrumb}>
                 <div className="row">
                     <div className="col-md-3">
                         <div className="form-group">
-                            <label>SPBU</label>
-                            <select id="filterSPBU" className="form-control" name="filterSPBU" defaultValue={(this.state.spbuData.length > 0) ? this.state.spbuData[0].name : ''} onChange={this.handleSelectChange}>
+                            <label>Perusahaan</label>
+                            <select id="filterCompany" className="form-control" name="filterCompany" defaultValue={(this.state.companyData.length > 0) ? this.state.companyData[0].name : ''} onChange={this.handleSelectChange}>
                                 <option key={0} value="">Semua</option>
                                 {
-                                    this.state.spbuData.map((item, i) => (
-                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterSPBU}>{item.name}</option>
+                                    this.state.companyData.map((item, i) => (
+                                        <option key={i + 1} value={item.uuid} selected={item.uuid == this.state.filterCompany}>{item.name}</option>
                                     ))
                                 }
                             </select>
@@ -207,7 +197,9 @@ class Voucher extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Voucher Sudah Terpakai <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-file-excel-o"></i> Export Excel</button>
+                            <AccessList acl="spbu.manage.voucher.used.export">
+                                <button className="btn btn-success" onClick={this.exportExcel}><i className="fa fa-file-excel-o"></i> Export Excel</button>
+                            </AccessList>
                         </div>
                     </div>
 
@@ -217,7 +209,7 @@ class Voucher extends Component {
                                 <tr>
                                     <th className="text-center">No</th>
                                     <th className="text-center">Waktu Penggunaan</th>
-                                    <th className="text-center">SPBU</th>
+                                    <th className="text-center">Perusahaan</th>
                                     <th className="text-center">Produk</th>
                                     <th className="text-center">Liter</th>
                                     <th className="text-center">Code</th>
@@ -242,7 +234,7 @@ class Voucher extends Component {
                                                     {moment(item.used_date).format('DD MMM YYYY HH:mm:ss')}
                                                     </center>
                                                 </td>
-                                                <td className="text-center">{ item.spbu.name }</td>
+                                                <td className="text-center">{ item.company.name }</td>
                                                 <td className="text-center">{ item.product.name }</td>
                                                 <td className="text-center">{ item.amount.toLocaleString() } Liter</td>
                                                 <td className="text-center">{ item.qr_code }</td>
@@ -267,4 +259,4 @@ class Voucher extends Component {
     }
 }
 
-export default Voucher;
+export default Used;
