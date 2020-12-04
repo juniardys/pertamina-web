@@ -209,7 +209,7 @@ class Losis extends Component {
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="6"><center>Data Belum ada</center></td>
+                                        <td colSpan="8"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                     this.state.dataItems.map((item, i) => (

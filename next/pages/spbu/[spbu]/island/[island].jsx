@@ -238,7 +238,7 @@ class Index extends Component {
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="5"><center>Data Belum ada</center></td>
+                                        <td colSpan="6"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (this.state.dataItems.map((nozzle, i) => (
                                     <tr key={i}>
