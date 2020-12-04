@@ -217,13 +217,12 @@ class Used extends Component {
                                     <th className="text-center">Total Harga</th>
                                     <th className="text-center">Driver</th>
                                     <th className="text-center">No Plat</th>
-                                    <th className="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="11"><center>Data Belum ada</center></td>
+                                        <td colSpan="10"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
@@ -242,11 +241,6 @@ class Used extends Component {
                                                 <td className="text-center">Rp { numeral(item.total_price).format('0,0') }</td>
                                                 <td className="text-center">{ item.person_name }</td>
                                                 <td className="text-center">{ item.person_plate }</td>
-                                                <td className="text-center">
-                                                    <Link href={'/company/' + this.props.query.company + '/voucher/show/' + item.uuid}>
-                                                        <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                                    </Link>
-                                                </td>
                                             </tr>
                                         ))
                                     )}

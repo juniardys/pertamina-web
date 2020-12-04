@@ -215,13 +215,12 @@ class Unused extends Component {
                                     <th className="text-center">Code</th>
                                     <th className="text-center">Harga/Liter</th>
                                     <th className="text-center">Total Harga</th>
-                                    <th className="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {(this.state.dataItems == '') ? (
                                     <tr>
-                                        <td colSpan="9"><center>Data Belum ada</center></td>
+                                        <td colSpan="8"><center>Data Belum ada</center></td>
                                     </tr>
                                 ) : (
                                         this.state.dataItems.map((item, i) => (
@@ -238,11 +237,6 @@ class Unused extends Component {
                                                 <td className="text-center">{ item.qr_code }</td>
                                                 <td className="text-center">Rp { item.price.toLocaleString() }</td>
                                                 <td className="text-center">Rp { numeral(item.total_price).format('0,0') }</td>
-                                                <td className="text-center">
-                                                    <Link href={'/company/' + this.props.query.company + '/voucher/show/' + item.uuid}>
-                                                        <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail"><i className="icon-library2"></i></button>
-                                                    </Link>
-                                                </td>
                                             </tr>
                                         ))
                                     )}
