@@ -27,6 +27,7 @@ class Report extends Component {
 
     async componentDidMount() {
         try {
+            window.$("#time-start, #time-end").AnyTime_noPicker();
             anyTimePicker("#time-start, #time-end")
         } catch (error) {
 
