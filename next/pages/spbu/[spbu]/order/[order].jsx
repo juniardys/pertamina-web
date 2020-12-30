@@ -47,10 +47,7 @@ class OrderDetail extends Component {
         helperBlock('.container-data')
         this.btnModal = Ladda.create(document.querySelector('.btn-modal-spinner'))
         const order = await get('/order', {
-            with: ['spbu', 'product'],
-            search: this.props.query.order,
-            filter_col: ['spbu_uuid'],
-            filter_val: [this.props.query.spbu]
+            uuid: this.props.query.order,
         })
         if (order != undefined && order.success) {
             const dataOrder = order.data.data[0]
@@ -368,7 +365,7 @@ class OrderDetail extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Daftar Pengiriman<a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
-                            <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }} onClick={() => Router.back()}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
+                            <button type="button" className="btn btn-brand" style={{ marginRight: '12px' }} onClick={() => window.location.href="/spbu/"+this.props.query.spbu+"/order"}><i className="icon-arrow-left22 position-left"></i> Kembali</button>
                             <AccessList acl="spbu.manage.order.delivery.create">
                                 <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#modal" onClick={() => this._setModalState('Konfirmasi Pengiriman', 'create', [])}><i className="icon-plus-circle2 position-left"></i> Konfirmasi</button>
                             </AccessList>

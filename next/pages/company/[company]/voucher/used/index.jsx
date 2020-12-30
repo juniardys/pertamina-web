@@ -239,7 +239,7 @@ class Voucher extends Component {
                                                 <td className="text-center">{ i + 1 }</td>
                                                 <td className="text-center">
                                                     <center>
-                                                    {moment(item.used_date).format('DD MMM YYYY HH:mm:ss')}
+                                                    {moment(item.used_date).format('MM/DD/YYYY HH:mm:ss')}
                                                     </center>
                                                 </td>
                                                 <td className="text-center">{ item.spbu.name }</td>

@@ -214,7 +214,7 @@ class Losis extends Component {
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
                                         <tr key={i}>
-                                            <td><center>{item.date}</center></td>
+                                            <td><center>{moment(item.date, 'YYYY-MM-DD').format('MM/DD/YYYY') || '-'}</center></td>
                                             <td>{item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || ''}</td>
                                             <td>{item.report == null ? 0 : item.report.start_meter.toLocaleString()}</td>
                                             <td>{item.report == null ? 0 : item.report.addition_amount.toLocaleString()}</td>

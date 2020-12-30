@@ -393,15 +393,15 @@ class Order extends Component {
                                                 <td>{i + 1}</td>
                                                 <td>{item.spbu.name}</td>
                                                 <td>{item.product.name}</td>
-                                                <td>{item.order_date}</td>
+                                                <td>{moment(item.order_date, 'YYYY-MM-DD').format('MM/DD/YYYY') || '-'}</td>
                                                 <td>{item.order_no}</td>
                                                 <td>{item.quantity}</td>
                                                 <td>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</td>
                                                 <td>
                                                     <AccessList acl="order.delivery.read">
-                                                        <Link href={'/order/[order]'} as={'/order/' + item.uuid}>
+                                                        <a href={'/order/' + item.uuid} target="_blank" style={{color: 'black'}}>
                                                             <button type="button" className="btn btn-brand btn-icon" style={{ marginRight: '12px' }} data-popup="tooltip" data-original-title="Detail Pengiriman"><i className="icon-transmission"></i></button>
-                                                        </Link>
+                                                        </a>
                                                     </AccessList>
 
                                                     <AccessList acl="order.update">

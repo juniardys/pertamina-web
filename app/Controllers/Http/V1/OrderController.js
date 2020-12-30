@@ -11,12 +11,16 @@ const moment = use('moment')
 class OrderController {
     async get({ request, response, transform }) {
         const req = request.all()
-        var query = Order.query().with('spbu').with('product')
+        var query = Order.query().with('spbu').with('product').orderBy('order_date', 'asc').orderBy('spbu_uuid', 'asc').orderBy('id', 'asc')
 
         if (req.spbu_uuid) {
             query = query.whereHas('spbu', (query) => {
                 query.where('uuid', req.spbu_uuid)
             })
+        }
+
+        if (req.uuid) {
+            query.where('uuid', req.uuid)
         }
 
         if (req.filterOrderNumber) {
@@ -41,8 +45,8 @@ class OrderController {
             if (req.filterDate) {
                 var [startDate, endDate] = req.filterDate.split(' - ')
                 query = query.where((query) => {
-                    query.where('created_at', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
-                        .where('created_at', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
+                    query.where('order_date', '>=', moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD 00:00:00'))
+                        .where('order_date', '<=', moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD 23:59:59'))
                 })
             }
         }
