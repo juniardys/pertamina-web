@@ -169,7 +169,17 @@ class Losis extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Pilih Tanggal</label>
-                            <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback} onChange={this.handleSelectChange} name="filterDate">
+                            <DateRangePicker 
+                                onEvent={this.handleEvent} 
+                                onCallback={this.handleCallback} 
+                                onChange={this.handleSelectChange} 
+                                initialSettings={{
+                                    locale: {
+                                        format: 'DD/MM/YYYY'
+                                    }
+                                }}
+                                name="filterDate"
+                            >
                                 <input className="form-control"/>
                             </DateRangePicker>
                         </div>
@@ -214,7 +224,7 @@ class Losis extends Component {
                                 ) : (
                                     this.state.dataItems.map((item, i) => (
                                         <tr key={i}>
-                                            <td><center>{moment(item.date, 'YYYY-MM-DD').format('MM/DD/YYYY') || '-'}</center></td>
+                                            <td><center>{moment(item.date, 'YYYY-MM-DD').format('DD/MM/YYYY') || '-'}</center></td>
                                             <td>{item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || ''}</td>
                                             <td>{item.report == null ? 0 : item.report.start_meter.toLocaleString()}</td>
                                             <td>{item.report == null ? 0 : item.report.addition_amount.toLocaleString()}</td>

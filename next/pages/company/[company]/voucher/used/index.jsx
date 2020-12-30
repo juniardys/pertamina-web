@@ -197,7 +197,17 @@ class Voucher extends Component {
                     <div className="col-md-3">
                         <div className="form-group">
                             <label>Pilih Tanggal</label>
-                            <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback} onChange={this.handleSelectChange} name="filterDate">
+                            <DateRangePicker 
+                                onEvent={this.handleEvent} 
+                                onCallback={this.handleCallback} 
+                                onChange={this.handleSelectChange} 
+                                initialSettings={{
+                                    locale: {
+                                        format: 'DD/MM/YYYY'
+                                    }
+                                }}
+                                name="filterDate"
+                            >
                                 <input className="form-control"/>
                             </DateRangePicker>
                         </div>
@@ -239,7 +249,7 @@ class Voucher extends Component {
                                                 <td className="text-center">{ i + 1 }</td>
                                                 <td className="text-center">
                                                     <center>
-                                                    {moment(item.used_date).format('MM/DD/YYYY HH:mm:ss')}
+                                                    {moment(item.used_date).format('DD/MM/YYYY HH:mm:ss')}
                                                     </center>
                                                 </td>
                                                 <td className="text-center">{ item.spbu.name }</td>

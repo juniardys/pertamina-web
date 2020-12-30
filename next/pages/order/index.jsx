@@ -342,7 +342,17 @@ class Order extends Component {
                         <div className="form-group">
                             <label>Tanggal Pemesanan</label>
                             <div>
-                                <DateRangePicker onEvent={this.handleEvent} onCallback={this.handleCallback} onChange={this.handleSelectChange} name="filterDate">
+                                <DateRangePicker 
+                                    onEvent={this.handleEvent} 
+                                    onCallback={this.handleCallback} 
+                                    onChange={this.handleSelectChange}
+                                    initialSettings={{
+                                        locale: {
+                                            format: 'DD/MM/YYYY'
+                                        }
+                                    }}
+                                    name="filterDate"
+                                >
                                     <input className="form-control"/>
                                 </DateRangePicker>
                             </div>
@@ -393,7 +403,7 @@ class Order extends Component {
                                                 <td>{i + 1}</td>
                                                 <td>{item.spbu.name}</td>
                                                 <td>{item.product.name}</td>
-                                                <td>{moment(item.order_date, 'YYYY-MM-DD').format('MM/DD/YYYY') || '-'}</td>
+                                                <td>{moment(item.order_date, 'YYYY-MM-DD').format('DD/MM/YYYY') || '-'}</td>
                                                 <td>{item.order_no}</td>
                                                 <td>{item.quantity}</td>
                                                 <td>{item.status.charAt(0).toUpperCase() + item.status.slice(1)}</td>
