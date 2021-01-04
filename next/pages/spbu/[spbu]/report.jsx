@@ -343,6 +343,7 @@ class Report extends Component {
                                     <div className="panel-heading">
                                         <h6 className="panel-title">
                                             <a data-toggle="collapse" href={'#' + data.uuid} aria-expanded="false" className="collapsed">{data.name}</a>
+                                            <span className="pull-right" style={{marginRight: "30px"}}>Petugas: { ((data.report_data != null && data.report_data.operator != null && data.report_data.operator.name != null)? data.report_data.operator.name : '-') }</span>
                                         </h6>
                                     </div>
                                     <div id={data.uuid} className="panel-collapse collapse" aria-expanded="false" style={{ height: '0px' }}>
@@ -434,6 +435,28 @@ class Report extends Component {
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
+                                            </table>
+
+                                            <h5 style={{ marginTop: '20px' }}>
+                                                Rekan Kerja
+                                            </h5>
+                                            <table className="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{ width: '10px' }}>#</th>
+                                                        <th>Nama</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {(data.co_worker.data == '') ? null : (
+                                                        data.co_worker.data.map((report, i) => (
+                                                            <tr>
+                                                                <td>{i + 1}</td>
+                                                                <td>{report.name}</td>
+                                                            </tr>
+                                                        ))
+                                                    )}
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>

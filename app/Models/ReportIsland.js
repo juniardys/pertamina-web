@@ -18,8 +18,8 @@ class ReportIsland extends Model {
         return this.belongsTo('App/Models/Shift', 'shift_uuid', 'uuid')
     }
     
-    admin() {
-        return this.belongsTo('App/Models/User', 'admin_acc', 'uuid')
+    operator() {
+        return this.belongsTo('App/Models/User', 'operator_uuid', 'uuid')
     }
     
     // Setters

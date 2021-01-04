@@ -8,6 +8,7 @@ const Nozzle = use('App/Models/Nozzle')
 const User = use('App/Models/User')
 const Product = use('App/Models/Product')
 const ReportFeederTank = use('App/Models/ReportFeederTank')
+const ReportIsland = use('App/Models/ReportIsland')
 const ReportNozzle = use('App/Models/ReportNozzle')
 const ReportPayment = use('App/Models/ReportPayment')
 const ReportCoWorker = use('App/Models/ReportCoWorker')
@@ -16,6 +17,7 @@ const { baseResp, uploadImage, getShiftBefore, getShiftAfter } = use('App/Helper
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const moment = use('moment')
 const _ = use('lodash')
+const db = use('Database')
 const Helpers = use('Helpers')
 const SpreadSheet = use('SpreadSheet')
 const numeral = use('numeral')
@@ -85,6 +87,23 @@ class ReportController {
                 data: [],
                 checklist: []
             }
+            // Get Report Island
+            const reportIsland = await ReportIsland.query()
+                .where('spbu_uuid', req.spbu_uuid)
+                .where('island_uuid', island.uuid)
+                .where('shift_uuid', req.shift_uuid)
+                .where('date', moment(req.date).format('YYYY-MM-DD'))
+                .first()
+            if (reportIsland) {
+                island['report_data'] = reportIsland.toJSON()
+                const getOperator = await db.table('users')
+                    .where('uuid', island['report_data'].operator_uuid)
+                    .first()
+                island['report_data']['operator'] = (getOperator)? getOperator : null
+            } else {
+                island['report_data'] = null
+            }
+
             // Get Nozzle
             const nozzle = await Nozzle.query().where('spbu_uuid', req.spbu_uuid).where('island_uuid', island.uuid).fetch()
             for (let i = 0; i < nozzle.toJSON().length; i++) {
