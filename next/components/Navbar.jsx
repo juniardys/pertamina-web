@@ -97,7 +97,7 @@ class Navbar extends Component {
 			<div className="navbar navbar-default header-highlight">
 				<div className="navbar-header">
 					<Link href="/">
-						<a className="navbar-brand" href=""><img src="/image/logo-white.png" alt="Pertamina" style={{ marginTop: '-8px', height: '32px' }} /></a>
+						<a className="navbar-brand" href=""><img src="/logo-white.png" alt="Pertamina" style={{ marginTop: '-8px', height: '32px' }} /></a>
 					</Link>
 
 					<ul className="nav navbar-nav pull-right visible-xs-block">
