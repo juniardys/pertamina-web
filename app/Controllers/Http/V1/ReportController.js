@@ -261,7 +261,7 @@ class ReportController {
                     'spbu_uuid': req.spbu_uuid,
                     'island_uuid': nozzle.island_uuid,
                     'shift_uuid': shiftBefore.shift.uuid,
-                    'nozzle_uuid': item.nozzle_uuid,
+                    'nozzle_uuid': nozzle.nozzle_uuid,
                     'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
                 }).first()
                 // Report available
