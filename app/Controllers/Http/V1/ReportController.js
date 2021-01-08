@@ -275,6 +275,7 @@ class ReportController {
             volume = req.last_meter - start_meter
             total_price = volume * price
             // Update Data
+            nozzle.start_meter = start_meter
             nozzle.total_price = parseInt(total_price) || 0
             nozzle.last_meter = req.last_meter
             await nozzle.save()
@@ -380,7 +381,6 @@ class ReportController {
                     start_meter = feeder_tank.start_meter
                 }
             }
-            if (req.last_meter < start_meter) throw new Error('Tangki (' + dataFeederTank.product.name + ') meteran akhirnya kurang dari meteran awal (' + start_meter + ')')
             // Update Data
             feeder_tank.last_meter = req.last_meter
             await feeder_tank.save()
