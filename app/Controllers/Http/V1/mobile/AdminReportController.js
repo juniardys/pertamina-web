@@ -728,6 +728,7 @@ class AdminReportController {
                     let before = await ReportFeederTank.query().where({
                         'spbu_uuid': req.spbu_uuid,
                         'shift_uuid': shiftBefore.shift.uuid,
+                        'feeder_tank_uuid': item.feeder_tank_uuid,
                         'date': moment(shiftBefore.date).format('YYYY-MM-DD'),
                     }).first()
                     // Report available
