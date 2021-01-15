@@ -522,7 +522,7 @@ class ReportController {
         data.forEach((item, i) => {
             var items = []
             items.push(item.date)
-            items.push(item.feeder_tank.product == null ? '-' : item.feeder_tank.product.name || '-')
+            items.push(item.feeder_tank.toJSON().product == null ? '-' : item.feeder_tank.toJSON().product.name || '-')
             items.push((item.report == null ? 0 : numeral(item.report.start_meter).format('0,0')))
             items.push((item.report == null ? 0 : numeral(item.report.addition_amount).format('0,0')))
             items.push((item.report == null ? 0 : numeral(item.report.last_meter).format('0,0')))
