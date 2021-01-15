@@ -8,12 +8,14 @@ const Nozzle = use('App/Models/Nozzle')
 const User = use('App/Models/User')
 const Product = use('App/Models/Product')
 const ReportFeederTank = use('App/Models/ReportFeederTank')
+const ReportShift = use('App/Models/ReportShift')
 const ReportIsland = use('App/Models/ReportIsland')
 const ReportNozzle = use('App/Models/ReportNozzle')
 const ReportPayment = use('App/Models/ReportPayment')
 const ReportCoWorker = use('App/Models/ReportCoWorker')
 const { validate } = use('Validator')
 const { baseResp, uploadImage, getShiftBefore, getShiftAfter } = use('App/Helpers')
+const ReportShiftTransformer = use('App/Transformers/V1/ReportShiftTransformer')
 const IslandTransformer = use('App/Transformers/V1/IslandTransformer')
 const moment = use('moment')
 const _ = use('lodash')
@@ -44,7 +46,14 @@ class ReportController {
         })
         if (validation.fails()) return response.status(400).json(baseResp(false, [], validation.messages()[0].message))
         const getIsland = await Island.query().where('spbu_uuid', req.spbu_uuid).orderBy('name', 'asc').fetch()
+        const getReportShift = await ReportShift.query()
+            .where('spbu_uuid', req.spbu_uuid)
+            .where('shift_uuid', req.shift_uuid)
+            .where('date', moment(req.date).format('YYYY-MM-DD'))
+            .with('admin')
+            .first()
         const data = {
+            reportShift: await transform.include('admin').item(getReportShift, ReportShiftTransformer),
             island: await transform.collection(getIsland, IslandTransformer),
             feeder_tank: [],
             total_sales: [],

@@ -24,6 +24,7 @@ class Report extends Component {
             modalItem: '',
             productData: [],
             shiftData: [],
+            dataReportShift: [],
             dataReportIsland: [],
             dataReportFeederTank: [],
             dataTotalFinance: [],
@@ -58,6 +59,7 @@ class Report extends Component {
             { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 this.setState({
+                    dataReportShift: response.data.data.reportShift,
                     dataReportIsland: response.data.data.island,
                     dataReportFeederTank: response.data.data.feeder_tank,
                     dataTotalFinance: response.data.data.total_finance,
@@ -74,6 +76,7 @@ class Report extends Component {
             { headers: { Authorization: `Bearer ${localStorage.getItem('auth')}` } })
             .then(response => {
                 this.setState({
+                    dataReportShift: response.data.data.reportShift,
                     dataReportIsland: response.data.data.island,
                     dataReportFeederTank: response.data.data.feeder_tank,
                     dataTotalFinance: response.data.data.total_finance,
@@ -328,6 +331,7 @@ class Report extends Component {
                     <div className="panel-heading">
                         <h5 className="panel-title">Laporan <span className={(this.state.filterShift == '') ? 'badge badge-primary' : 'badge badge-warning'} style={{ borderRadius: '2px' }}>{(this.state.filterShift == '') ? 'Semua' : this.state.filterShiftName}</span> <a className="heading-elements-toggle"><i className="icon-more"></i></a></h5>
                         <div className="heading-elements">
+                            <h5>Admin: { (this.state.dataReportShift != null && this.state.dataReportShift.admin != null)? this.state.dataReportShift.admin.name : '-' }</h5>
                             {/* <button type="submit" className="btn btn-primary btn-ladda btn-ladda-spinner ladda-button btn-export-spinner" data-spinner-color="#333" data-style="slide-down">
                                 <span className="ladda-label"> Ekspor</span>
                                 <span className="ladda-spinner"></span>

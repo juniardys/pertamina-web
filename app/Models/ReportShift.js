@@ -26,6 +26,10 @@ class ReportShift extends Model {
         return this.belongsTo('App/Models/User', 'operator_uuid', 'uuid')
     }
     
+    admin() {
+        return this.belongsTo('App/Models/User', 'admin_acc', 'uuid').withTrashed()
+    }
+    
     // Setters
     setCreatedAt(created_at) {
         return new Date(created_at).toISOString()
