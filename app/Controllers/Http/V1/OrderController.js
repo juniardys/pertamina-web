@@ -51,7 +51,7 @@ class OrderController {
             }
         }
 
-        const builder = await query
+        const builder = await query.paginate(request.page || 1, request.paginate || 1000)
         let data = transform
         data = await data.include(['spbu', 'product']).paginate(builder, OrderTransformer)
 
