@@ -294,6 +294,7 @@ class ReportController {
                     'spbu_uuid': req.spbu_uuid,
                     'island_uuid': nozzle.island_uuid,
                     'shift_uuid': shiftAfter.shift.uuid,
+                    'nozzle_uuid': nozzle.nozzle_uuid,
                     'date': moment(shiftAfter.date).format('YYYY-MM-DD'),
                 }).first()
                 if (after) {
@@ -398,6 +399,7 @@ class ReportController {
                 let after = await ReportFeederTank.query().where({
                     'spbu_uuid': req.spbu_uuid,
                     'shift_uuid': shiftAfter.shift.uuid,
+                    'feeder_tank_uuid': feeder_tank.feeder_tank_uuid,
                     'date': moment(shiftAfter.date).format('YYYY-MM-DD'),
                 }).first()
                 if (after) {
