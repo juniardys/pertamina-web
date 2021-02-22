@@ -17,6 +17,9 @@ const ReportIsland = use('App/Models/ReportIsland')
 const ReportFeederTank = use('App/Models/ReportFeederTank')
 const _ = use('lodash')
 const moment = use('moment')
+const imagemin = require('imagemin');
+const imageminJpegtran = require('imagemin-jpegtran');
+const imageminPngquant = require('imagemin-pngquant');
 
 const baseResp = (success, data, message = null, errors = null, meta = null) => {
     let response = {
@@ -140,6 +143,15 @@ const uploadImage = async (request, fileParam, folder = '/', fileName = null, si
         console.log(img.error().message);
         return false
     }
+
+    const files = await imagemin([Helpers.publicPath('img/' + folder + fileName)], {
+		plugins: [
+			imageminJpegtran(),
+			imageminPngquant({
+				quality: [0.6, 0.8]
+			})
+		]
+	});
 
     return 'img/' + folder + fileName
 }
