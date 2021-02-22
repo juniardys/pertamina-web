@@ -17,9 +17,9 @@ const ReportIsland = use('App/Models/ReportIsland')
 const ReportFeederTank = use('App/Models/ReportFeederTank')
 const _ = use('lodash')
 const moment = use('moment')
-const imagemin = require('imagemin');
-const imageminJpegtran = require('imagemin-jpegtran');
-const imageminPngquant = require('imagemin-pngquant');
+const imagemin = use('imagemin');
+const imageminJpegtran = use('imagemin-jpegtran');
+const imageminPngquant = use('imagemin-pngquant');
 
 const baseResp = (success, data, message = null, errors = null, meta = null) => {
     let response = {
