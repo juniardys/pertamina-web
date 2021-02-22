@@ -43,6 +43,8 @@
     "date-fns": "^2.16.1",
     "firebase": "^7.14.3",
     "imagemin": "^7.0.1",
+    "imagemin-jpegtran": "^7.0.0",
+    "imagemin-pngquant": "^9.0.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "next": "^9.2.2",
